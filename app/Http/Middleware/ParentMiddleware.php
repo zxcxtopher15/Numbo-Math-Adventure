@@ -20,12 +20,10 @@ class ParentMiddleware
             if (Auth::user()->user_type == 'Parent') {
                 return $next($request);
             } else {
-                Auth::logout();
-                return redirect(url('login'));
+                return redirect(url('dashboard'));
             }
         } else {
-            Auth::logout();
-            return redirect(url('login'));
+            return redirect(url('dashboard'));
         };
     }
 }
