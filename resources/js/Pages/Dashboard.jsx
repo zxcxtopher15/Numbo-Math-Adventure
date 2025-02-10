@@ -1,7 +1,11 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 
 export default function Dashboard() {
+    const { auth } = usePage().props;
+    const userType = auth?.user?.user_type;
+
     return (
         <AuthenticatedLayout
             header={
@@ -16,7 +20,12 @@ export default function Dashboard() {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
-                            You're logged in!
+                            {userType === 'Teacher' && <p>Welcome, Teacher!</p>}
+                            {userType === 'Student' && <p>Welcome, Student!</p>}
+                            {userType === 'Parent' && <p>Welcome, Parent!</p>}
+                            {!['Teacher', 'Student', 'Parent'].includes(userType) && (
+                                <p>You're logged in!</p>
+                            )}
                         </div>
                     </div>
                 </div>
