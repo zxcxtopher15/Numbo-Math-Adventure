@@ -85,13 +85,19 @@ export default function Login({ status, canResetPassword }) {
           )}
         </div>
 
-        <div className="mt-10 flex items-center mb-8 justify-between">
-          <PrimaryButton className="ms-4" disabled={processing}>
+        <div className="mt-10 flex flex-col items-center  justify-center">
+          <PrimaryButton className="" disabled={processing}>
             Log in
           </PrimaryButton>
-          <PrimaryButton className="ms-4" disabled={processing}>
-            Log in
-          </PrimaryButton>
+          <span className="text-sm mt-8 text-gray-600">
+            Doesn't have an account yet?
+            <Link
+              href={route('register')}
+              className="ms-2 text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              Register
+            </Link>
+          </span>
         </div>
       </form>
     </GuestLayout>

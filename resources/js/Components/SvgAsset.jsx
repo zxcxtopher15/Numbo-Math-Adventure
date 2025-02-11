@@ -11,7 +11,7 @@ export const SvgAsset = ({ value, className = '', ...props }) => {
 
   return (
     <motion.img
-      src={`/images/assets/${value}.svg`}
+      src={`/images/assets/shapes/${value}.svg`}
       alt={`svg-${value}`}
       className={`absolute ` + className}
       {...props}
