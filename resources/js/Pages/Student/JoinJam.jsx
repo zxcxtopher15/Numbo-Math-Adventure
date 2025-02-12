@@ -245,6 +245,43 @@ const JoinJam = () => {
         }
     };
 
+    useEffect(() => {
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
+
+        if (!jamCode) return;
+
+        const sseUrl = `${baseUrl}/math-jams/jam-stream-updates?math_jam_code=${jamCode}`;
+
+        let eventSource;
+
+        const connectSSE = () => {
+            eventSource = new EventSource(sseUrl);
+
+            eventSource.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+
+                if (data && (data.status === "waiting" || data.status === "started")) {
+                    console.log(data);
+                } else {
+                    
+                }
+            };
+
+            eventSource.onerror = () => {
+                eventSource.close();
+                setTimeout(() => {
+                    connectSSE();
+                }, 1000);
+            };
+        };
+
+        connectSSE();
+
+        return () => {
+            eventSource?.close();
+        };
+    }, [jamCode]);
+
     return (
         <>
             <Head title="Math Jam" />

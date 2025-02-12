@@ -49,6 +49,7 @@ Route::group(['middleware' => 'student'], function () {
     Route::get('/math-jams/check-status', [MathJamController::class, 'checkStatus']);
     Route::post('/math-jams/disconnect', [MathJamController::class, 'disconnect']);
     Route::post('/math-jams/reconnect', [MathJamController::class, 'reconnect']);
+    Route::get('/math-jams/jam-stream-updates', [MathJamController::class, 'jamStreamUpdates']);
 });
 
 Route::group(['middleware' => 'parent'], function () {});

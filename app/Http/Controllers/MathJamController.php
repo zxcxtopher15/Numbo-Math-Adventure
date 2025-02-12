@@ -262,4 +262,27 @@ class MathJamController extends Controller
             'status' => 'joined',
         ]);
     }
+
+    public function jamStreamUpdates(Request $request)
+    {
+        $mathJamCode = $request->query('math_jam_code');
+
+        return response()->stream(function () use ($mathJamCode) {
+            while (true) {
+                $mathJam = MathJam::where('math_jam_code', $mathJamCode)->first();
+
+                if ($mathJam) {
+                    echo "data: " . json_encode($mathJam) . "\n\n";
+                }
+                
+                ob_flush();
+                flush();
+                sleep(.200);
+            }
+        }, 200, [
+            'Content-Type' => 'text/event-stream',
+            'Cache-Control' => 'no-cache',
+            'Connection' => 'keep-alive',
+        ]);
+    }
 }
