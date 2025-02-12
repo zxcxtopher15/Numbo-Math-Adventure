@@ -111,10 +111,9 @@ const JoinJam = () => {
     };
 
     useEffect(() => {
-        if (!studentId || !jamCode) return;
+        if (!studentId) return;
 
         const checkStatus = async () => {
-            if (!studentId || !jamCode) return;
 
             try {
                 const response = await fetch(`/math-jams/check-status?student_id=${studentId}&math_jam_code=${jamCode}`);
@@ -123,6 +122,7 @@ const JoinJam = () => {
                 if (response.ok) {
                     setStatus(data.status);
                     setScore(data.score);
+                    setJamCode(data.math_jam_code);
                 } else {
                     sessionStorage.removeItem('jamCode');
                     setJamCode('');
@@ -227,6 +227,10 @@ const JoinJam = () => {
                     icon: 'error',
                     title: 'Reconnect Failed',
                     text: data.message || 'Failed to reconnect to the Math Jam.',
+                }).then(() => {
+                    if (data.message.includes("cancelled") || data.message.includes("ended")) {
+                        location.reload();
+                    }
                 });
             }
         } catch (err) {

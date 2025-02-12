@@ -155,12 +155,30 @@ class MathJamController extends Controller
     {
         $validated = $request->validate([
             'student_id' => 'required|exists:users,id',
-            'math_jam_code' => 'required|string|exists:math_jams,math_jam_code',
+            'math_jam_code' => 'nullable|string',
         ]);
 
+        if (empty($validated['math_jam_code'])) {
+            $latestParticipant = MathJamParticipant::where('student_id', $validated['student_id'])
+                ->latest()
+                ->first();
+
+            if (!$latestParticipant) {
+                return response()->json(['message' => 'No participation record found'], 404);
+            }
+
+            $validated['math_jam_code'] = $latestParticipant->mathJam->math_jam_code ?? null;
+
+            if (!$validated['math_jam_code']) {
+                return response()->json(['message' => 'No valid Math Jam found'], 404);
+            }
+        }
+
+        $mathJamCode = $validated['math_jam_code'];
+
         $participant = MathJamParticipant::where('student_id', $validated['student_id'])
-            ->whereHas('MathJam', function ($query) use ($validated) {
-                $query->where('math_jam_code', $validated['math_jam_code']);
+            ->whereHas('MathJam', function ($query) use ($mathJamCode) {
+                $query->where('math_jam_code', $mathJamCode);
                 $query->whereNotIn('status', ['cancelled', 'ended']);
             })
             ->latest()
@@ -171,6 +189,7 @@ class MathJamController extends Controller
         }
 
         return response()->json([
+            'math_jam_code' => $mathJamCode,
             'status' => $participant->status,
             'score' => $participant->score,
         ]);
@@ -212,12 +231,19 @@ class MathJamController extends Controller
             'student_id' => 'required|exists:users,id',
         ]);
 
+        $mathJam = MathJam::where('math_jam_code', $validated['math_jam_code'])->first();
+
+        if (!$mathJam || in_array($mathJam->status, ['cancelled', 'ended'])) {
+            return response()->json([
+                'message' => "Current Math Jam " . ucfirst($mathJam->status)
+            ], 400);
+        }
+
         $participant = MathJamParticipant::where('student_id', $validated['student_id'])
+            ->where('status', 'disconnected')
             ->whereHas('MathJam', function ($query) use ($validated) {
                 $query->where('math_jam_code', $validated['math_jam_code']);
-                $query->whereNotIn('status', ['cancelled', 'ended']);
             })
-            ->where('status', 'disconnected')
             ->latest()
             ->first();
 
