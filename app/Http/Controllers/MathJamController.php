@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\MathJam;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Models\MathJamParticipant;
 use Illuminate\Support\Facades\Auth;
 
 class MathJamController extends Controller
@@ -77,5 +78,162 @@ class MathJamController extends Controller
 
             sleep(.100);
         }
+    }
+
+    public function cancelJam(Request $request)
+    {
+        $jamId = $request->jam_id;
+        $jam = MathJam::findOrFail($jamId);
+
+        if ($jam->teacher_id !== Auth::id()) {
+            return response()->json(['message' => 'Unauthorized action'], 403);
+        }
+
+        $jam->status = 'cancelled';
+        $jam->save();
+
+        return response()->json([
+            'message' => 'Math Jam has been cancelled.',
+            'jam' => $jam,
+        ]);
+    }
+
+    public function joinJam(Request $request)
+    {
+        $validated = $request->validate([
+            'math_jam_code' => 'required|string',
+            'student_id' => 'required|exists:users,id',
+        ]);
+
+        $mathJam = MathJam::where('math_jam_code', $validated['math_jam_code'])->first();
+
+        if (!$mathJam) {
+            return response()->json(['message' => 'Invalid Math Jam Code'], 200);
+        }
+
+        switch ($mathJam->status) {
+            case 'started':
+                return response()->json(['message' => 'The Math Jam has already started.'], 200);
+
+            case 'cancelled':
+                return response()->json(['message' => 'The Math Jam has been cancelled.'], 200);
+
+            case 'waiting':
+                $existingParticipant = MathJamParticipant::where('math_jam_id', $mathJam->id)
+                    ->where('student_id', $validated['student_id'])
+                    ->first();
+
+                if ($existingParticipant) {
+                    return response()->json([
+                        'status' => $existingParticipant->status,
+                        'score' => $existingParticipant->score,
+                    ]);
+                }
+
+                $participant = MathJamParticipant::create([
+                    'math_jam_id' => $mathJam->id,
+                    'student_id' => $validated['student_id'],
+                    'status' => 'joined',
+                    'score' => 0,
+                    'joined_at' => now(),
+                ]);
+
+                return response()->json([
+                    'status' => 'joined',
+                    'score' => 0,
+                ]);
+
+            case 'ended':
+                return response()->json(['message' => 'The Math Jam has already ended.'], 200);
+
+            default:
+                return response()->json(['message' => 'Unexpected Math Jam status.'], 200);
+        }
+    }
+
+    public function checkStatus(Request $request)
+    {
+        $validated = $request->validate([
+            'student_id' => 'required|exists:users,id',
+            'math_jam_code' => 'required|string|exists:math_jams,math_jam_code',
+        ]);
+
+        $participant = MathJamParticipant::where('student_id', $validated['student_id'])
+            ->whereHas('MathJam', function ($query) use ($validated) {
+                $query->where('math_jam_code', $validated['math_jam_code']);
+                $query->whereNotIn('status', ['cancelled', 'ended']);
+            })
+            ->latest()
+            ->first();
+
+        if (!$participant) {
+            return response()->json(['message' => 'No active participation found'], 404);
+        }
+
+        return response()->json([
+            'status' => $participant->status,
+            'score' => $participant->score,
+        ]);
+    }
+
+    public function disconnect(Request $request)
+    {
+        $validated = $request->validate([
+            'math_jam_code' => 'required|exists:math_jams,math_jam_code',
+            'student_id' => 'required|exists:users,id',
+        ]);
+
+        $participant = MathJamParticipant::where('student_id', $validated['student_id'])
+            ->whereHas('MathJam', function ($query) use ($validated) {
+                $query->where('math_jam_code', $validated['math_jam_code']);
+                $query->whereNotIn('status', ['cancelled', 'ended']);
+            })
+            ->whereNotNull('math_jam_id')
+            ->latest()
+            ->first();
+
+        if (!$participant) {
+            return response()->json(['message' => 'No active participation found'], 404);
+        }
+
+        $participant->disconnected_at = now();
+        $participant->status = 'disconnected';
+        $participant->save();
+
+        return response()->json([
+            'message' => 'Disconnected successfully',
+        ]);
+    }
+
+    public function reconnect(Request $request)
+    {
+        $validated = $request->validate([
+            'math_jam_code' => 'required|exists:math_jams,math_jam_code',
+            'student_id' => 'required|exists:users,id',
+        ]);
+
+        $participant = MathJamParticipant::where('student_id', $validated['student_id'])
+            ->whereHas('MathJam', function ($query) use ($validated) {
+                $query->where('math_jam_code', $validated['math_jam_code']);
+                $query->whereNotIn('status', ['cancelled', 'ended']);
+            })
+            ->where('status', 'disconnected')
+            ->latest()
+            ->first();
+
+        if (!$participant) {
+            return response()->json(['message' => 'No disconnected participation found'], 404);
+        }
+
+        $participant->update([
+            'status' => 'joined',
+            'disconnected_at' => null,
+        ]);
+
+        return response()->json([
+            'message' => 'Reconnected successfully',
+            'score' => $participant->score,
+            'status' => 'joined',
+        ]);
     }
 }

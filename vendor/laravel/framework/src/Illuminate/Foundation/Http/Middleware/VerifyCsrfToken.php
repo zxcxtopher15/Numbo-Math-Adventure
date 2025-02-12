@@ -40,7 +40,6 @@ class VerifyCsrfToken
      * @var array<int, string>
      */
     protected $except = [
-        '/math-jams/create'
     ];
 
     /**

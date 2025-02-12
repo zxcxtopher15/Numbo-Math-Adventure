@@ -37,9 +37,19 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::post('/math-jams/create', [MathJamController::class, 'create']);
     Route::get('/math-jams/check-existing', [MathJamController::class, 'checkExistingJam']);
     Route::get('/math-jams/stream-updates', [MathJamController::class, 'streamMathJamUpdates']);
+    Route::post('/math-jams/cancel', [MathJamController::class, 'cancelJam']);
 });
 
-Route::group(['middleware' => 'student'], function () {});
+Route::group(['middleware' => 'student'], function () {
+    Route::get('/math-jams-join', function () {
+        return Inertia::render('Student/JoinJam');
+    });
+
+    Route::post('/math-jams/join', [MathJamController::class, 'joinJam']);
+    Route::get('/math-jams/check-status', [MathJamController::class, 'checkStatus']);
+    Route::post('/math-jams/disconnect', [MathJamController::class, 'disconnect']);
+    Route::post('/math-jams/reconnect', [MathJamController::class, 'reconnect']);
+});
 
 Route::group(['middleware' => 'parent'], function () {});
 

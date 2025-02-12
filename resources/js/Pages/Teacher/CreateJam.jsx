@@ -42,41 +42,41 @@ const CreateJam = () => {
     fetchExistingJam();
   }, [auth.user.id]);
 
-  useEffect(() => {
-    const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
-    const sseUrl = `${baseUrl}/math-jams/stream-updates?teacher_id=${auth.user.id}`;
+  // useEffect(() => {
+  //   const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
+  //   const sseUrl = `${baseUrl}/math-jams/stream-updates?teacher_id=${auth.user.id}`;
 
-    let eventSource;
+  //   let eventSource;
 
-    const connectSSE = () => {
-      eventSource = new EventSource(sseUrl);
+  //   const connectSSE = () => {
+  //     eventSource = new EventSource(sseUrl);
 
-      eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
+  //     eventSource.onmessage = (event) => {
+  //       const data = JSON.parse(event.data);
 
-        if (data && (data.status === "waiting" || data.status === "started")) {
-          setExistingJam(data);
-        } else {
-          setExistingJam(null);
-        }
-      };
+  //       if (data && (data.status === "waiting" || data.status === "started")) {
+  //         setExistingJam(data);
+  //       } else {
+  //         setExistingJam(null);
+  //       }
+  //     };
 
-      eventSource.onerror = (error) => {
-        // console.error("SSE Error:", error);
-        eventSource.close();
-        setTimeout(() => {
-          // console.log("Reconnecting SSE...");
-          connectSSE();
-        }, 1000);
-      };
-    };
+  //     eventSource.onerror = (error) => {
+  //       // console.error("SSE Error:", error);
+  //       eventSource.close();
+  //       setTimeout(() => {
+  //         // console.log("Reconnecting SSE...");
+  //         connectSSE();
+  //       }, 1000);
+  //     };
+  //   };
 
-    connectSSE();
+  //   connectSSE();
 
-    return () => {
-      eventSource?.close();
-    };
-  }, [auth.user.id]);
+  //   return () => {
+  //     eventSource?.close();
+  //   };
+  // }, [auth.user.id]);
 
   const handleCreateJam = async () => {
     if (existingJam) {
@@ -98,7 +98,7 @@ const CreateJam = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.getAttribute("content"),
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
         },
         body: JSON.stringify({
           teacher_id: auth.user.id,
@@ -110,8 +110,6 @@ const CreateJam = () => {
       });
 
       const data = await response.json();
-      console.log("Response:", response);
-      console.log("Data:", data);
 
       if (response.ok) {
         alert("Math Jam created successfully!");
@@ -123,6 +121,45 @@ const CreateJam = () => {
     } catch (error) {
       console.error("Fetch Error:", error);
       alert("An error occurred while creating the jam.");
+    }
+  };
+
+  const handleCancelJam = async () => {
+    const confirmed = window.confirm("Are you sure you want to cancel this Math Jam?");
+    if (confirmed) {
+      const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
+      if (!baseUrl) {
+        console.error("Base URL not found.");
+        alert("Base URL not found.");
+        return;
+      }
+
+      const apiUrl = `${baseUrl}/math-jams/cancel`;
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+          },
+          body: JSON.stringify({
+            jam_id: existingJam.id,
+          }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          alert("Math Jam cancelled successfully.");
+          setExistingJam(null);
+        } else {
+          alert(data.message || "Failed to cancel the Math Jam.");
+          console.error("Error details:", data);
+        }
+      } catch (error) {
+        console.error("Fetch Error:", error);
+        alert("An error occurred while cancelling the jam.");
+      }
     }
   };
 
@@ -142,6 +179,9 @@ const CreateJam = () => {
             <p><strong>Time Limit:</strong> {existingJam.time_limit} sec</p>
             <p><strong>Category:</strong> {existingJam.category}</p>
             <p><strong>Status:</strong> {existingJam.status}</p>
+            <PrimaryButton onClick={handleCancelJam} className="w-full mt-4 bg-red-500 hover:bg-red-600">
+              Cancel Jam
+            </PrimaryButton>
           </div>
         ) : (
           <>
