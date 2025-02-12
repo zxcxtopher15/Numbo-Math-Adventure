@@ -1,8 +1,5 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
-import NavLink from '@/Components/NavLink';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import {
   SidebarProvider,
@@ -10,11 +7,11 @@ import {
   SidebarInset,
 } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/Components/AppSidebar';
-import { NavUser } from '@/Components/NavUser';
 
 export default function AuthenticatedLayout({ header, children }) {
   const user = usePage().props.auth.user;
-
+  const { auth } = usePage().props;
+  const userType = auth?.user?.user_type;
   const [showingNavigationDropdown, setShowingNavigationDropdown] =
     useState(false);
 
@@ -25,6 +22,17 @@ export default function AuthenticatedLayout({ header, children }) {
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center  gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
+
+            <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+              <div className="p-6 font-medium text-gray-900">
+                {userType === 'Teacher' && <p>Welcome, Teacher!</p>}
+                {userType === 'Student' && <p>Welcome, Student!</p>}
+                {userType === 'Parent' && <p>Welcome, Parent!</p>}
+                {!['Teacher', 'Student', 'Parent'].includes(userType) && (
+                  <p>You're logged in!</p>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="hidden sm:ms-6 sm:flex sm:items-center">

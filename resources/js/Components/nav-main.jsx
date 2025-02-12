@@ -17,7 +17,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
-
+import { Link } from '@inertiajs/react';
 export function NavMain({ items }) {
   return (
     <SidebarGroup>
@@ -29,10 +29,10 @@ export function NavMain({ items }) {
               isActive={item.isActive}
               tooltip={item.title}
             >
-              <a href={item.url} className="flex items-center gap-2">
+              <Link href={item.url} className="flex items-center gap-2">
                 {item.icon && <item.icon />}
                 {item.title}
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}

@@ -18,8 +18,6 @@ import {
 } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
-import { NavProjects } from '@/components/nav-projects';
-import { NavUser } from '@/Components/NavUser';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import {
   Sidebar,
@@ -42,23 +40,23 @@ const data = {
   navMain: [
     {
       title: 'Dashboard',
-      url: '#',
+      url: '/dashboard',
       icon: LayoutDashboard,
       isActive: true,
     },
     {
       title: 'Assessments ',
-      url: '#',
+      url: '/assessments',
       icon: BookType,
     },
     {
       title: 'Assignments',
-      url: '#',
+      url: '/assignments',
       icon: BookOpen,
     },
     {
-      title: 'Reports',
-      url: '#',
+      title: 'Modules',
+      url: 'modules',
       icon: Settings2,
     },
   ],

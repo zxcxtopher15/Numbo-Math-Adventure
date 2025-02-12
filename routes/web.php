@@ -26,10 +26,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
 });
 
 Route::group(['middleware' => 'teacher'], function() {
-
+    Route::get('/assignments', function () {
+        return Inertia::render('Assignments/List', request()->all());
+    })->name('assignments.list');
+    Route::get('/assessments', function () {
+        return Inertia::render('Assessments/List', request()->all());
+    })->name('assessments.list');
 });
 
 Route::group(['middleware' => 'student'], function() {
