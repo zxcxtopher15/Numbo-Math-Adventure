@@ -3,11 +3,12 @@
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\MathJamController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 Route::get('/', [AuthenticatedSessionController::class, 'create'])
-->name('login');
+    ->name('login');
 
 // Route::get('/', function () {
 //     return Inertia::render('Welcome', [
@@ -29,21 +30,28 @@ Route::middleware('auth')->group(function () {
     
 });
 
-Route::group(['middleware' => 'teacher'], function() {
-    Route::get('/assignments', function () {
-        return Inertia::render('Assignments/List', request()->all());
-    })->name('assignments.list');
-    Route::get('/assessments', function () {
-        return Inertia::render('Assessments/List', request()->all());
-    })->name('assessments.list');
+Route::group(['middleware' => 'teacher'], function () {
+    Route::get('/math-jams', function () {
+        return Inertia::render('Teacher/CreateJam');
+    });
+
+    Route::post('/math-jams/create', [MathJamController::class, 'create']);
+    Route::get('/math-jams/check-existing', [MathJamController::class, 'checkExistingJam']);
+    Route::get('/math-jams/stream-updates', [MathJamController::class, 'streamMathJamUpdates']);
+    Route::post('/math-jams/cancel', [MathJamController::class, 'cancelJam']);
 });
 
-Route::group(['middleware' => 'student'], function() {
+Route::group(['middleware' => 'student'], function () {
+    Route::get('/math-jams-join', function () {
+        return Inertia::render('Student/JoinJam');
+    });
 
+    Route::post('/math-jams/join', [MathJamController::class, 'joinJam']);
+    Route::get('/math-jams/check-status', [MathJamController::class, 'checkStatus']);
+    Route::post('/math-jams/disconnect', [MathJamController::class, 'disconnect']);
+    Route::post('/math-jams/reconnect', [MathJamController::class, 'reconnect']);
 });
 
-Route::group(['middleware' => 'parent'], function() {
+Route::group(['middleware' => 'parent'], function () {});
 
-});
-
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

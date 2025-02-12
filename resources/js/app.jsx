@@ -6,7 +6,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import LoadingScreen from '@/components/LoadingScreen'; // Import the LoadingScreen component
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'Numbo Math Adventure';
 
 createInertiaApp({
   title: (title) => `${title} - ${appName}`,
