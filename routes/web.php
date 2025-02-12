@@ -3,11 +3,12 @@
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\MathJamController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 Route::get('/', [AuthenticatedSessionController::class, 'create'])
-->name('login');
+    ->name('login');
 
 // Route::get('/', function () {
 //     return Inertia::render('Welcome', [
@@ -28,16 +29,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::group(['middleware' => 'teacher'], function() {
+Route::group(['middleware' => 'teacher'], function () {
+    Route::get('/math-jams', function () {
+        return Inertia::render('Teacher/CreateJam');
+    });
 
+    Route::post('/math-jams/create', [MathJamController::class, 'create']);
+    Route::get('/math-jams/check-existing', [MathJamController::class, 'checkExistingJam']);
+    Route::get('/math-jams/stream-updates', [MathJamController::class, 'streamMathJamUpdates']);
 });
 
-Route::group(['middleware' => 'student'], function() {
+Route::group(['middleware' => 'student'], function () {});
 
-});
+Route::group(['middleware' => 'parent'], function () {});
 
-Route::group(['middleware' => 'parent'], function() {
-
-});
-
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
