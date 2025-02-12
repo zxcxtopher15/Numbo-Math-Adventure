@@ -228,7 +228,7 @@ const JoinJam = () => {
                     title: 'Reconnect Failed',
                     text: data.message || 'Failed to reconnect to the Math Jam.',
                 }).then(() => {
-                    if (data.message.includes("cancelled") || data.message.includes("ended")) {
+                    if (data.message.includes("Cancelled") || data.message.includes("Ended")) {
                         location.reload();
                     }
                 });
