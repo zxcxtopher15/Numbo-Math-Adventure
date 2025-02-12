@@ -39,7 +39,9 @@ class VerifyCsrfToken
      *
      * @var array<int, string>
      */
-    protected $except = [];
+    protected $except = [
+        '/math-jams/create'
+    ];
 
     /**
      * The globally ignored URIs that should be excluded from CSRF verification.
