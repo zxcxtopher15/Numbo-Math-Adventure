@@ -5,27 +5,26 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import LoadingScreen from '@/components/LoadingScreen'; // Import the LoadingScreen component
+import { CustomScroll } from 'react-custom-scroll';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Numbo Math Adventure';
 
 createInertiaApp({
-  title: (title) => `${title} - ${appName}`,
-  resolve: (name) =>
-    resolvePageComponent(
-      `./Pages/${name}.jsx`,
-      import.meta.glob('./Pages/**/*.jsx'),
-    ),
-  setup({ el, App, props }) {
-    const root = createRoot(el);
+    title: (title) => `${title} - ${appName}`,
+    resolve: (name) => resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx')),
+    setup({ el, App, props }) {
+        const root = createRoot(el);
 
-    root.render(
-      <>
-        {/* <LoadingScreen />  */}
-        <App {...props} />
-      </>,
-    );
-  },
-  progress: {
-    color: '#4B5563',
-  },
+        root.render(
+            <>
+                {/* <LoadingScreen />  */}
+                <CustomScroll>
+                    <App {...props} />
+                </CustomScroll>
+            </>,
+        );
+    },
+    progress: {
+        color: '#4B5563',
+    },
 });

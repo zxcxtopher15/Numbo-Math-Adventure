@@ -39,6 +39,10 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::get('/math-jams/check-existing', [MathJamController::class, 'checkExistingJam']);
     Route::get('/math-jams/stream-updates', [MathJamController::class, 'streamMathJamUpdates']);
     Route::post('/math-jams/cancel', [MathJamController::class, 'cancelJam']);
+
+    Route::get('/board', function () {
+        return Inertia::render('Jam/BoardContainer', request()->all());
+    })->name('jam.BoardContainer');
 });
 
 Route::group(['middleware' => 'student'], function () {
