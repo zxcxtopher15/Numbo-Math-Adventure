@@ -165,7 +165,9 @@ function TotalResult({ totalQuestions, gameState }) {
                         <Link href="/dashboard" className="bg-warning rounded-2xl p-2">
                             Main Menu
                         </Link>
-                        <div className="bg-primary  rounded-2xl p-2 px-4">Play Again</div>
+                        <Link href="/board" className="bg-primary  rounded-2xl p-2 px-4">
+                            Play Again
+                        </Link>
                     </div>
                 </div>
             </div>
