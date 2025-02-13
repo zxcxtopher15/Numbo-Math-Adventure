@@ -49,6 +49,54 @@ const data = [
             { id: 4, answer: '6', is_correct: false },
         ],
     },
+    {
+        title: 'Addition Challenge',
+        time: 4,
+        question_data: {
+            type: 'addition',
+            image: null,
+            title: 'Solve This',
+            question: '2 + 2 = ?',
+        },
+        answers: [
+            { id: 1, answer: '4', is_correct: true },
+            { id: 2, answer: '5', is_correct: false },
+            { id: 3, answer: '6', is_correct: false },
+            { id: 4, answer: '7', is_correct: false },
+        ],
+    },
+    {
+        title: 'Subtraction Challenge',
+        time: 50,
+        question_data: {
+            type: 'subtraction',
+            image: null,
+            title: 'Solve This',
+            question: '8 - 3 = ?',
+        },
+        answers: [
+            { id: 1, answer: '5', is_correct: true },
+            { id: 2, answer: '6', is_correct: false },
+            { id: 3, answer: '7', is_correct: false },
+            { id: 4, answer: '8', is_correct: false },
+        ],
+    },
+    {
+        title: 'Addition Challenge',
+        time: 4,
+        question_data: {
+            type: 'addition',
+            image: null,
+            title: 'Solve This',
+            question: '3 + 3 = ?',
+        },
+        answers: [
+            { id: 1, answer: '6', is_correct: true },
+            { id: 2, answer: '5', is_correct: false },
+            { id: 3, answer: '7', is_correct: false },
+            { id: 4, answer: '8', is_correct: false },
+        ],
+    },
 ];
 
 function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
@@ -163,6 +211,8 @@ export function Board() {
     }, []);
 
     const handleAnswer = (answer) => {
+        setIsCorrect(false); // Reset the isCorrect state
+
         setIsAnswered(true);
         const correct = answer ? answer.is_correct : false;
         setCorrectAnswer(correct ? answer.answer : data[currentQuestion].answers.find((a) => a.is_correct).answer);
@@ -287,32 +337,34 @@ export function Board() {
 
                     <div className="absolute lg:bottom-7 bottom-0 lg:right-8 right-0">
                         <div className="rounded-full bg-primary lg:h-[150px] h-24">
-                            <CountdownCircleTimer
-                                isPlaying={!isPaused}
-                                duration={data[currentQuestion].time}
-                                colors={['#004777', '#A30000', '#A30000']}
-                                colorsTime={[7, 2, 0]}
-                                size={window.innerWidth > 768 ? 150 : 100}
-                                startTime={startTime}
-                                onComplete={handleTimeUp}
-                            >
-                                {({ remainingTime }) => (
-                                    <div className="lg:text-5xl text-3xl font-bold text-white">
-                                        {remainingTime > 0 ? (
-                                            <div className="flex items-center">{remainingTime}</div>
-                                        ) : (
-                                            <motion.img
-                                                src="/images/assets/objects/clock.svg"
-                                                className="w-14 h-14"
-                                                alt="clock"
-                                                initial={{ y: 0, rotate: 0 }}
-                                                animate={{ y: [0, -10, 0], rotate: [0, 10, -10, 0] }}
-                                                transition={{ duration: 0.5, repeat: Infinity, ease: 'easeInOut' }}
-                                            />
-                                        )}
-                                    </div>
-                                )}
-                            </CountdownCircleTimer>
+                            {currentQuestion < data.length && (
+                                <CountdownCircleTimer
+                                    key={currentQuestion} // Reset timer on new question
+                                    isPlaying={!isPaused && !isAnswered} // Only play when not paused & unanswered
+                                    duration={data[currentQuestion].time}
+                                    colors={['#004777', '#F7B801', '#A30000', '#A30000']}
+                                    colorsTime={[10, 5, 2, 0]}
+                                    size={window.innerWidth > 768 ? 150 : 100}
+                                    onComplete={handleTimeUp} // Trigger when timer runs out
+                                >
+                                    {({ remainingTime }) => (
+                                        <div className="lg:text-5xl text-3xl font-bold text-white">
+                                            {remainingTime > 0 ? (
+                                                <div className="flex items-center">{remainingTime}</div>
+                                            ) : (
+                                                <motion.img
+                                                    src="/images/assets/objects/clock.svg"
+                                                    className="w-14 h-14"
+                                                    alt="clock"
+                                                    initial={{ y: 0, rotate: 0 }}
+                                                    animate={{ y: [0, -10, 0], rotate: [0, 10, -10, 0] }}
+                                                    transition={{ duration: 0.5, repeat: Infinity, ease: 'easeInOut' }}
+                                                />
+                                            )}
+                                        </div>
+                                    )}
+                                </CountdownCircleTimer>
+                            )}
                         </div>
                     </div>
                 </div>
