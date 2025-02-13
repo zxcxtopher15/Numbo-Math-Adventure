@@ -28,7 +28,7 @@ const JoinJam = () => {
         }
 
         setLoading(true);
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) {
             Swal.fire({
                 icon: 'error',
@@ -42,7 +42,7 @@ const JoinJam = () => {
 
         try {
             const response = await fetch(apiUrl, {
-                method: "POST",
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -88,14 +88,14 @@ const JoinJam = () => {
     const handleDisconnect = async () => {
         if (!studentId || !jamCode) return;
 
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
 
         const apiUrl = `${baseUrl}/math-jams/disconnect`;
 
         try {
             await fetch(apiUrl, {
-                method: "POST",
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -116,7 +116,9 @@ const JoinJam = () => {
         const checkStatus = async () => {
 
             try {
-                const response = await fetch(`/math-jams/check-status?student_id=${studentId}&math_jam_code=${jamCode}`);
+                const response = await fetch(
+                    `/math-jams/check-status?student_id=${studentId}&math_jam_code=${jamCode}`,
+                );
                 const data = await response.json();
 
                 if (response.ok) {
@@ -128,7 +130,7 @@ const JoinJam = () => {
                     setJamCode('');
                 }
             } catch (err) {
-                console.error("Error checking status:", err);
+                console.error('Error checking status:', err);
             }
         };
 
@@ -139,11 +141,7 @@ const JoinJam = () => {
         };
 
         const disableReload = (event) => {
-            if (
-                event.key === "F5" ||
-                (event.ctrlKey && event.key === "r") ||
-                (event.ctrlKey && event.key === "R")
-            ) {
+            if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.ctrlKey && event.key === 'R')) {
                 event.preventDefault();
                 Swal.fire({
                     icon: 'warning',
@@ -163,13 +161,13 @@ const JoinJam = () => {
             }
         };
 
-        document.addEventListener("contextmenu", disableRightClick);
+        document.addEventListener('contextmenu', disableRightClick);
         window.addEventListener('beforeunload', handleBeforeUnload);
         window.addEventListener('offline', handleNetworkChange);
         window.addEventListener('keydown', disableReload);
 
         return () => {
-            document.removeEventListener("contextmenu", disableRightClick);
+            document.removeEventListener('contextmenu', disableRightClick);
             window.removeEventListener('beforeunload', handleBeforeUnload);
             window.removeEventListener('offline', handleNetworkChange);
             window.removeEventListener('keydown', disableReload);
@@ -187,7 +185,7 @@ const JoinJam = () => {
         }
 
         setLoading(true);
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) {
             Swal.fire({
                 icon: 'error',
@@ -201,7 +199,7 @@ const JoinJam = () => {
 
         try {
             const response = await fetch(apiUrl, {
-                method: "POST",
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -288,7 +286,9 @@ const JoinJam = () => {
             <div className="flex justify-center items-center min-h-screen bg-gray-100">
                 <div className="bg-white shadow-lg rounded-lg p-6 w-[400px]">
                     <h2 className="text-xl font-semibold text-center mb-4">Join a Math Jam</h2>
-                    <p className="text-center text-gray-700 mb-4">Welcome, <span className="font-semibold">{studentName}</span>!</p>
+                    <p className="text-center text-gray-700 mb-4">
+                        Welcome, <span className="font-semibold">{studentName}</span>!
+                    </p>
 
                     {status === 'disconnected' ? (
                         <div className="bg-red-100 p-4 rounded mb-4">
@@ -330,7 +330,9 @@ const JoinJam = () => {
 
                             {status && (
                                 <div className="bg-yellow-100 p-4 rounded mb-4">
-                                    <h3 className="font-semibold">Status: {status.charAt(0).toUpperCase() + status.slice(1)}</h3>
+                                    <h3 className="font-semibold">
+                                        Status: {status.charAt(0).toUpperCase() + status.slice(1)}
+                                    </h3>
                                     <p>Score: {score}</p>
                                 </div>
                             )}
