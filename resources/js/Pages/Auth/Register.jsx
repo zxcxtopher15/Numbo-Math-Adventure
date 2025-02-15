@@ -11,11 +11,11 @@ export default function Register() {
     email: '',
     password: '',
     password_confirmation: '',
+    user_type: 'Student',
   });
 
   const submit = (e) => {
     e.preventDefault();
-
     post(route('register'), {
       onFinish: () => reset('password', 'password_confirmation'),
     });
@@ -32,8 +32,9 @@ export default function Register() {
               <input
                 type="radio"
                 name="user_type"
-                value="student"
+                value="Student"
                 className="hidden peer"
+                checked={data.user_type === 'Student'}
                 onChange={(e) => setData('user_type', e.target.value)}
               />
               <img
@@ -50,8 +51,9 @@ export default function Register() {
               <input
                 type="radio"
                 name="user_type"
-                value="teacher"
+                value="Teacher"
                 className="hidden peer"
+                checked={data.user_type === 'Teacher'}
                 onChange={(e) => setData('user_type', e.target.value)}
               />
               <img
@@ -72,7 +74,6 @@ export default function Register() {
 
           <div>
             <InputLabel htmlFor="name" value="Name" />
-
             <TextInput
               id="name"
               name="name"
@@ -83,13 +84,11 @@ export default function Register() {
               onChange={(e) => setData('name', e.target.value)}
               required
             />
-
             <InputError message={errors.name} className="mt-2" />
           </div>
 
           <div className="mt-4">
             <InputLabel htmlFor="email" value="Email" />
-
             <TextInput
               id="email"
               type="email"
@@ -100,13 +99,11 @@ export default function Register() {
               onChange={(e) => setData('email', e.target.value)}
               required
             />
-
             <InputError message={errors.email} className="mt-2" />
           </div>
 
           <div className="mt-4">
             <InputLabel htmlFor="password" value="Password" />
-
             <TextInput
               id="password"
               type="password"
@@ -117,7 +114,6 @@ export default function Register() {
               onChange={(e) => setData('password', e.target.value)}
               required
             />
-
             <InputError message={errors.password} className="mt-2" />
           </div>
 
@@ -126,7 +122,6 @@ export default function Register() {
               htmlFor="password_confirmation"
               value="Confirm Password"
             />
-
             <TextInput
               id="password_confirmation"
               type="password"
@@ -134,10 +129,11 @@ export default function Register() {
               value={data.password_confirmation}
               className="mt-1 block w-full"
               autoComplete="new-password"
-              onChange={(e) => setData('password_confirmation', e.target.value)}
+              onChange={(e) =>
+                setData('password_confirmation', e.target.value)
+              }
               required
             />
-
             <InputError
               message={errors.password_confirmation}
               className="mt-2"
