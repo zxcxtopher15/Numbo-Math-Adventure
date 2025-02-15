@@ -8,6 +8,10 @@ export default defineConfig({
             input: 'resources/js/app.jsx',
             refresh: true,
         }),
-        react(),
+        react({
+            babel: {
+                plugins: [['babel-plugin-react-compiler', { target: '18' }]],
+            },
+        }),
     ],
 });
