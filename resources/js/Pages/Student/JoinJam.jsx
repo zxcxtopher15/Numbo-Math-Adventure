@@ -114,23 +114,25 @@ const JoinJam = () => {
         if (!studentId) return;
 
         const checkStatus = async () => {
+            if (!studentId) return;
 
             try {
                 const response = await fetch(
-                    `/math-jams/check-status?student_id=${studentId}&math_jam_code=${jamCode}`,
+                    `/math-jams/check-status?student_id=${studentId}&math_jam_code=${jamCode}`
                 );
                 const data = await response.json();
 
-                if (response.ok) {
-                    setStatus(data.status);
-                    setScore(data.score);
-                    setJamCode(data.math_jam_code);
-                } else {
+                if (data.error) {
                     sessionStorage.removeItem('jamCode');
                     setJamCode('');
+                    return;
                 }
+
+                setStatus(data.status);
+                setScore(data.score);
+                setJamCode(data.math_jam_code);
             } catch (err) {
-                console.error('Error checking status:', err);
+                console.error("Error checking status:", err);
             }
         };
 
@@ -151,9 +153,9 @@ const JoinJam = () => {
             }
         };
 
-        const handleBeforeUnload = (event) => {
-            handleDisconnect();
+        const handleBeforeUnload = async (event) => {
             event.preventDefault();
+            await handleDisconnect();
         };
 
         const handleNetworkChange = () => {
@@ -260,7 +262,7 @@ const JoinJam = () => {
                 const data = JSON.parse(event.data);
 
                 if (data && (data.status === "waiting" || data.status === "started")) {
-                    console.log(data);
+                    // console.log(data);
                 } else {
                 }
             };

@@ -164,13 +164,13 @@ class MathJamController extends Controller
                 ->first();
 
             if (!$latestParticipant) {
-                return response()->json(['message' => 'No participation record found'], 200);
+                return response()->json(['message' => 'No participation record found', 'error' => true], 200);
             }
 
             $validated['math_jam_code'] = $latestParticipant->mathJam->math_jam_code ?? null;
 
             if (!$validated['math_jam_code']) {
-                return response()->json(['message' => 'No valid Math Jam found'], 200);
+                return response()->json(['message' => 'No valid Math Jam found', 'error' => true], 200);
             }
         }
 
@@ -185,13 +185,14 @@ class MathJamController extends Controller
             ->first();
 
         if (!$participant) {
-            return response()->json(['message' => 'No active participation found'], 200);
+            return response()->json(['message' => 'No active participation found', 'error' => true], 200);
         }
 
         return response()->json([
             'math_jam_code' => $mathJamCode,
             'status' => $participant->status,
             'score' => $participant->score,
+            'error' => false
         ]);
     }
 
@@ -212,7 +213,7 @@ class MathJamController extends Controller
             ->first();
 
         if (!$participant) {
-            return response()->json(['message' => 'No active participation found'], 200);
+            return response()->json(['message' => 'No active participation found', 'error' => true], 200);
         }
 
         $participant->disconnected_at = now();
@@ -248,7 +249,7 @@ class MathJamController extends Controller
             ->first();
 
         if (!$participant) {
-            return response()->json(['message' => 'No disconnected participation found'], 200);
+            return response()->json(['message' => 'No disconnected participation found'], 404);
         }
 
         $participant->update([
@@ -274,7 +275,7 @@ class MathJamController extends Controller
                 if ($mathJam) {
                     echo "data: " . json_encode($mathJam) . "\n\n";
                 }
-                
+
                 ob_flush();
                 flush();
                 sleep(.200);
