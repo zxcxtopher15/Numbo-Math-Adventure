@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { usePage } from '@inertiajs/react';
 import Swal from 'sweetalert2';
 import { Head } from '@inertiajs/react';
+import { useRef } from 'react';
 
 const JoinJam = () => {
     const { auth } = usePage().props;
@@ -12,6 +13,7 @@ const JoinJam = () => {
     const [status, setStatus] = useState('');
     const [score, setScore] = useState(0);
     const [loading, setLoading] = useState(false);
+    const hasReloaded = useRef(false);
 
     useEffect(() => {
         sessionStorage.setItem('jamCode', jamCode);
@@ -153,8 +155,8 @@ const JoinJam = () => {
             }
         };
 
-        const handleBeforeUnload = async () => {
-            await handleDisconnect();
+        const handleBeforeUnload = (event) => {
+            handleDisconnect();
         };
 
         const handleNetworkChange = () => {
@@ -263,6 +265,10 @@ const JoinJam = () => {
                 if (data && (data.status === "waiting" || data.status === "started")) {
                     // console.log(data);
                 } else {
+                    if (!hasReloaded.current) {
+                        hasReloaded.current = true;
+                        window.location.reload();
+                    }
                 }
             };
 
