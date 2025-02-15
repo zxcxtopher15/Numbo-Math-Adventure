@@ -278,7 +278,7 @@ class MathJamController extends Controller
 
                 ob_flush();
                 flush();
-                sleep(.200);
+                sleep(.500);
             }
         }, 200, [
             'Content-Type' => 'text/event-stream',
