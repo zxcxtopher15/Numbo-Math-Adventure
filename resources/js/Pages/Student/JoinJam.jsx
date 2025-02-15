@@ -3,11 +3,17 @@ import { usePage } from '@inertiajs/react';
 import Swal from 'sweetalert2';
 import { Head } from '@inertiajs/react';
 import { useRef } from 'react';
+import BoardOverlay from '@/Components/BoardOverlay';
+import { SvgAsset } from '@/Components/SvgAsset';
+import PrimaryButton from '@/Components/PrimaryButton';
+import TextInput from '@/Components/TextInput';
+import Avatar from '@/Components/Avatar';
 
 const JoinJam = () => {
     const { auth } = usePage().props;
     const studentId = auth?.user.id;
     const studentName = auth?.user.name;
+    const studentImg = '';
 
     const [jamCode, setJamCode] = useState(sessionStorage.getItem('jamCode') || '');
     const [status, setStatus] = useState('');
@@ -120,7 +126,7 @@ const JoinJam = () => {
 
             try {
                 const response = await fetch(
-                    `/math-jams/check-status?student_id=${studentId}&math_jam_code=${jamCode}`
+                    `/math-jams/check-status?student_id=${studentId}&math_jam_code=${jamCode}`,
                 );
                 const data = await response.json();
 
@@ -134,7 +140,7 @@ const JoinJam = () => {
                 setScore(data.score);
                 setJamCode(data.math_jam_code);
             } catch (err) {
-                console.error("Error checking status:", err);
+                console.error('Error checking status:', err);
             }
         };
 
@@ -230,7 +236,7 @@ const JoinJam = () => {
                     title: 'Reconnect Failed',
                     text: data.message || 'Failed to reconnect to the Math Jam.',
                 }).then(() => {
-                    if (data.message.includes("Cancelled") || data.message.includes("Ended")) {
+                    if (data.message.includes('Cancelled') || data.message.includes('Ended')) {
                         location.reload();
                     }
                 });
@@ -248,7 +254,7 @@ const JoinJam = () => {
     };
 
     useEffect(() => {
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
 
         if (!jamCode) return;
 
@@ -262,7 +268,7 @@ const JoinJam = () => {
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
 
-                if (data && (data.status === "waiting" || data.status === "started")) {
+                if (data && (data.status === 'waiting' || data.status === 'started')) {
                     // console.log(data);
                 } else {
                     if (!hasReloaded.current) {
@@ -289,64 +295,90 @@ const JoinJam = () => {
 
     return (
         <>
-            <Head title="Math Jam" />
-            <div className="flex justify-center items-center min-h-screen bg-gray-100">
-                <div className="bg-white shadow-lg rounded-lg p-6 w-[400px]">
-                    <h2 className="text-xl font-semibold text-center mb-4">Join a Math Jam</h2>
-                    <p className="text-center text-gray-700 mb-4">
-                        Welcome, <span className="font-semibold">{studentName}</span>!
-                    </p>
+            <BoardOverlay>
+                <div className="w-full h-full  bg-white rounded-3xl sm:p-8 p-2 flex flex-col justify-center relative overflow-hidden box-border">
+                    <img
+                        className="hidden sm:block sm:absolute top-0 -right-16 h-full opacity-20"
+                        src="/images/assets/shapes/shape-tricolor.svg"
+                        alt=""
+                    />
+                    <img
+                        className="hidden sm:block sm:absolute top-0 -right-20 h-full opacity-100"
+                        src="/images/assets/shapes/shape-tricolor.svg"
+                        alt=""
+                    />
 
-                    {status === 'disconnected' ? (
-                        <div className="bg-red-100 p-4 rounded mb-4">
-                            <h3 className="font-semibold text-red-700">You were disconnected!</h3>
-                            <p>Would you like to reconnect?</p>
-                            <button
-                                onClick={handleReconnect}
-                                className="w-full bg-green-500 text-white py-2 px-4 rounded mt-2"
-                                disabled={loading}
-                            >
-                                {loading ? 'Reconnecting...' : 'Reconnect'}
-                            </button>
+                    <SvgAsset
+                        movement="sm"
+                        value="/images/assets/background/students_jam.svg"
+                        className=" hidden sm:block sm:absolute top-0 right-40 h-full z-0"
+                    />
+                    <Head title="Math Journey" />
+                    <div className="bg-gray-200 p-6 rounded-3xl max-w-[400px] h-max flex flex-col justify-between overflow-hidden">
+                        <h2 className="text-primary text-xl font-semibold  mb-4">Join Math Journey</h2>
+
+                        <div className="bg-white flex items-center justify-start gap-4 p-3 rounded-3xl mb-8">
+                            {studentImg ? <Avatar image={studentImg} /> : <Avatar name={studentName} />}
+                            <span>
+                                <h4 className="font-bold text-primary">Welcome</h4>
+                                <h3 className="font-semibold text-2xl capitalize text-gray-500">{studentName}</h3>
+                            </span>
                         </div>
-                    ) : (
-                        <>
-                            <div className="mb-4">
-                                <label htmlFor="jamCode" className="block text-sm font-medium text-gray-700">
-                                    Math Jam Code
-                                </label>
-                                <input
-                                    type="text"
-                                    id="jamCode"
-                                    value={jamCode}
-                                    onChange={(e) => setJamCode(e.target.value)}
-                                    className="w-full mt-1 p-2 border rounded"
-                                    placeholder="Enter Math Jam Code"
-                                />
-                            </div>
 
-                            <div className="flex justify-center mb-4">
+                        {status === 'disconnected' ? (
+                            <div className="bg-red-100 p-4 rounded mb-4">
+                                <h3 className="font-semibold text-red-700">You were disconnected!</h3>
+                                <p>Would you like to reconnect?</p>
                                 <button
-                                    onClick={handleJoinJam}
-                                    className="w-full bg-blue-500 text-white py-2 px-4 rounded"
+                                    onClick={handleReconnect}
+                                    className="w-full bg-green-500 text-white py-2 px-4 rounded mt-2"
                                     disabled={loading}
                                 >
-                                    {loading ? 'Joining...' : 'Join Jam'}
+                                    {loading ? 'Reconnecting...' : 'Reconnect'}
                                 </button>
                             </div>
-
-                            {status && (
-                                <div className="bg-yellow-100 p-4 rounded mb-4">
-                                    <h3 className="font-semibold">
-                                        Status: {status.charAt(0).toUpperCase() + status.slice(1)}
-                                    </h3>
-                                    <p>Score: {score}</p>
+                        ) : (
+                            <>
+                                <div className="mb-4">
+                                    <label htmlFor="jamCode" className="block text-sm font-medium text-gray-700">
+                                        Math Jam Code
+                                    </label>
+                                    <TextInput
+                                        type="text"
+                                        id="jamCode"
+                                        value={jamCode}
+                                        onChange={(e) => setJamCode(e.target.value)}
+                                        className="w-full mt-1 p-2 border rounded"
+                                        placeholder="Enter Math Jam Code"
+                                    />
                                 </div>
-                            )}
-                        </>
-                    )}
+
+                                <div className="flex justify-between my-7">
+                                    <PrimaryButton
+                                        onClick={handleJoinJam}
+                                        className="w-fit px-4 bg-danger"
+                                        disabled={loading}
+                                    >
+                                        Go Back
+                                    </PrimaryButton>
+                                    <PrimaryButton onClick={handleJoinJam} className="w-fit" disabled={loading}>
+                                        {loading ? 'Joining...' : 'Join '}
+                                    </PrimaryButton>
+                                </div>
+
+                                {status && (
+                                    <div className="bg-yellow-100 p-4 rounded mb-4">
+                                        <h3 className="font-semibold">
+                                            Status: {status.charAt(0).toUpperCase() + status.slice(1)}
+                                        </h3>
+                                        <p>Score: {score}</p>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
                 </div>
-            </div>
+            </BoardOverlay>
         </>
     );
 };

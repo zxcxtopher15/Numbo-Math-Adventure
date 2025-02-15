@@ -162,3 +162,22 @@
 .fade-out {
     animation: fadeOut 1s forwards;
 }
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 1s forwards;
+}
+
+.smooth-fade {
+    animation:
+        fadeIn 1s forwards,
+        fadeOut 1s 1s forwards;
+}

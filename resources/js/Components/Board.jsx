@@ -11,10 +11,10 @@ import {
     DialogTrigger,
     DialogFooter,
 } from '@/components/ui/dialog';
-import Swal from 'sweetalert2';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
 import { Link } from '@inertiajs/react';
+import { SvgAsset } from './SvgAsset';
 
 const data = [
     {
@@ -135,10 +135,10 @@ function TotalResult({ totalQuestions, gameState }) {
                     <h1 className="text-6xl font-bold text-primary relative z-10">GREAT JOB!!!</h1>
 
                     <div className="flex justify-center items-center h-full w-full">
-                        <img
-                            className="absolute z-0"
-                            src="/images/assets/background/students_result.svg"
-                            alt="Students"
+                        <SvgAsset
+                            movement="sm"
+                            value="/images/assets/background/students_result.svg"
+                            className=" hidden sm:block sm:absolute top-0 right-40 h-full z-0"
                         />
                     </div>
                 </div>

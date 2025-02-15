@@ -13,5 +13,14 @@ export default defineConfig({
                 plugins: [['babel-plugin-react-compiler', { target: '18' }]],
             },
         }),
+        
     ],
+    server: {
+        watch: {
+          usePolling: true, // Fixes auto-reloading issues on some systems
+        },
+        hmr: {
+          host: 'numbo-math-adventure.test', // Adjust if using Docker/WSL
+        },
+      },
 });
