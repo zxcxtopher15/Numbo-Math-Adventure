@@ -153,8 +153,7 @@ const JoinJam = () => {
             }
         };
 
-        const handleBeforeUnload = async (event) => {
-            event.preventDefault();
+        const handleBeforeUnload = async () => {
             await handleDisconnect();
         };
 
