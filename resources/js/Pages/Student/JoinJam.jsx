@@ -265,10 +265,7 @@ const JoinJam = () => {
                 if (data && (data.status === "waiting" || data.status === "started")) {
                     // console.log(data);
                 } else {
-                    if (!hasReloaded.current) {
-                        hasReloaded.current = true;
-                        window.location.reload();
-                    }
+                    window.location.reload();
                 }
             };
 
