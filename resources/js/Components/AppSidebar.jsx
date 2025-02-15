@@ -30,7 +30,7 @@ export function AppSidebar(props) {
             },
             {
                 title: 'Math Journey ',
-                url: userType === 'teacher' ? '/math-jams' : '/math-jams-join',
+                url: userType === 'Teacher' ? '/math-jams' : '/math-jams-join',
                 icon: Dices,
                 isActive: window.location.pathname === '/math-jams' || window.location.pathname === '/math-jams-join',
             },

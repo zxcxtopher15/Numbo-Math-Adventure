@@ -8,6 +8,8 @@ import { SvgAsset } from '@/Components/SvgAsset';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import Avatar from '@/Components/Avatar';
+import { Link } from '@inertiajs/react';
+import LoadingScreen from '@/Components/LoadingScreen';
 
 const JoinJam = () => {
     const { auth } = usePage().props;
@@ -296,6 +298,7 @@ const JoinJam = () => {
     return (
         <>
             <BoardOverlay>
+                {loading ? <LoadingScreen time={2000} text="Loading..." /> : null}
                 <div className="w-full h-full  bg-white rounded-3xl sm:p-8 p-2 flex flex-col justify-center relative overflow-hidden box-border">
                     <img
                         className="hidden sm:block sm:absolute top-0 -right-16 h-full opacity-20"
@@ -354,13 +357,11 @@ const JoinJam = () => {
                                 </div>
 
                                 <div className="flex justify-between my-7">
-                                    <PrimaryButton
-                                        onClick={handleJoinJam}
-                                        className="w-fit px-4 bg-danger"
-                                        disabled={loading}
-                                    >
-                                        Go Back
-                                    </PrimaryButton>
+                                    <Link href="/dashboard">
+                                        {' '}
+                                        <PrimaryButton className="w-fit px-4 bg-danger">Go Back</PrimaryButton>
+                                    </Link>
+
                                     <PrimaryButton onClick={handleJoinJam} className="w-fit" disabled={loading}>
                                         {loading ? 'Joining...' : 'Join '}
                                     </PrimaryButton>
