@@ -5,6 +5,7 @@ import { Info } from 'lucide-react';
 import { FaPlay } from 'react-icons/fa';
 import { Popover, PopoverContent, PopoverTrigger } from '@/Components/ui/popover';
 import PrimaryButton from '@/Components/PrimaryButton';
+import ShapeGenerator from '@/Components/ShapeGenerator';
 
 // This is sample data with dynamic colors.
 const data = [
@@ -137,7 +138,6 @@ export default function Dashboard() {
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Dashboard</h2>}>
             <Head title="Dashboard" />
-
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="p-4 space-y-4">
