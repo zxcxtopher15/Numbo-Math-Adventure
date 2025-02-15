@@ -151,8 +151,9 @@ const JoinJam = () => {
             }
         };
 
-        const handleBeforeUnload = () => {
+        const handleBeforeUnload = (event) => {
             handleDisconnect();
+            event.preventDefault();
         };
 
         const handleNetworkChange = () => {
@@ -261,7 +262,6 @@ const JoinJam = () => {
                 if (data && (data.status === "waiting" || data.status === "started")) {
                     console.log(data);
                 } else {
-                    
                 }
             };
 

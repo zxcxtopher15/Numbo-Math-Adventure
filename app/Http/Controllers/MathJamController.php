@@ -164,13 +164,13 @@ class MathJamController extends Controller
                 ->first();
 
             if (!$latestParticipant) {
-                return response()->json(['message' => 'No participation record found'], 404);
+                return response()->json(['message' => 'No participation record found'], 200);
             }
 
             $validated['math_jam_code'] = $latestParticipant->mathJam->math_jam_code ?? null;
 
             if (!$validated['math_jam_code']) {
-                return response()->json(['message' => 'No valid Math Jam found'], 404);
+                return response()->json(['message' => 'No valid Math Jam found'], 200);
             }
         }
 
@@ -185,7 +185,7 @@ class MathJamController extends Controller
             ->first();
 
         if (!$participant) {
-            return response()->json(['message' => 'No active participation found'], 404);
+            return response()->json(['message' => 'No active participation found'], 200);
         }
 
         return response()->json([
@@ -212,7 +212,7 @@ class MathJamController extends Controller
             ->first();
 
         if (!$participant) {
-            return response()->json(['message' => 'No active participation found'], 404);
+            return response()->json(['message' => 'No active participation found'], 200);
         }
 
         $participant->disconnected_at = now();
@@ -248,7 +248,7 @@ class MathJamController extends Controller
             ->first();
 
         if (!$participant) {
-            return response()->json(['message' => 'No disconnected participation found'], 404);
+            return response()->json(['message' => 'No disconnected participation found'], 200);
         }
 
         $participant->update([
