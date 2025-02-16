@@ -250,10 +250,34 @@ const JoinJam = () => {
                 if (data && (data.status === "waiting" || data.status === "started")) {
                     // console.log(data);
                 } else {
-                    if (!hasReloaded.current) {
-                        hasReloaded.current = true;
-                        handleDisconnect();
-                        window.location.reload();
+                    if (data.status === 'cancelled') {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Math Jam Cancelled",
+                            text: "The Math Jam session has been cancelled.",
+                            confirmButtonColor: "#d33",
+                            allowOutsideClick: false
+                        }).then(() => {
+                            if (!hasReloaded.current) {
+                                hasReloaded.current = true;
+                                handleDisconnect();
+                                window.location.reload();
+                            }
+                        });
+                    } else if (data.status === 'ended') {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Math Jam Ended",
+                            text: "The Math Jam session has ended. Thank you for participating!",
+                            confirmButtonColor: "#d33",
+                            allowOutsideClick: false
+                        }).then(() => {
+                            if (!hasReloaded.current) {
+                                hasReloaded.current = true;
+                                handleDisconnect();
+                                window.location.reload();
+                            }
+                        });
                     }
                 }
             };
@@ -280,6 +304,8 @@ const JoinJam = () => {
                 icon: "error",
                 title: "Connection Lost",
                 text: "You have been disconnected due to a lost internet connection.",
+                confirmButtonColor: "#d33",
+                allowOutsideClick: false
             }).then(() => {
                 window.location.reload();
             });
