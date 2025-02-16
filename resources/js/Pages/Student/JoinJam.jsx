@@ -163,25 +163,11 @@ const JoinJam = () => {
             }
         };
 
-        const handleBeforeUnload = (event) => {
-            handleDisconnect();
-        };
-
-        const handleNetworkChange = () => {
-            if (navigator.onLine === false) {
-                handleDisconnect();
-            }
-        };
-
         document.addEventListener('contextmenu', disableRightClick);
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        window.addEventListener('offline', handleNetworkChange);
         window.addEventListener('keydown', disableReload);
 
         return () => {
             document.removeEventListener('contextmenu', disableRightClick);
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-            window.removeEventListener('offline', handleNetworkChange);
             window.removeEventListener('keydown', disableReload);
         };
     }, [studentId]);
@@ -258,10 +244,9 @@ const JoinJam = () => {
     useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
 
-        if (!jamCode) return;
+        if (!jamCode || !studentId) return;
 
         const sseUrl = `${baseUrl}/math-jams/jam-stream-updates?math_jam_code=${jamCode}`;
-
         let eventSource;
 
         const connectSSE = () => {
@@ -273,9 +258,26 @@ const JoinJam = () => {
                 if (data && (data.status === 'waiting' || data.status === 'started')) {
                     // console.log(data);
                 } else {
-                    if (!hasReloaded.current) {
-                        hasReloaded.current = true;
-                        window.location.reload();
+                    if (data.status === 'cancelled' || data.status === 'ended') {
+                        eventSource.close();
+
+                        Swal.fire({
+                            icon: data.status === 'cancelled' ? "error" : "info",
+                            title: data.status === 'cancelled' ? "Math Jam Cancelled" : "Math Jam Ended",
+                            text: data.status === 'cancelled'
+                                ? "The Math Jam session has been cancelled."
+                                : "The Math Jam session has ended. Thank you for participating!",
+                            confirmButtonColor: "#d33",
+                            allowOutsideClick: false
+                        }).then(() => {
+                            if (!hasReloaded.current) {
+                                hasReloaded.current = true;
+                                handleDisconnect();
+                                window.location.reload();
+                            }
+                        });
+
+                        return;
                     }
                 }
             };
@@ -290,10 +292,33 @@ const JoinJam = () => {
 
         connectSSE();
 
+        const beforeUnloadHandler = (event) => {
+            handleDisconnect();
+        };
+
+        window.addEventListener("beforeunload", beforeUnloadHandler);
+
+        const offlineHandler = () => {
+            handleDisconnect();
+            Swal.fire({
+                icon: "error",
+                title: "Connection Lost",
+                text: "You have been disconnected due to a lost internet connection.",
+                confirmButtonColor: "#d33",
+                allowOutsideClick: false
+            }).then(() => {
+                window.location.reload();
+            });
+        };
+
+        window.addEventListener("offline", offlineHandler);
+
         return () => {
             eventSource?.close();
+            window.removeEventListener("beforeunload", beforeUnloadHandler);
+            window.removeEventListener("offline", offlineHandler);
         };
-    }, [jamCode]);
+    }, [jamCode, studentId]);
 
     return (
         <>
