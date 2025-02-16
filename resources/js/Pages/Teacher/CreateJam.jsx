@@ -19,6 +19,7 @@ const CreateJam = () => {
   const [showScores, setShowScores] = useState(true);
   const [existingJam, setExistingJam] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [participants, setParticipants] = useState([]);
 
   useEffect(() => {
     const fetchExistingJam = async () => {
@@ -85,12 +86,7 @@ const CreateJam = () => {
 
       eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
-
-        // if (data && (data.status === "waiting" || data.status === "started")) {
-        //   setExistingJam(data);
-        // } else {
-        //   setExistingJam(null);
-        // }
+        setParticipants(data);
       };
 
       eventSource.onerror = (error) => {

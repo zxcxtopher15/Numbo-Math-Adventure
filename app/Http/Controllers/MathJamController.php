@@ -75,7 +75,9 @@ class MathJamController extends Controller
 
             if ($jam) {
                 $participants = DB::table('math_jam_participants')
-                    ->where('math_jam_id', $jam->id)
+                    ->join('users', 'math_jam_participants.student_id', '=', 'users.id')
+                    ->where('math_jam_participants.math_jam_id', $jam->id)
+                    ->select('users.name, math_jam_participants.*')
                     ->get();
 
                 echo "data: " . json_encode($participants) . "\n\n";
