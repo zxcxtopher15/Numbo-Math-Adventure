@@ -285,4 +285,5 @@ class MathJamController extends Controller
             'Cache-Control' => 'no-cache',
             'Connection' => 'keep-alive',
         ]);
- }
+    }
+}
