@@ -31,14 +31,14 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::group(['middleware' => 'teacher'], function () {
-    Route::get('/math-jams', function () {
+    Route::get('/math-journey', function () {
         return Inertia::render('Teacher/CreateJam');
     });
 
-    Route::post('/math-jams/create', [MathJamController::class, 'create']);
-    Route::get('/math-jams/check-existing', [MathJamController::class, 'checkExistingJam']);
-    Route::get('/math-jams/stream-updates', [MathJamController::class, 'streamMathJamUpdates']);
-    Route::post('/math-jams/cancel', [MathJamController::class, 'cancelJam']);
+    Route::post('/math-journey/create', [MathJamController::class, 'create']);
+    Route::get('/math-journey/check-existing', [MathJamController::class, 'checkExistingJam']);
+    Route::get('/math-journey/stream-updates', [MathJamController::class, 'streamMathJamUpdates']);
+    Route::post('/math-journey/cancel', [MathJamController::class, 'cancelJam']);
 
     Route::get('/board', function () {
         return Inertia::render('Jam/BoardContainer', request()->all());
@@ -46,15 +46,15 @@ Route::group(['middleware' => 'teacher'], function () {
 });
 
 Route::group(['middleware' => 'student'], function () {
-    Route::get('/math-jams-join', function () {
+    Route::get('/math-journey-join', function () {
         return Inertia::render('Student/JoinJam');
     });
 
-    Route::post('/math-jams/join', [MathJamController::class, 'joinJam']);
-    Route::get('/math-jams/check-status', [MathJamController::class, 'checkStatus']);
-    Route::post('/math-jams/disconnect', [MathJamController::class, 'disconnect']);
-    Route::post('/math-jams/reconnect', [MathJamController::class, 'reconnect']);
-    Route::get('/math-jams/jam-stream-updates', [MathJamController::class, 'jamStreamUpdates']);
+    Route::post('/math-journey/join', [MathJamController::class, 'joinJam']);
+    Route::get('/math-journey/check-status', [MathJamController::class, 'checkStatus']);
+    Route::post('/math-journey/disconnect', [MathJamController::class, 'disconnect']);
+    Route::post('/math-journey/reconnect', [MathJamController::class, 'reconnect']);
+    Route::get('/math-journey/jam-stream-updates', [MathJamController::class, 'jamStreamUpdates']);
 
     Route::get('/board', function () {
         return Inertia::render('Jam/BoardContainer', request()->all());

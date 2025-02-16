@@ -48,7 +48,7 @@ const JoinJam = () => {
             return;
         }
 
-        const apiUrl = `${baseUrl}/math-jams/join`;
+        const apiUrl = `${baseUrl}/math-journey/join`;
 
         try {
             const response = await fetch(apiUrl, {
@@ -80,11 +80,11 @@ const JoinJam = () => {
                 Swal.fire({
                     icon: 'error',
                     title: 'Join Jam Failed',
-                    text: data.message || 'Failed to join the Math Jam',
+                    text: data.message || 'Failed to join the Math Journey',
                 });
             }
         } catch (err) {
-            console.error('Error joining the Math Jam:', err);
+            console.error('Error joining the Math Journey:', err);
             Swal.fire({
                 icon: 'error',
                 title: 'An error occurred',
@@ -101,7 +101,7 @@ const JoinJam = () => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
 
-        const apiUrl = `${baseUrl}/math-jams/disconnect`;
+        const apiUrl = `${baseUrl}/math-journey/disconnect`;
 
         try {
             await fetch(apiUrl, {
@@ -128,7 +128,7 @@ const JoinJam = () => {
 
             try {
                 const response = await fetch(
-                    `/math-jams/check-status?student_id=${studentId}&math_jam_code=${jamCode}`,
+                    `/math-journey/check-status?student_id=${studentId}&math_jam_code=${jamCode}`,
                 );
                 const data = await response.json();
 
@@ -193,7 +193,7 @@ const JoinJam = () => {
             return;
         }
 
-        const apiUrl = `${baseUrl}/math-jams/reconnect`;
+        const apiUrl = `${baseUrl}/math-journey/reconnect`;
 
         try {
             const response = await fetch(apiUrl, {
@@ -216,13 +216,13 @@ const JoinJam = () => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Reconnected!',
-                    text: 'You have successfully rejoined the Math Jam.',
+                    text: 'You have successfully rejoined the Math Journey.',
                 });
             } else {
                 Swal.fire({
                     icon: 'error',
                     title: 'Reconnect Failed',
-                    text: data.message || 'Failed to reconnect to the Math Jam.',
+                    text: data.message || 'Failed to reconnect to the Math Journey.',
                 }).then(() => {
                     if (data.message.includes('Cancelled') || data.message.includes('Ended')) {
                         location.reload();
@@ -246,7 +246,7 @@ const JoinJam = () => {
 
         if (!jamCode || !studentId) return;
 
-        const sseUrl = `${baseUrl}/math-jams/jam-stream-updates?math_jam_code=${jamCode}`;
+        const sseUrl = `${baseUrl}/math-journey/jam-stream-updates?math_jam_code=${jamCode}`;
         let eventSource;
 
         const connectSSE = () => {
@@ -263,10 +263,10 @@ const JoinJam = () => {
 
                         Swal.fire({
                             icon: data.status === 'cancelled' ? "error" : "info",
-                            title: data.status === 'cancelled' ? "Math Jam Cancelled" : "Math Jam Ended",
+                            title: data.status === 'cancelled' ? "Math Journey Cancelled" : "Math Journey Ended",
                             text: data.status === 'cancelled'
-                                ? "The Math Jam session has been cancelled."
-                                : "The Math Jam session has ended. Thank you for participating!",
+                                ? "The Math Journey session has been cancelled."
+                                : "The Math Journey session has ended. Thank you for participating!",
                             confirmButtonColor: "#d33",
                             allowOutsideClick: false
                         }).then(() => {
@@ -369,7 +369,7 @@ const JoinJam = () => {
                             <>
                                 <div className="mb-4">
                                     <label htmlFor="jamCode" className="block text-sm font-medium text-gray-700">
-                                        Math Jam Code
+                                        Math Journey Code
                                     </label>
                                     <TextInput
                                         type="text"
@@ -377,7 +377,7 @@ const JoinJam = () => {
                                         value={jamCode}
                                         onChange={(e) => setJamCode(e.target.value)}
                                         className="w-full mt-1 p-2 border rounded"
-                                        placeholder="Enter Math Jam Code"
+                                        placeholder="Enter Math Journey Code"
                                     />
                                 </div>
 

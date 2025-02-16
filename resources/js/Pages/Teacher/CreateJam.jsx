@@ -28,7 +28,7 @@ const CreateJam = () => {
         return;
       }
 
-      const apiUrl = `${baseUrl}/math-jams/check-existing?teacher_id=${auth.user.id}`;
+      const apiUrl = `${baseUrl}/math-journey/check-existing?teacher_id=${auth.user.id}`;
 
       try {
         const response = await fetch(apiUrl);
@@ -76,7 +76,7 @@ const CreateJam = () => {
 
   useEffect(() => {
     const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
-    const sseUrl = `${baseUrl}/math-jams/stream-updates?teacher_id=${auth.user.id}`;
+    const sseUrl = `${baseUrl}/math-journey/stream-updates?teacher_id=${auth.user.id}`;
 
     let eventSource;
 
@@ -112,7 +112,7 @@ const CreateJam = () => {
 
   const handleCreateJam = async () => {
     if (existingJam) {
-      alert('You already have an ongoing Math Jam. Please finish it before creating a new one.');
+      alert('You already have an ongoing Math Journey. Please finish it before creating a new one.');
       return;
     }
 
@@ -123,7 +123,7 @@ const CreateJam = () => {
       return;
     }
 
-    const apiUrl = `${baseUrl}/math-jams/create`;
+    const apiUrl = `${baseUrl}/math-journey/create`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -146,13 +146,13 @@ const CreateJam = () => {
       if (response.ok) {
         Swal.fire({
           icon: 'success',
-          title: 'Math Jam created successfully!',
+          title: 'Math Journey created successfully!',
         });
         setExistingJam(data.jam);
       } else {
         Swal.fire({
           icon: 'error',
-          title: 'Failed to create Math Jam',
+          title: 'Failed to create Math Journey',
           text: data.message || 'An unknown error occurred',
         });
         console.error('Error details:', data);
@@ -170,7 +170,7 @@ const CreateJam = () => {
   const handleCancelJam = async () => {
     const confirmed = await Swal.fire({
       title: 'Are you sure?',
-      text: 'Are you sure you want to cancel this Math Jam?',
+      text: 'Are you sure you want to cancel this Math Journey?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -185,7 +185,7 @@ const CreateJam = () => {
         return;
       }
 
-      const apiUrl = `${baseUrl}/math-jams/cancel`;
+      const apiUrl = `${baseUrl}/math-journey/cancel`;
 
       try {
         const response = await fetch(apiUrl, {
@@ -203,14 +203,14 @@ const CreateJam = () => {
         if (response.ok) {
           Swal.fire({
             icon: 'success',
-            title: 'Math Jam cancelled',
-            text: 'The Math Jam has been cancelled successfully.',
+            title: 'Math Journey cancelled',
+            text: 'The Math Journey has been cancelled successfully.',
           });
           setExistingJam(null);
         } else {
           Swal.fire({
             icon: 'error',
-            title: 'Failed to cancel the Math Jam',
+            title: 'Failed to cancel the Math Journey',
             text: data.message || 'An unknown error occurred',
           });
           console.error('Error details:', data);

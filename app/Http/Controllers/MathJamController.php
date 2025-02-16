@@ -25,7 +25,7 @@ class MathJamController extends Controller
 
         if ($existingJam) {
             return response()->json([
-                'message' => 'You already have an active Math Jam in progress.',
+                'message' => 'You already have an active Math Journey in progress.',
             ], 400);
         }
 
@@ -45,7 +45,7 @@ class MathJamController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Math Jam created successfully!',
+            'message' => 'Math Journey created successfully!',
             'jam' => $mathJam,
         ]);
     }
@@ -93,7 +93,7 @@ class MathJamController extends Controller
         $jam->save();
 
         return response()->json([
-            'message' => 'Math Jam has been cancelled.',
+            'message' => 'Math Journey has been cancelled.',
             'jam' => $jam,
         ]);
     }
@@ -108,15 +108,15 @@ class MathJamController extends Controller
         $mathJam = MathJam::where('math_jam_code', $validated['math_jam_code'])->first();
 
         if (!$mathJam) {
-            return response()->json(['message' => 'Invalid Math Jam Code'], 200);
+            return response()->json(['message' => 'Invalid Math Journey Code'], 200);
         }
 
         switch ($mathJam->status) {
             case 'started':
-                return response()->json(['message' => 'The Math Jam has already started.'], 200);
+                return response()->json(['message' => 'The Math Journey has already started.'], 200);
 
             case 'cancelled':
-                return response()->json(['message' => 'The Math Jam has been cancelled.'], 200);
+                return response()->json(['message' => 'The Math Journey has been cancelled.'], 200);
 
             case 'waiting':
                 $existingParticipant = MathJamParticipant::where('math_jam_id', $mathJam->id)
@@ -144,10 +144,10 @@ class MathJamController extends Controller
                 ]);
 
             case 'ended':
-                return response()->json(['message' => 'The Math Jam has already ended.'], 200);
+                return response()->json(['message' => 'The Math Journey has already ended.'], 200);
 
             default:
-                return response()->json(['message' => 'Unexpected Math Jam status.'], 200);
+                return response()->json(['message' => 'Unexpected Math Journey status.'], 200);
         }
     }
 
@@ -170,7 +170,7 @@ class MathJamController extends Controller
             $validated['math_jam_code'] = $latestParticipant->mathJam->math_jam_code ?? null;
 
             if (!$validated['math_jam_code']) {
-                return response()->json(['message' => 'No valid Math Jam found', 'error' => true], 200);
+                return response()->json(['message' => 'No valid Math Journey found', 'error' => true], 200);
             }
         }
 
@@ -236,7 +236,7 @@ class MathJamController extends Controller
 
         if (!$mathJam || in_array($mathJam->status, ['cancelled', 'ended'])) {
             return response()->json([
-                'message' => "Current Math Jam " . ucfirst($mathJam->status)
+                'message' => "Current Math Journey " . ucfirst($mathJam->status)
             ], 400);
         }
 
