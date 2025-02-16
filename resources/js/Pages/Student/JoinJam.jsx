@@ -268,6 +268,8 @@ const JoinJam = () => {
                     if (!hasReloaded.current) {
                         hasReloaded.current = true;
                         window.location.reload();
+                        sessionStorage.removeItem('jamCode');
+                        setJamCode('');
                     }
                 }
             };

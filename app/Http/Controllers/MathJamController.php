@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MathJam;
+use App\Events\JamUpdated;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\MathJamParticipant;
@@ -92,6 +93,8 @@ class MathJamController extends Controller
         $jam->status = 'cancelled';
         $jam->save();
 
+        broadcast(new JamUpdated($jam, [], true))->toOthers();
+
         return response()->json([
             'message' => 'Math Jam has been cancelled.',
             'jam' => $jam,
@@ -137,6 +140,10 @@ class MathJamController extends Controller
                     'score' => 0,
                     'joined_at' => now(),
                 ]);
+
+                $participants = MathJamParticipant::where('math_jam_id', $mathJam->id)->get();
+
+                broadcast(new JamUpdated($mathJam, $participants))->toOthers();
 
                 return response()->json([
                     'status' => 'joined',
