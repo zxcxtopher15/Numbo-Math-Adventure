@@ -250,22 +250,6 @@ const JoinJam = () => {
                 if (data && (data.status === "waiting" || data.status === "started")) {
                     // console.log(data);
                 } else {
-                    if (data.status === 'cancelled') {
-                        Swal.fire({
-                            icon: "error",
-                            title: "Math Jam Cancelled",
-                            text: "The Math Jam session has been cancelled.",
-                            confirmButtonColor: "#d33",
-                            allowOutsideClick: false
-                        }).then(() => {
-                            if (!hasReloaded.current) {
-                                hasReloaded.current = true;
-                                handleDisconnect();
-                                window.location.reload();
-                            }
-                        });
-                    }
-
                     if (data.status === 'cancelled' || data.status === 'ended') {
                         eventSource.close();
 
