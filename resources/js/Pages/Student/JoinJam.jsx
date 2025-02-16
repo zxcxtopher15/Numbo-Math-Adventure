@@ -167,8 +167,8 @@ const JoinJam = () => {
     }, [studentId]);
 
     useEffect(() => {
-        handleRightClick();
-        handleNetworkChange();
+        disableRightClick();
+        disableReload();
         handleBeforeUnload();
         handleNetworkChange();
 
