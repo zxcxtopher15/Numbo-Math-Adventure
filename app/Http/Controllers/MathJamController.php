@@ -74,7 +74,6 @@ class MathJamController extends Controller
             $jam = MathJam::where('teacher_id', $teacherId)->latest()->first();
 
             if ($jam) {
-                // Fetch only the participants using the math_jam_id
                 $participants = DB::table('math_jam_participants')
                     ->where('math_jam_id', $jam->id)
                     ->get();
@@ -83,7 +82,7 @@ class MathJamController extends Controller
             } else {
                 echo "data: []\n\n";
             }
-            
+
             ob_flush();
             flush();
 
