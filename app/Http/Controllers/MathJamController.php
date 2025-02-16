@@ -286,14 +286,16 @@ class MathJamController extends Controller
     public function jamStreamUpdates(Request $request)
     {
         $mathJamCode = $request->query('math_jam_code');
-        $lastUpdatedAt = null;
+
+        $mathJam = MathJam::where('math_jam_code', $mathJamCode)->first();
+        $lastUpdatedAt = $mathJam ? $mathJam->updated_at : null;
 
         return response()->stream(function () use ($mathJamCode, &$lastUpdatedAt) {
             while (!connection_aborted()) {
                 $mathJam = MathJam::where('math_jam_code', $mathJamCode)->first();
 
                 if ($mathJam) {
-                    if ($mathJam->updated_at !== $lastUpdatedAt) {
+                    if ($mathJam->updated_at != $lastUpdatedAt) {
                         echo "data: " . json_encode($mathJam) . "\n\n";
                         $lastUpdatedAt = $mathJam->updated_at;
                     }
