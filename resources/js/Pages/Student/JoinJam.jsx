@@ -87,20 +87,29 @@ const JoinJam = () => {
         }
     };
 
-    const handleDisconnect = () => {
-        if (!studentId || !jamCode) return;
+    const handleDisconnect = async () => {
+        if (!studentId) return;
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
 
         const apiUrl = `${baseUrl}/math-jams/disconnect`;
 
-        const data = JSON.stringify({
-            student_id: studentId,
-            math_jam_code: jamCode,
-        });
-
-        navigator.sendBeacon(apiUrl, data);
+        try {
+            await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    math_jam_code: jamCode,
+                }),
+            });
+        } catch (err) {
+            console.error('Error during disconnect:', err);
+        }
     };
 
     useEffect(() => {
