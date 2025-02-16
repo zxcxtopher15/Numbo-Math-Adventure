@@ -6,6 +6,7 @@ use App\Models\MathJam;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\MathJamParticipant;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class MathJamController extends Controller
@@ -61,7 +62,7 @@ class MathJamController extends Controller
         return response()->json(['jam' => $existingJam]);
     }
 
-    public function streamMathJamUpdates(Request $request)
+    public function streamMathJamParticipants(Request $request)
     {
         header("Content-Type: text/event-stream");
         header("Cache-Control: no-cache");
@@ -72,11 +73,20 @@ class MathJamController extends Controller
         while (true) {
             $jam = MathJam::where('teacher_id', $teacherId)->latest()->first();
 
-            echo "data: " . json_encode($jam) . "\n\n";
+            if ($jam) {
+                $participants = DB::table('math_jam_participants')
+                    ->where('math_jam_id', $jam->id)
+                    ->get();
+
+                echo "data: " . json_encode($participants) . "\n\n";
+            } else {
+                echo "data: []\n\n";
+            }
+
             ob_flush();
             flush();
 
-            sleep(.100);
+            sleep(1);
         }
     }
 

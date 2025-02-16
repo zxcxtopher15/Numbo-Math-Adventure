@@ -37,7 +37,7 @@ Route::group(['middleware' => 'teacher'], function () {
 
     Route::post('/math-journey/create', [MathJamController::class, 'create']);
     Route::get('/math-journey/check-existing', [MathJamController::class, 'checkExistingJam']);
-    Route::get('/math-journey/stream-updates', [MathJamController::class, 'streamMathJamUpdates']);
+    Route::get('/math-journey/stream-participants', [MathJamController::class, 'streamMathJamParticipants']);
     Route::post('/math-journey/cancel', [MathJamController::class, 'cancelJam']);
 
     Route::get('/board', function () {

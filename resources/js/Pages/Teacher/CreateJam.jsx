@@ -76,7 +76,7 @@ const CreateJam = () => {
 
   useEffect(() => {
     const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
-    const sseUrl = `${baseUrl}/math-journey/stream-updates?teacher_id=${auth.user.id}`;
+    const sseUrl = `${baseUrl}/math-journey/stream-participants?teacher_id=${auth.user.id}`;
 
     let eventSource;
 
@@ -86,11 +86,11 @@ const CreateJam = () => {
       eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
 
-        if (data && (data.status === "waiting" || data.status === "started")) {
-          setExistingJam(data);
-        } else {
-          setExistingJam(null);
-        }
+        // if (data && (data.status === "waiting" || data.status === "started")) {
+        //   setExistingJam(data);
+        // } else {
+        //   setExistingJam(null);
+        // }
       };
 
       eventSource.onerror = (error) => {
