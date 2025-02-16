@@ -10,6 +10,7 @@ import { SvgAsset } from '@/Components/SvgAsset';
 import StudentList from '@/Components/StudentList';
 import Swal from 'sweetalert2';
 import LoadingScreen from '@/Components/LoadingScreen';
+import { Head } from '@inertiajs/react';
 
 const CreateJam = () => {
   const { auth } = usePage().props;
