@@ -256,6 +256,7 @@ const CreateJam = () => {
             <LoadingScreen time={2000} text="Checking for existing session..." />
           ) : (
             <>
+              <Head title="Math Journey" />
               <div className="bg-gray-200  rounded-3xl max-w-[400px] h-full flex flex-col justify-between overflow-hidden">
                 <div className="sm:p-6 sm:pr-8 p-4 pt-9 h-full ">
                   <h2 className="text-xl text-primary font-semibold text-start mb-8">

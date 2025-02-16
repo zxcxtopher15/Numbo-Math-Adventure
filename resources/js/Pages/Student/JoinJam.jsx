@@ -322,6 +322,7 @@ const JoinJam = () => {
 
     return (
         <>
+            <Head title="Math Journey" />
             <BoardOverlay>
                 {loading ? <LoadingScreen time={2000} text="Loading..." /> : null}
                 <div className="w-full h-full  bg-white rounded-3xl sm:p-8 p-2 flex flex-col justify-center relative overflow-hidden box-border">
@@ -341,7 +342,6 @@ const JoinJam = () => {
                         value="/images/assets/background/students_jam.svg"
                         className=" hidden sm:block sm:absolute top-0 right-40 h-full z-0"
                     />
-                    <Head title="Math Journey" />
                     <div className="bg-gray-200 p-6 rounded-3xl max-w-[400px] h-max flex flex-col justify-between overflow-hidden">
                         <h2 className="text-primary text-xl font-semibold  mb-4">Join Math Journey</h2>
 
