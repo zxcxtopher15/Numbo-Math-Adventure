@@ -264,11 +264,17 @@ const JoinJam = () => {
                                 window.location.reload();
                             }
                         });
-                    } else if (data.status === 'ended') {
+                    }
+
+                    if (data.status === 'cancelled' || data.status === 'ended') {
+                        eventSource.close();
+
                         Swal.fire({
-                            icon: "error",
-                            title: "Math Jam Ended",
-                            text: "The Math Jam session has ended. Thank you for participating!",
+                            icon: data.status === 'cancelled' ? "error" : "info",
+                            title: data.status === 'cancelled' ? "Math Jam Cancelled" : "Math Jam Ended",
+                            text: data.status === 'cancelled'
+                                ? "The Math Jam session has been cancelled."
+                                : "The Math Jam session has ended. Thank you for participating!",
                             confirmButtonColor: "#d33",
                             allowOutsideClick: false
                         }).then(() => {
@@ -278,6 +284,8 @@ const JoinJam = () => {
                                 window.location.reload();
                             }
                         });
+
+                        return;
                     }
                 }
             };
