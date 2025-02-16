@@ -69,26 +69,33 @@ class MathJamController extends Controller
         header("Connection: keep-alive");
 
         $teacherId = $request->query('teacher_id');
+        $lastUpdatedAt = null;
 
-        while (true) {
+        while (!connection_aborted()) {
             $jam = MathJam::where('teacher_id', $teacherId)->latest()->first();
 
             if ($jam) {
-                $participants = DB::table('math_jam_participants')
-                    ->join('users', 'math_jam_participants.student_id', '=', 'users.id')
-                    ->where('math_jam_participants.math_jam_id', $jam->id)
-                    ->select('math_jam_participants.*', 'users.name')
-                    ->get();
+                $latestUpdate = DB::table('math_jam_participants')
+                    ->where('math_jam_id', $jam->id)
+                    ->max('updated_at');
 
-                echo "data: " . json_encode($participants) . "\n\n";
+                if ($latestUpdate !== $lastUpdatedAt) {
+                    $participants = DB::table('math_jam_participants')
+                        ->join('users', 'math_jam_participants.student_id', '=', 'users.id')
+                        ->where('math_jam_participants.math_jam_id', $jam->id)
+                        ->select('math_jam_participants.*', 'users.name')
+                        ->get();
+
+                    echo "data: " . json_encode($participants) . "\n\n";
+                    $lastUpdatedAt = $latestUpdate;
+                }
             } else {
                 echo "data: []\n\n";
             }
 
             ob_flush();
             flush();
-
-            sleep(.1000);
+            usleep(100000);
         }
     }
 
