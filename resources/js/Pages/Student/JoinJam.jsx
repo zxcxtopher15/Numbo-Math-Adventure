@@ -19,6 +19,31 @@ const JoinJam = () => {
         sessionStorage.setItem('jamCode', jamCode);
     }, [jamCode]);
 
+    const disableRightClick = (event) => {
+        event.preventDefault();
+    };
+
+    const disableReload = (event) => {
+        if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.ctrlKey && event.key === 'R')) {
+            event.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: 'Action Blocked',
+                text: 'Page reload is disabled on this section.',
+            });
+        }
+    };
+
+    const handleBeforeUnload = (event) => {
+        handleDisconnect();
+    };
+
+    const handleNetworkChange = () => {
+        if (navigator.onLine === false) {
+            handleDisconnect();
+        }
+    };
+
     const handleJoinJam = async () => {
         if (!studentId) {
             Swal.fire({
@@ -139,31 +164,13 @@ const JoinJam = () => {
         };
 
         checkStatus();
+    }, [studentId]);
 
-        const disableRightClick = (event) => {
-            event.preventDefault();
-        };
-
-        const disableReload = (event) => {
-            if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.ctrlKey && event.key === 'R')) {
-                event.preventDefault();
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Action Blocked',
-                    text: 'Page reload is disabled on this section.',
-                });
-            }
-        };
-
-        const handleBeforeUnload = (event) => {
-            handleDisconnect();
-        };
-
-        const handleNetworkChange = () => {
-            if (navigator.onLine === false) {
-                handleDisconnect();
-            }
-        };
+    useEffect(() => {
+        handleRightClick();
+        handleNetworkChange();
+        handleBeforeUnload();
+        handleNetworkChange();
 
         document.addEventListener('contextmenu', disableRightClick);
         window.addEventListener('beforeunload', handleBeforeUnload);
@@ -176,7 +183,7 @@ const JoinJam = () => {
             window.removeEventListener('offline', handleNetworkChange);
             window.removeEventListener('keydown', disableReload);
         };
-    }, [studentId]);
+    }, []);
 
     const handleReconnect = async () => {
         if (!studentId || !jamCode) {
