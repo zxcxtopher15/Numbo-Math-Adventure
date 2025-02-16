@@ -155,55 +155,14 @@ const JoinJam = () => {
             }
         };
 
-        const handleBeforeUnload = (event) => {
-            handleDisconnect();
-        };
-
-        const handleNetworkChange = () => {
-            if (navigator.onLine === false) {
-                handleDisconnect();
-            }
-        };
-
         document.addEventListener('contextmenu', disableRightClick);
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        window.addEventListener('offline', handleNetworkChange);
         window.addEventListener('keydown', disableReload);
 
         return () => {
             document.removeEventListener('contextmenu', disableRightClick);
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-            window.removeEventListener('offline', handleNetworkChange);
             window.removeEventListener('keydown', disableReload);
         };
     }, [studentId]);
-
-    useEffect(() => {
-        if (!studentId) return;
-
-        const disableRightClick = (event) => event.preventDefault();
-
-        const handleBeforeUnload = (event) => {
-            handleDisconnect();
-            event.returnValue = '';
-        };
-
-        const handleNetworkChange = () => {
-            if (!navigator.onLine) {
-                handleDisconnect();
-            }
-        };
-
-        document.addEventListener('contextmenu', disableRightClick);
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        window.addEventListener('offline', handleNetworkChange);
-
-        return () => {
-            document.removeEventListener('contextmenu', disableRightClick);
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-            window.removeEventListener('offline', handleNetworkChange);
-        };
-    }, [studentId, jamCode]);
 
     const handleReconnect = async () => {
         if (!studentId || !jamCode) {
