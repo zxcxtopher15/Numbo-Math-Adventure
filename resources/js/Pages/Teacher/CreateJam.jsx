@@ -222,62 +222,12 @@ const CreateJam = () => {
     }
   };
 
-  const waitingList = [
-    {
-      id: 1,
-      name: 'John Doe',
-      user_type: 'Student',
-      score: 80,
-    },
-    {
-      id: 2,
-      name: 'Jane Doe',
-      user_type: 'Student',
-      score: 70,
-    },
-    {
-      id: 3,
-      name: 'Bob Smith',
-      user_type: 'Teacher',
-      score: 90,
-    },
-    {
-      id: 4,
-      name: 'Alice Johnson',
-      user_type: 'Parent',
-      score: 60,
-    },
-    {
-      id: 5,
-      name: 'Samantha Lee',
-      user_type: 'Student',
-      score: 50,
-    },
-    {
-      id: 6,
-      name: 'Emily Brown',
-      user_type: 'Teacher',
-      score: 40,
-    },
-    {
-      id: 7,
-      name: 'Michael Davis',
-      user_type: 'Parent',
-      score: 30,
-    },
-    {
-      id: 8,
-      name: 'Sarah Taylor',
-      user_type: 'Student',
-      score: 20,
-    },
-    {
-      id: 9,
-      name: 'Tom Harris',
-      user_type: 'Teacher',
-      score: 10,
-    },
-  ];
+  const waitingList = participants.map((participant) => ({
+    id: participant.id,
+    name: participant.name,
+    user_type: "Student",
+    score: participant.score,
+  }));
 
   return (
     <BoardOverlay>
