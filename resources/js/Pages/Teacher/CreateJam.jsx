@@ -222,12 +222,14 @@ const CreateJam = () => {
     }
   };
 
-  const waitingList = participants.map((participant) => ({
-    id: participant.id,
-    name: participant.name,
-    user_type: "Student",
-    score: participant.score,
-  }));
+  const waitingList = participants
+    .filter((participant) => participant.status === "joined")
+    .map((participant) => ({
+      id: participant.id,
+      name: participant.name,
+      user_type: "Student",
+      score: participant.score,
+    }));
 
   return (
     <BoardOverlay>
