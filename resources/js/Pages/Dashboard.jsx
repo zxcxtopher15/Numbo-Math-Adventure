@@ -2,10 +2,19 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { Link, usePage } from '@inertiajs/react';
 import { Info } from 'lucide-react';
-import { FaPlay } from 'react-icons/fa';
+import { FaPlay, FaRandom } from 'react-icons/fa';
 import { Popover, PopoverContent, PopoverTrigger } from '@/Components/ui/popover';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogTrigger,
+    DialogHeader,
+    DialogTitle,
+} from '@/Components/ui/dialog';
 import PrimaryButton from '@/Components/PrimaryButton';
 import ShapeGenerator from '@/Components/ShapeGenerator';
+import Checkbox from '@/Components/Checkbox';
 
 // This is sample data with dynamic colors.
 const data = [
@@ -16,6 +25,13 @@ const data = [
         gradient: 'from-[#CDDA1E] to-[#50DE65]',
         textColor: 'text-[#50DE65]',
         items: [
+            {
+                id: 0,
+                title: 'Custom Game',
+                description: 'Create your own custom category',
+                sample: 'Create your own custom category',
+            },
+
             {
                 id: 1,
                 title: 'Add Tens',
@@ -56,6 +72,13 @@ const data = [
         textColor: 'text-[#FBBF24]',
         items: [
             {
+                id: 0,
+                title: 'Custom Game',
+                description: 'Create your own custom category',
+                sample: 'Create your own custom category',
+            },
+
+            {
                 id: 4,
                 title: 'Subtract Tens',
                 description: 'Subtraction with tens',
@@ -83,6 +106,13 @@ const data = [
         textColor: 'text-[#8B5CF6]',
         items: [
             {
+                id: 0,
+                title: 'Custom Game',
+                description: 'Create your own custom category',
+                sample: 'Create your own custom category',
+            },
+
+            {
                 id: 7,
                 title: 'Item 7',
                 description: 'This is item 7',
@@ -109,6 +139,13 @@ const data = [
         gradient: 'from-[#34D399] to-[#6366F1]',
         textColor: 'text-[#6366F1]',
         items: [
+            {
+                id: 0,
+                title: 'Custom Game',
+                description: 'Create your own custom category',
+                sample: 'Create your own custom category',
+            },
+
             {
                 id: 10,
                 title: 'Item 10',
@@ -163,40 +200,98 @@ export default function Dashboard() {
 
                                     <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-2 mt-8">
                                         {sample.items.map((item) => (
-                                            <Popover>
-                                                <PopoverTrigger>
-                                                    <div
-                                                        key={item.id}
-                                                        className={`p-4 bg-white ${sample.textColor} rounded-3xl shadow-md`}
-                                                    >
-                                                        <div className="flex items-center justify-between px-3">
-                                                            <h2 className="font-semibold">{item.title}</h2>
-                                                            <FaPlay className="w-5 h-5" />
-                                                        </div>
-                                                    </div>
-                                                </PopoverTrigger>
-                                                <PopoverContent>
-                                                    <div className="mb-5">
-                                                        <h1 className="font-semibold text-xl text-gray-700 ">
-                                                            {item.title}
-                                                        </h1>
-                                                        <p className="text-gray-500">{item.description}</p>
-                                                    </div>
-                                                    <div className="text-center">
-                                                        <p className={`text-sm text-gray-500`}>Example</p>
-                                                        <h2
-                                                            className={` font-semibold ${item.sample.length < 12 ? 'text-5xl' : item.sample.length < 30 ? 'text-2xl' : 'text-xl'} mb-5 ${sample.textColor}`}
-                                                        >
-                                                            {item.sample}
-                                                        </h2>
-                                                    </div>
-                                                    <div className="flex justify-end">
-                                                        <Link href={'/board'}>
-                                                            <PrimaryButton>Play</PrimaryButton>
-                                                        </Link>
-                                                    </div>
-                                                </PopoverContent>
-                                            </Popover>
+                                            <>
+                                                {item.id === 0 ? (
+                                                    <Dialog>
+                                                        <DialogTrigger asChild>
+                                                            <div
+                                                                className={`p-4 bg-white ${sample.textColor} rounded-3xl shadow-md cursor-pointer`}
+                                                            >
+                                                                <div className="flex items-center justify-between px-3">
+                                                                    <h2 className="text-lg font-semibold">
+                                                                        {item.title}
+                                                                    </h2>
+                                                                    <FaRandom className="w-5 h-5" />
+                                                                </div>
+                                                            </div>
+                                                        </DialogTrigger>
+
+                                                        <DialogContent>
+                                                            <DialogTitle>{item.title}</DialogTitle>
+                                                            <DialogDescription>{item.description}</DialogDescription>
+                                                            <div className="grid grid-cols-2 gap-2">
+                                                                {sample?.items
+                                                                    .filter((item2) => item2.id !== 0)
+                                                                    .map((item2) => (
+                                                                        <div
+                                                                            key={item2.id}
+                                                                            className="flex items-center"
+                                                                        >
+                                                                            <div
+                                                                                className={`p-4 bg-white rounded-2xl border-2 border-gray-400 w-full flex`}
+                                                                            >
+                                                                                <Checkbox
+                                                                                    type="checkbox"
+                                                                                    className={`mr-2 bg-gray-300  h-6 w-6 ${sample.textColor}`}
+                                                                                    value={item2.title}
+                                                                                />
+
+                                                                                <div className="flex items-center justify-between px-3">
+                                                                                    <h2 className="font-semibold">
+                                                                                        {item2.title}
+                                                                                    </h2>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+                                                            </div>
+                                                            <div className="mt-2">
+                                                                <div className="flex justify-end gap-2">
+                                                                    <PrimaryButton className={` ${sample.textColor}`}>
+                                                                        {' '}
+                                                                        Start
+                                                                    </PrimaryButton>
+                                                                </div>
+                                                            </div>
+                                                        </DialogContent>
+                                                    </Dialog>
+                                                ) : (
+                                                    <Popover key={item.id}>
+                                                        <PopoverTrigger>
+                                                            <div
+                                                                key={item.id}
+                                                                className={`p-4 bg-white ${sample.textColor} rounded-3xl shadow-md`}
+                                                            >
+                                                                <div className="flex items-center justify-between px-3">
+                                                                    <h2 className="font-semibold">{item.title}</h2>
+                                                                    <FaPlay className="w-5 h-5" />
+                                                                </div>
+                                                            </div>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent>
+                                                            <div className="mb-5">
+                                                                <h1 className="font-semibold text-xl text-gray-700 ">
+                                                                    {item.title}
+                                                                </h1>
+                                                                <p className="text-gray-500">{item.description}</p>
+                                                            </div>
+                                                            <div className="text-center">
+                                                                <p className={`text-sm text-gray-500`}>Example</p>
+                                                                <h2
+                                                                    className={` font-semibold ${item.sample.length < 12 ? 'text-5xl' : item.sample.length < 30 ? 'text-2xl' : 'text-xl'} mb-5 ${sample.textColor}`}
+                                                                >
+                                                                    {item.sample}
+                                                                </h2>
+                                                            </div>
+                                                            <div className="flex justify-end">
+                                                                <Link href={'/board'}>
+                                                                    <PrimaryButton>Play</PrimaryButton>
+                                                                </Link>
+                                                            </div>
+                                                        </PopoverContent>
+                                                    </Popover>
+                                                )}
+                                            </>
                                         ))}
                                     </div>
                                 </div>

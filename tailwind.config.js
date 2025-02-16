@@ -1,5 +1,6 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
+const plugin = require('tailwindcss/plugin'); // ✅ Correct way
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -98,5 +99,30 @@ export default {
         },
     },
 
-    plugins: [forms, require('tailwindcss-animate')],
+    plugins: [
+        forms,
+        require('tailwindcss-animate'),
+        require('tailwind-scrollbar')({ nocompatible: true }), // Enables styling
+        plugin(function ({ addBase }) {
+            addBase({
+                '::-webkit-scrollbar': {
+                    width: '8px',
+                    height: '8px',
+                },
+                '::-webkit-scrollbar-track': {
+                    background: 'trasparent', // Light gray background
+                    marginTop: '30px', // Adds space at the top
+                    marginBottom: '30px', // Adds space at the bottom
+                    borderRadius: '10px',
+                },
+                '::-webkit-scrollbar-thumb': {
+                    background: '#cbd5e0', // Indigo color
+                    borderRadius: '8px',
+                },
+                '::-webkit-scrollbar-thumb:hover': {
+                    background: '#cbd5e0', // Darker indigo on hover
+                },
+            });
+        }),
+    ],
 };

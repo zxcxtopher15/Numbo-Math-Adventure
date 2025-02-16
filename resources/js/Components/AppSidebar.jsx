@@ -1,23 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import {
-    AudioWaveform,
-    BookOpen,
-    Bot,
-    Command,
-    Frame,
-    GalleryVerticalEnd,
-    Map,
-    PieChart,
-    Settings2,
-    SquareTerminal,
-    LayoutDashboard,
-    ListChecks,
-    BookType,
-} from 'lucide-react';
+import { Settings2, LayoutDashboard, Dices } from 'lucide-react';
 
-import { NavMain } from '@/components/nav-main';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import {
     Sidebar,
@@ -27,45 +12,40 @@ import {
     SidebarRail,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarGroup,
+    SidebarMenu,
 } from '@/components/ui/sidebar';
-
-// This is sample data.
-const data = {
-    user: {
-        name: 'Popoy',
-        email: 'popoy@gmail.com',
-        avatar: '/avatars/shadcn.jpg',
-    },
-
-    navMain: [
-        {
-            title: 'Dashboard',
-            url: '/dashboard',
-            icon: LayoutDashboard,
-            isActive: true,
-        },
-        {
-            title: 'Assessments ',
-            url: '/assessments',
-            icon: BookType,
-        },
-        {
-            title: 'Assignments',
-            url: '/assignments',
-            icon: BookOpen,
-        },
-        {
-            title: 'Modules',
-            url: 'modules',
-            icon: Settings2,
-        },
-    ],
-};
+import { usePage, Link } from '@inertiajs/react';
 
 export function AppSidebar(props) {
+    const { auth } = usePage().props;
+    const userType = auth?.user?.user_type;
+    const data = {
+        navMain: [
+            {
+                title: 'Dashboard',
+                url: '/dashboard',
+                icon: LayoutDashboard,
+                isActive: window.location.pathname === '/dashboard',
+            },
+            {
+                title: 'Math Journey ',
+                url: userType === 'Teacher' ? '/math-jams' : '/math-jams-join',
+                icon: Dices,
+                isActive: window.location.pathname === '/math-jams' || window.location.pathname === '/math-jams-join',
+            },
+            {
+                title: 'Modules',
+                url: 'modules',
+                icon: Settings2,
+                isActive: window.location.pathname === '/modules',
+            },
+        ],
+    };
+
     return (
         <Sidebar
-            className="bg-gradient-to-r from-teal-400 to-yellow-200 1"
+            className="bg-gradient-to-r from-teal-400 to-yellow-200"
             variant="sidebar | floating | inset"
             collapsible="icon"
             {...props}
@@ -76,7 +56,20 @@ export function AppSidebar(props) {
                 </a>
             </SidebarHeader>
             <SidebarContent>
-                <NavMain items={data.navMain} />
+                <SidebarGroup>
+                    <SidebarMenu>
+                        {data.navMain.map((item) => (
+                            <SidebarMenuItem key={item.title}>
+                                <SidebarMenuButton asChild isActive={item.isActive} tooltip={item.title}>
+                                    <Link href={item.url} className="flex items-center gap-2">
+                                        {item.icon && <item.icon />}
+                                        {item.title}
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        ))}
+                    </SidebarMenu>
+                </SidebarGroup>
             </SidebarContent>
             <SidebarFooter></SidebarFooter>
             <SidebarRail />
