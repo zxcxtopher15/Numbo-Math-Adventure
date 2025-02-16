@@ -127,7 +127,7 @@ const CreateJam = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+          'X-CSRF-TOKEN': '{{ csrf_token() }}',
         },
         body: JSON.stringify({
           teacher_id: auth.user.id,
@@ -189,7 +189,7 @@ const CreateJam = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
           },
           body: JSON.stringify({
             jam_id: existingJam.id,
