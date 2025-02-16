@@ -74,14 +74,16 @@ class MathJamController extends Controller
             $jam = MathJam::where('teacher_id', $teacherId)->latest()->first();
 
             if ($jam) {
+                // Fetch only the participants using the math_jam_id
                 $participants = DB::table('math_jam_participants')
                     ->where('math_jam_id', $jam->id)
                     ->get();
 
-                $jam->participants = $participants;
+                echo "data: " . json_encode($participants) . "\n\n";
+            } else {
+                echo "data: []\n\n";
             }
-
-            echo "data: " . json_encode($jam) . "\n\n";
+            
             ob_flush();
             flush();
 
