@@ -236,10 +236,9 @@ const JoinJam = () => {
     useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
 
-        if (!jamCode) return;
+        if (!jamCode || !studentId) return;
 
         const sseUrl = `${baseUrl}/math-jams/jam-stream-updates?math_jam_code=${jamCode}`;
-
         let eventSource;
 
         const connectSSE = () => {
@@ -253,9 +252,8 @@ const JoinJam = () => {
                 } else {
                     if (!hasReloaded.current) {
                         hasReloaded.current = true;
+                        handleDisconnect();
                         window.location.reload();
-                        sessionStorage.removeItem('jamCode');
-                        setJamCode('');
                     }
                 }
             };
@@ -270,10 +268,31 @@ const JoinJam = () => {
 
         connectSSE();
 
+        const beforeUnloadHandler = (event) => {
+            handleDisconnect();
+        };
+
+        window.addEventListener("beforeunload", beforeUnloadHandler);
+
+        const offlineHandler = () => {
+            handleDisconnect();
+            Swal.fire({
+                icon: "error",
+                title: "Connection Lost",
+                text: "You have been disconnected due to a lost internet connection.",
+            }).then(() => {
+                window.location.reload();
+            });
+        };
+
+        window.addEventListener("offline", offlineHandler);
+
         return () => {
             eventSource?.close();
+            window.removeEventListener("beforeunload", beforeUnloadHandler);
+            window.removeEventListener("offline", offlineHandler);
         };
-    }, [jamCode]);
+    }, [jamCode, studentId]);
 
     return (
         <>
