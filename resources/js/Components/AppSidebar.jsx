@@ -39,13 +39,7 @@ export function AppSidebar(props) {
                 url: 'modules',
                 icon: Settings2,
                 isActive: window.location.pathname === '/modules',
-            },
-            {
-                title: 'Questions',
-                url: 'questions',
-                icon: Settings2,
-                isActive: window.location.pathname === '/questions',
-            },
+            }
         ],
     };
 
