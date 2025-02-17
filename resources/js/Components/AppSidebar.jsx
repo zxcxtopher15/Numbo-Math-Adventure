@@ -40,8 +40,23 @@ export function AppSidebar(props) {
                 icon: Settings2,
                 isActive: window.location.pathname === '/modules',
             },
+            {
+                title: 'Questions',
+                url: 'questions',
+                icon: Settings2,
+                isActive: window.location.pathname === '/questions',
+            },
         ],
     };
+
+    if (userType === 'Teacher') {
+        data.navMain.push({
+            title: 'Questions',
+            url: '/questions',
+            icon: Settings2,
+            isActive: window.location.pathname === '/questions',
+        });
+    }
 
     return (
         <Sidebar

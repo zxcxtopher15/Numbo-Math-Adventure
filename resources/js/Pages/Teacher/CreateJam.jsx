@@ -41,29 +41,6 @@ const CreateJam = () => {
         } else {
           setExistingJam(null);
         }
-
-        const disableRightClick = (event) => {
-          event.preventDefault();
-        };
-
-        const disableReload = (event) => {
-          if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.ctrlKey && event.key === 'R')) {
-            event.preventDefault();
-            Swal.fire({
-              icon: 'warning',
-              title: 'Action Blocked',
-              text: 'Page reload is disabled on this section.',
-            });
-          }
-        };
-
-        document.addEventListener('contextmenu', disableRightClick);
-        window.addEventListener('keydown', disableReload);
-
-        return () => {
-          document.removeEventListener('contextmenu', disableRightClick);
-          window.removeEventListener('keydown', disableReload);
-        };
       } catch (error) {
         console.error('Error fetching existing jam:', error);
       } finally {
@@ -75,6 +52,31 @@ const CreateJam = () => {
 
     fetchExistingJam();
   }, [auth.user.id]);
+
+  useEffect(() => {
+    const disableRightClick = (event) => {
+      event.preventDefault();
+    };
+
+    const disableReload = (event) => {
+      if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.ctrlKey && event.key === 'R')) {
+        event.preventDefault();
+        Swal.fire({
+          icon: 'warning',
+          title: 'Action Blocked',
+          text: 'Page reload is disabled on this section.',
+        });
+      }
+    };
+
+    document.addEventListener('contextmenu', disableRightClick);
+    window.addEventListener('keydown', disableReload);
+
+    return () => {
+      document.removeEventListener('contextmenu', disableRightClick);
+      window.removeEventListener('keydown', disableReload);
+    };
+  }, []);
 
   useEffect(() => {
     const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
