@@ -52,7 +52,7 @@ const data = [
             },
             {
                 id: 4,
-                title: 'Complete The Equations',
+                title: 'Complete The Equations (Addition)',
                 description: 'Complete the equations',
                 sample: '1 + 5 = 6',
             },
