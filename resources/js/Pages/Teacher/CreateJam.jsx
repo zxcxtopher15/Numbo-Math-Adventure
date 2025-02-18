@@ -13,372 +13,382 @@ import LoadingScreen from '@/Components/LoadingScreen';
 import { Head } from '@inertiajs/react';
 
 const CreateJam = () => {
-  const { auth } = usePage().props;
-  const [numQuestions, setNumQuestions] = useState(5);
-  const [timeLimit, setTimeLimit] = useState(30);
-  const [category, setCategory] = useState('math');
-  const [showScores, setShowScores] = useState(true);
-  const [existingJam, setExistingJam] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [participants, setParticipants] = useState([]);
+    const { auth } = usePage().props;
+    const [numQuestions, setNumQuestions] = useState(5);
+    const [timeLimit, setTimeLimit] = useState(30);
+    const [category, setCategory] = useState('math');
+    const [showScores, setShowScores] = useState(true);
+    const [existingJam, setExistingJam] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [participants, setParticipants] = useState([]);
 
-  useEffect(() => {
-    const fetchExistingJam = async () => {
-      const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-      if (!baseUrl) {
-        console.error('Base URL not found.');
-        return;
-      }
+    useEffect(() => {
+        const fetchExistingJam = async () => {
+            const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+            if (!baseUrl) {
+                console.error('Base URL not found.');
+                return;
+            }
 
-      const apiUrl = `${baseUrl}/math-journey/check-existing?teacher_id=${auth.user.id}`;
+            const apiUrl = `${baseUrl}/math-journey/check-existing?teacher_id=${auth.user.id}`;
 
-      try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
 
-        if (response.ok && data.jam) {
-          setExistingJam(data.jam);
-        } else {
-          setExistingJam(null);
+                if (response.ok && data.jam) {
+                    setExistingJam(data.jam);
+                } else {
+                    setExistingJam(null);
+                }
+            } catch (error) {
+                console.error('Error fetching existing jam:', error);
+            } finally {
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000); //
+            }
+        };
+
+        fetchExistingJam();
+    }, [auth.user.id]);
+
+    useEffect(() => {
+        const disableRightClick = (event) => {
+            event.preventDefault();
+        };
+
+        const disableReload = (event) => {
+            if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.ctrlKey && event.key === 'R')) {
+                event.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Action Blocked',
+                    text: 'Page reload is disabled on this section.',
+                });
+            }
+        };
+
+        document.addEventListener('contextmenu', disableRightClick);
+        window.addEventListener('keydown', disableReload);
+
+        return () => {
+            document.removeEventListener('contextmenu', disableRightClick);
+            window.removeEventListener('keydown', disableReload);
+        };
+    }, []);
+
+    useEffect(() => {
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        const sseUrl = `${baseUrl}/math-journey/stream-participants?teacher_id=${auth.user.id}`;
+
+        let eventSource;
+
+        const connectSSE = () => {
+            eventSource = new EventSource(sseUrl);
+
+            eventSource.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                setParticipants(data);
+            };
+
+            eventSource.onerror = (error) => {
+                // console.error("SSE Error:", error);
+                eventSource.close();
+                setTimeout(() => {
+                    // console.log("Reconnecting SSE...");
+                    connectSSE();
+                }, 1000);
+            };
+        };
+
+        connectSSE();
+
+        return () => {
+            eventSource?.close();
+        };
+    }, [auth.user.id]);
+
+    const handleCreateJam = async () => {
+        if (existingJam) {
+            alert('You already have an ongoing Math Journey. Please finish it before creating a new one.');
+            return;
         }
-      } catch (error) {
-        console.error('Error fetching existing jam:', error);
-      } finally {
-        setTimeout(() => {
-          setLoading(false);
-        }, 2000); //
-      }
-    };
 
-    fetchExistingJam();
-  }, [auth.user.id]);
-
-  useEffect(() => {
-    const disableRightClick = (event) => {
-      event.preventDefault();
-    };
-
-    const disableReload = (event) => {
-      if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.ctrlKey && event.key === 'R')) {
-        event.preventDefault();
-        Swal.fire({
-          icon: 'warning',
-          title: 'Action Blocked',
-          text: 'Page reload is disabled on this section.',
-        });
-      }
-    };
-
-    document.addEventListener('contextmenu', disableRightClick);
-    window.addEventListener('keydown', disableReload);
-
-    return () => {
-      document.removeEventListener('contextmenu', disableRightClick);
-      window.removeEventListener('keydown', disableReload);
-    };
-  }, []);
-
-  useEffect(() => {
-    const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
-    const sseUrl = `${baseUrl}/math-journey/stream-participants?teacher_id=${auth.user.id}`;
-
-    let eventSource;
-
-    const connectSSE = () => {
-      eventSource = new EventSource(sseUrl);
-
-      eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        setParticipants(data);
-      };
-
-      eventSource.onerror = (error) => {
-        // console.error("SSE Error:", error);
-        eventSource.close();
-        setTimeout(() => {
-          // console.log("Reconnecting SSE...");
-          connectSSE();
-        }, 1000);
-      };
-    };
-
-    connectSSE();
-
-    return () => {
-      eventSource?.close();
-    };
-  }, [auth.user.id]);
-
-  const handleCreateJam = async () => {
-    if (existingJam) {
-      alert('You already have an ongoing Math Journey. Please finish it before creating a new one.');
-      return;
-    }
-
-    const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-    if (!baseUrl) {
-      console.error('Base URL not found.');
-      alert('Base URL not found.');
-      return;
-    }
-
-    const apiUrl = `${baseUrl}/math-journey/create`;
-
-    try {
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': '{{ csrf_token() }}',
-        },
-        body: JSON.stringify({
-          teacher_id: auth.user.id,
-          num_questions: parseInt(numQuestions, 10),
-          time_limit: parseInt(timeLimit, 10),
-          category,
-          show_scores: showScores ? 1 : 0,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Math Journey created successfully!',
-        });
-        setExistingJam(data.jam);
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Failed to create Math Journey',
-          text: data.message || 'An unknown error occurred',
-        });
-        console.error('Error details:', data);
-      }
-    } catch (error) {
-      console.error('Fetch Error:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'An error occurred while creating the jam',
-        text: 'Please try again later',
-      });
-    }
-  };
-
-  const handleCancelJam = async () => {
-    const confirmed = await Swal.fire({
-      title: 'Are you sure?',
-      text: 'Are you sure you want to cancel this Math Journey?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, cancel it!',
-    });
-
-    if (confirmed.isConfirmed) {
-      const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-      if (!baseUrl) {
-        console.error('Base URL not found.');
-        return;
-      }
-
-      const apiUrl = `${baseUrl}/math-journey/cancel`;
-
-      try {
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-          },
-          body: JSON.stringify({
-            jam_id: existingJam.id,
-          }),
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Math Journey cancelled',
-            text: 'The Math Journey has been cancelled successfully.',
-          });
-          setExistingJam(null);
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Failed to cancel the Math Journey',
-            text: data.message || 'An unknown error occurred',
-          });
-          console.error('Error details:', data);
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        if (!baseUrl) {
+            console.error('Base URL not found.');
+            alert('Base URL not found.');
+            return;
         }
-      } catch (error) {
-        console.error('Fetch Error:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'An error occurred while cancelling the jam',
-          text: 'Please try again later',
+
+        const apiUrl = `${baseUrl}/math-journey/create`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({
+                    teacher_id: auth.user.id,
+                    num_questions: parseInt(numQuestions, 10),
+                    time_limit: parseInt(timeLimit, 10),
+                    category,
+                    show_scores: showScores ? 1 : 0,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Math Journey created successfully!',
+                });
+                setExistingJam(data.jam);
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed to create Math Journey',
+                    text: data.message || 'An unknown error occurred',
+                });
+                console.error('Error details:', data);
+            }
+        } catch (error) {
+            console.error('Fetch Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'An error occurred while creating the jam',
+                text: 'Please try again later',
+            });
+        }
+    };
+
+    const handleCancelJam = async () => {
+        const confirmed = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'Are you sure you want to cancel this Math Journey?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!',
         });
-      }
-    }
-  };
 
-  const waitingList = participants
-    .filter((participant) => participant.status === "joined")
-    .map((participant) => ({
-      id: participant.id,
-      name: participant.name,
-      user_type: "Student",
-      score: participant.score,
-    }));
+        if (confirmed.isConfirmed) {
+            const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+            if (!baseUrl) {
+                console.error('Base URL not found.');
+                return;
+            }
 
-  return (
-    <>
-      <Head title="Math Journey" />
-      <BoardOverlay>
-        <div className="w-full h-full bg-white rounded-3xl sm:p-8 p-2 flex flex-col justify-center relative overflow-hidden box-border">
-          <img
-            className="hidden sm:block sm:absolute top-0 -right-16 h-full opacity-20"
-            src="/images/assets/shapes/shape-tricolor.svg"
-            alt=""
-          />
-          <img
-            className="hidden sm:block sm:absolute top-0 -right-20 h-full opacity-100"
-            src="/images/assets/shapes/shape-tricolor.svg"
-            alt=""
-          />
-          <SvgAsset
-            movement="sm"
-            value="/images/assets/background/students_jam.svg"
-            className=" hidden sm:block sm:absolute top-0 right-40 h-full z-0"
-          />
+            const apiUrl = `${baseUrl}/math-journey/cancel`;
 
-          {/* Main Content */}
-          <div className="relative z-1 h-full">
-            {loading ? (
-              <LoadingScreen time={2000} text="Checking for existing session..." />
-            ) : (
-              <>
-                <div className="bg-gray-200  rounded-3xl max-w-[400px] h-full flex flex-col justify-between overflow-hidden">
-                  <div className="sm:p-6 sm:pr-8 p-4 pt-9 h-full ">
-                    <h2 className="text-xl text-primary font-semibold text-start mb-8">
-                      {existingJam ? 'Ongoing Math Session' : 'Create a Live Session'}
-                    </h2>
-                    {existingJam ? (
-                      <>
-                        <div className="mb-4 p-4 bg-blue-100 text-gray-600 rounded-3xl flex flex-col gap-2">
-                          <p className="font-semibold">
-                            Code:{' '}
-                            <span className="font-normal">{existingJam.math_jam_code}</span>
-                          </p>
-                          <p className="font-semibold">
-                            Questions:{' '}
-                            <span className="font-normal">{existingJam.num_questions}</span>
-                          </p>
-                          <p className="font-semibold">
-                            Time Limit:{' '}
-                            <span className="font-normal">{existingJam.time_limit} sec</span>
-                          </p>
-                          <p className="font-semibold">
-                            Category:{' '}
-                            <span className="font-normal">{existingJam.category}</span>
-                          </p>
-                          <p className="font-semibold">
-                            Status: <span className="font-normal">{existingJam.status}</span>
-                          </p>
-                        </div>
-                        <div className="h-full">
-                          <StudentList data={waitingList} />
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="mb-4">
-                          <InputLabel value="Number of Questions" />
-                          <TextInput
-                            type="number"
-                            className="w-full"
-                            value={numQuestions}
-                            onChange={(e) => setNumQuestions(e.target.value)}
-                          />
-                        </div>
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    body: JSON.stringify({
+                        jam_id: existingJam.id,
+                    }),
+                });
 
-                        {/* Time Limit */}
-                        <div className="mb-4">
-                          <InputLabel value="Time Limit per Question (in seconds)" />
-                          <TextInput
-                            type="number"
-                            className="w-full"
-                            value={timeLimit}
-                            onChange={(e) => setTimeLimit(e.target.value)}
-                          />
-                        </div>
+                const data = await response.json();
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Math Journey cancelled',
+                        text: 'The Math Journey has been cancelled successfully.',
+                    });
+                    setExistingJam(null);
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Failed to cancel the Math Journey',
+                        text: data.message || 'An unknown error occurred',
+                    });
+                    console.error('Error details:', data);
+                }
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'An error occurred while cancelling the jam',
+                    text: 'Please try again later',
+                });
+            }
+        }
+    };
 
-                        {/* Category Selection */}
-                        <div className="mb-7">
-                          <InputLabel value="Question Category" />
-                          <SelectInput
-                            className="custom-class"
-                            isFocused={true}
-                            placeholder="Select an option"
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                          >
-                            <option value="math">Math</option>
-                            <option value="science">Science</option>
-                            <option value="history">History</option>
-                          </SelectInput>
-                        </div>
+    const waitingList = participants
+        .filter((participant) => participant.status === 'joined')
+        .map((participant) => ({
+            id: participant.id,
+            name: participant.name,
+            user_type: 'Student',
+            score: participant.score,
+        }));
 
-                        {/* Show Scores Checkbox */}
-                        <div className="flex items-center space-x-2 mb-4 px-4">
-                          <Checkbox
-                            type="checkbox"
-                            checked={showScores}
-                            onChange={() => setShowScores(!showScores)}
-                          />
-                          <span className="ms-2 text-sm text-gray-600">
-                            Show Scores to Students
-                          </span>
-                        </div>
-                      </>
-                    )}
+    return (
+        <>
+            <Head title="Math Journey" />
+            <BoardOverlay>
+                <div className="w-full h-full bg-white rounded-3xl sm:p-8 p-2 flex flex-col justify-center relative overflow-hidden box-border">
+                    <img
+                        className="hidden sm:block sm:absolute top-0 -right-16 h-full opacity-20"
+                        src="/images/assets/shapes/shape-tricolor.svg"
+                        alt=""
+                    />
+                    <img
+                        className="hidden sm:block sm:absolute top-0 -right-20 h-full opacity-100"
+                        src="/images/assets/shapes/shape-tricolor.svg"
+                        alt=""
+                    />
+                    {/* <SvgAsset
+                        movement="sm"
+                        value="/images/assets/background/students_jam.svg"
+                        className=" hidden sm:block sm:absolute top-0 right-40 h-full z-0"
+                    /> */}
 
-                    {/* Number of Questions */}
-                  </div>
-                  <div className="flex justify-between items-center sm:px-8 px-3 pb-8 ">
-                    {existingJam ? (
-                      <>
-                        <PrimaryButton
-                          onClick={handleCancelJam}
-                          className="w-max  px-5  bg-red-500 hover:bg-red-600"
-                        >
-                          Cancel
-                        </PrimaryButton>
+                    {/* Main Content */}
+                    <div className=" z-1 h-full">
+                        {loading ? (
+                            <LoadingScreen time={2000} text="Checking for existing session..." />
+                        ) : (
+                            <>
+                                <div className=" bg-gray-200 p-4 rounded-3xl max-w-[400px] h-full overflow-y-auto">
+                                    <div className="h-full flex flex-col">
+                                        <div className=" h-full flex flex-col">
+                                            <h2 className="text-xl text-primary font-semibold text-start mb-8">
+                                                {existingJam ? 'Ongoing Math Session' : 'Create a Live Session'}
+                                            </h2>
+                                            {existingJam ? (
+                                                <>
+                                                    <div className="mb-4 p-4 bg-blue-100 text-gray-600 rounded-3xl h-max flex flex-col gap-2">
+                                                        <p className="font-semibold">
+                                                            Code:{' '}
+                                                            <span className="font-normal">
+                                                                {existingJam.math_jam_code}
+                                                            </span>
+                                                        </p>
+                                                        <p className="font-semibold">
+                                                            Questions:{' '}
+                                                            <span className="font-normal">
+                                                                {existingJam.num_questions}
+                                                            </span>
+                                                        </p>
+                                                        <p className="font-semibold">
+                                                            Time Limit:{' '}
+                                                            <span className="font-normal">
+                                                                {existingJam.time_limit} sec
+                                                            </span>
+                                                        </p>
+                                                        <p className="font-semibold">
+                                                            Category:{' '}
+                                                            <span className="font-normal">{existingJam.category}</span>
+                                                        </p>
+                                                        <p className="font-semibold">
+                                                            Status:{' '}
+                                                            <span className="font-normal">{existingJam.status}</span>
+                                                        </p>
+                                                    </div>
+                                                    <div className="bg-white flex-1 m-1 mb-5 rounded-3xl overflow-y-auto">
+                                                        <StudentList data={waitingList} />
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <div className="">
+                                                    <div className="mb-4">
+                                                        <InputLabel value="Number of Questions" />
+                                                        <TextInput
+                                                            type="number"
+                                                            className="w-full"
+                                                            value={numQuestions}
+                                                            onChange={(e) => setNumQuestions(e.target.value)}
+                                                        />
+                                                    </div>
 
-                        <PrimaryButton className="w-max px-5">Start</PrimaryButton>
-                      </>
-                    ) : (
-                      <>
-                        <Link href={'/dashboard'}>
-                          <PrimaryButton className="bg-danger w-fit px-5">Go Back</PrimaryButton>
-                        </Link>
-                        <PrimaryButton onClick={handleCreateJam} className="w-max px-5">
-                          Create
-                        </PrimaryButton>
-                      </>
-                    )}
-                  </div>
+                                                    {/* Time Limit */}
+                                                    <div className="mb-4">
+                                                        <InputLabel value="Time Limit per Question (in seconds)" />
+                                                        <TextInput
+                                                            type="number"
+                                                            className="w-full"
+                                                            value={timeLimit}
+                                                            onChange={(e) => setTimeLimit(e.target.value)}
+                                                        />
+                                                    </div>
+
+                                                    {/* Category Selection */}
+                                                    <div className="mb-7">
+                                                        <InputLabel value="Question Category" />
+                                                        <SelectInput
+                                                            className="custom-class"
+                                                            isFocused={true}
+                                                            placeholder="Select an option"
+                                                            value={category}
+                                                            onChange={(e) => setCategory(e.target.value)}
+                                                        >
+                                                            <option value="math">Math</option>
+                                                            <option value="science">Science</option>
+                                                            <option value="history">History</option>
+                                                        </SelectInput>
+                                                    </div>
+
+                                                    {/* Show Scores Checkbox */}
+                                                    <div className="flex items-center space-x-2 mb-4 px-4">
+                                                        <Checkbox
+                                                            type="checkbox"
+                                                            checked={showScores}
+                                                            onChange={() => setShowScores(!showScores)}
+                                                        />
+                                                        <span className="ms-2 text-sm text-gray-600">
+                                                            Show Scores to Students
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                        {/* Number of Questions */}
+                                        <div className="flex justify-between items-center sm:px-8 px-3 pb-3 ">
+                                            {existingJam ? (
+                                                <>
+                                                    <PrimaryButton
+                                                        onClick={handleCancelJam}
+                                                        className="w-max  px-5  bg-red-500 hover:bg-red-600"
+                                                    >
+                                                        Cancel
+                                                    </PrimaryButton>
+
+                                                    <PrimaryButton className="w-max px-5">Start</PrimaryButton>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Link href={'/dashboard'}>
+                                                        <PrimaryButton className="bg-danger w-fit px-5">
+                                                            Go Back
+                                                        </PrimaryButton>
+                                                    </Link>
+                                                    <PrimaryButton onClick={handleCreateJam} className="w-max px-5">
+                                                        Create
+                                                    </PrimaryButton>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
-              </>
-            )}
-          </div>
-        </div>
-      </BoardOverlay>
-    </>
-  );
+            </BoardOverlay>
+        </>
+    );
 };
 
 export default CreateJam;

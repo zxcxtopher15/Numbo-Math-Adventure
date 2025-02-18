@@ -262,13 +262,14 @@ const JoinJam = () => {
                         eventSource.close();
 
                         Swal.fire({
-                            icon: data.status === 'cancelled' ? "error" : "info",
-                            title: data.status === 'cancelled' ? "Math Journey Cancelled" : "Math Journey Ended",
-                            text: data.status === 'cancelled'
-                                ? "The Math Journey session has been cancelled."
-                                : "The Math Journey session has ended. Thank you for participating!",
-                            confirmButtonColor: "#d33",
-                            allowOutsideClick: false
+                            icon: data.status === 'cancelled' ? 'error' : 'info',
+                            title: data.status === 'cancelled' ? 'Math Journey Cancelled' : 'Math Journey Ended',
+                            text:
+                                data.status === 'cancelled'
+                                    ? 'The Math Journey session has been cancelled.'
+                                    : 'The Math Journey session has ended. Thank you for participating!',
+                            confirmButtonColor: '#d33',
+                            allowOutsideClick: false,
                         }).then(() => {
                             if (!hasReloaded.current) {
                                 hasReloaded.current = true;
@@ -296,27 +297,27 @@ const JoinJam = () => {
             handleDisconnect();
         };
 
-        window.addEventListener("beforeunload", beforeUnloadHandler);
+        window.addEventListener('beforeunload', beforeUnloadHandler);
 
         const offlineHandler = () => {
             handleDisconnect();
             Swal.fire({
-                icon: "error",
-                title: "Connection Lost",
-                text: "You have been disconnected due to a lost internet connection.",
-                confirmButtonColor: "#d33",
-                allowOutsideClick: false
+                icon: 'error',
+                title: 'Connection Lost',
+                text: 'You have been disconnected due to a lost internet connection.',
+                confirmButtonColor: '#d33',
+                allowOutsideClick: false,
             }).then(() => {
                 window.location.reload();
             });
         };
 
-        window.addEventListener("offline", offlineHandler);
+        window.addEventListener('offline', offlineHandler);
 
         return () => {
             eventSource?.close();
-            window.removeEventListener("beforeunload", beforeUnloadHandler);
-            window.removeEventListener("offline", offlineHandler);
+            window.removeEventListener('beforeunload', beforeUnloadHandler);
+            window.removeEventListener('offline', offlineHandler);
         };
     }, [jamCode, studentId]);
 
@@ -335,14 +336,16 @@ const JoinJam = () => {
                         className="hidden sm:block sm:absolute top-0 -right-20 h-full opacity-100"
                         src="/images/assets/shapes/shape-tricolor.svg"
                         alt=""
+                        draggable={false}
                     />
 
                     <SvgAsset
                         movement="sm"
                         value="/images/assets/background/students_jam.svg"
-                        className=" hidden sm:block sm:absolute top-0 right-40 h-full z-0"
+                        className=" hidden sm:block sm:absolute top-0 right-40 h-full z-0 "
+                        draggable={false}
                     />
-                    <div className="bg-gray-200 p-6 rounded-3xl max-w-[400px] h-max flex flex-col justify-between overflow-hidden">
+                    <div className="bg-gray-200 p-6 rounded-3xl max-w-[400px] h-max flex flex-col justify-between overflow-hidden relative z-10">
                         <h2 className="text-primary text-xl font-semibold  mb-4">Join Math Journey</h2>
 
                         <div className="bg-white flex items-center justify-start gap-4 p-3 rounded-3xl mb-8">

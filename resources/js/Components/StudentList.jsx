@@ -2,7 +2,7 @@ import Avatar from './Avatar';
 export default function StudentList({ data }) {
     return (
         <div className=" box-border">
-            <div className="bg-white rounded-3xl p-4 space-y-4 h-96 min-h-10 overflow-y-auto">
+            <div className=" rounded-3xl p-4 space-y-4  overflow-y-auto">
                 {data.map((profile) => (
                     <div key={profile.id} className="flex gap-4 justify-between items-center pe-3 pb-4 border-b">
                         <div className="flex items-center gap-4 ">

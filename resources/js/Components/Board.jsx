@@ -130,19 +130,19 @@ function TotalResult({ totalQuestions, gameState }) {
         <>
             <Confetti width={width} height={height} />
 
-            <div className="w-full h-full flex  items-center justify-between bg-white p-6 rounded-3xl shadow-lg box-border">
-                <div className="w-full h-full justify-center items-end p-10 relative">
+            <div className="w-full h-full flex  items-center justify-between bg-white sm:p-8 p-2 rounded-3xl shadow-lg box-border">
+                <div className="hidden sm:flex  w-full h-full justify-center items-end p-10 relative">
                     <h1 className="text-6xl font-bold text-primary relative z-10">GREAT JOB!!!</h1>
 
-                    <div className="flex justify-center items-center h-full w-full">
+                    <div className="justify-center items-center h-full w-full">
                         <SvgAsset
                             movement="sm"
                             value="/images/assets/background/students_result.svg"
-                            className=" hidden sm:block sm:absolute top-0 right-40 h-full z-0"
+                            className=" hidden sm:block sm:absolute top-0 sm:right-40 md:right-0 h-full z-0"
                         />
                     </div>
                 </div>
-                <div className="flex flex-col bg-gray-200 h-full rounded-3xl p-6 gap-4 lg:w-1/3">
+                <div className="flex flex-col bg-gray-200 h-full rounded-3xl sm:p-6 p-2 w-full gap-4 sm:w-1/3 md:w-3/4 lg:w-1/3">
                     <div className="flex justify-start items-center w-full p-4 bg-white rounded-3xl px-6 gap-8 ">
                         <img className="w-14 h-14" src="/images/assets/stars/glossy_3.svg" alt="" />
                         <h1 className="text-warning font-bold  text-6xl">
@@ -272,7 +272,7 @@ export function Board() {
 
     const isGameFinished = currentQuestion >= data.length;
 
-    return isGameFinished ? (
+    return !isGameFinished ? (
         <TotalResult totalQuestions={data.length} gameState={gameState} />
     ) : (
         <>
