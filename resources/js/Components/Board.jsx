@@ -272,7 +272,7 @@ export function Board() {
 
     const isGameFinished = currentQuestion >= data.length;
 
-    return !isGameFinished ? (
+    return isGameFinished ? (
         <TotalResult totalQuestions={data.length} gameState={gameState} />
     ) : (
         <>
