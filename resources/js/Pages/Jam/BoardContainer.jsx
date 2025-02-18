@@ -22,7 +22,7 @@ export default function BoardContainer({ auth }) {
         if (categoryTitle) {
             const categoryParam = Array.isArray(categoryTitle) ? JSON.stringify(categoryTitle) : categoryTitle;
 
-            fetch(`/questions?categoryTitle=${categoryParam}`)
+            fetch(`/questions_list?categoryTitle=${categoryParam}`)
                 .then((response) => response.json())
                 .then((data) => {
                     const formattedData = data.map((question) => ({
