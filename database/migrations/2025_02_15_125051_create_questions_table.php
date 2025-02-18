@@ -14,16 +14,13 @@ return new class extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
             $table->string('category');
-            $table->string('question_type');
-            $table->integer('number_1');
-            $table->integer('number_2');
+            $table->string('question_type')->nullable();
+            // $table->integer('number_1');
+            // $table->integer('number_2');
             $table->string('question');
-            $table->string('choice_a');
-            $table->string('choice_b');
-            $table->string('choice_c');
-            $table->string('choice_d');
+            $table->json('choices');
             $table->string('correct_answer');
-            $table->tinyInteger('status');
+            $table->tinyInteger('status')->default(0);
             $table->timestamps();
         });
     }

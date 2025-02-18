@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\MathJamController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 Route::get('/', [AuthenticatedSessionController::class, 'create'])
@@ -42,10 +43,9 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::get('/board', function () {
         return Inertia::render('Jam/BoardContainer', request()->all());
     })->name('jam.BoardContainer');
-    
-    Route::get('/questions', function () {
-        return Inertia::render('Teacher/Questions', request()->all());
-    })->name('questions');
+
+    Route::get('/questions', [QuestionController::class, 'index'])->name('questions');
+    Route::post('/questions/store', [QuestionController::class, 'store'])->name('questions.store');
 });
 
 Route::group(['middleware' => 'student'], function () {
@@ -58,7 +58,7 @@ Route::group(['middleware' => 'student'], function () {
     Route::post('/math-journey/disconnect', [MathJamController::class, 'disconnect']);
     Route::post('/math-journey/reconnect', [MathJamController::class, 'reconnect']);
     Route::get('/math-journey/jam-stream-updates', [MathJamController::class, 'jamStreamUpdates']);
-    
+
     Route::get('/board', function () {
         return Inertia::render('Jam/BoardContainer', request()->all());
     })->name('jam.BoardContainer');

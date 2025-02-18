@@ -1,17 +1,14 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
-import { usePage } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
-export default function Questions() {
+export default function Questions({ questions = [] }) {
     const { auth } = usePage().props;
-    const userType = auth?.user?.user_type;
-
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newQuestion, setNewQuestion] = useState({
+
+    const { data, setData, post, reset } = useForm({
         category: '',
-        type: '',
-        question_text: '',
+        question: '',
         choices: ['', '', '', ''],
         correct_answer: '',
     });
@@ -26,20 +23,26 @@ export default function Questions() {
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setNewQuestion({ ...newQuestion, [name]: value });
+        setData(e.target.name, e.target.value);
     };
 
     const handleChoiceChange = (index, value) => {
-        const updatedChoices = [...newQuestion.choices];
+        const updatedChoices = [...data.choices];
         updatedChoices[index] = value;
-        setNewQuestion({ ...newQuestion, choices: updatedChoices });
+        setData('choices', updatedChoices);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('New Question:', newQuestion);
-        toggleModal();
+        post(route('questions.store'), {
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            onSuccess: () => {
+                reset();
+                toggleModal();
+            }
+        });
     };
 
     return (
@@ -62,7 +65,15 @@ export default function Questions() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {/* Render existing questions here */}
+                                    {questions.map((q, index) => (
+                                        <tr key={q.id} className="border">
+                                            <td className="border px-4 py-2">{index + 1}</td>
+                                            <td className="border px-4 py-2">{q.category}</td>
+                                            <td className="border px-4 py-2">{q.question}</td>
+                                            <td className="border px-4 py-2">{q.choices.join(', ')}</td>
+                                            <td className="border px-4 py-2">{q.correct_answer}</td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
@@ -76,7 +87,7 @@ export default function Questions() {
                         <h3 className="text-lg font-semibold mb-4">Add New Question</h3>
                         <form onSubmit={handleSubmit}>
                             <label className="block mb-2">Category:</label>
-                            <select name="category" value={newQuestion.category} onChange={handleChange} className="border w-full p-2 mb-2">
+                            <select name="category" value={data.category} onChange={handleChange} className="border w-full p-2 mb-2">
                                 <option value="">Select Category</option>
                                 {Object.entries(categories).map(([type, options]) => (
                                     <optgroup key={type} label={type}>
@@ -88,10 +99,10 @@ export default function Questions() {
                             </select>
 
                             <label className="block mb-2">Question:</label>
-                            <input type="text" name="question_text" value={newQuestion.question_text} onChange={handleChange} className="border w-full p-2 mb-2" />
+                            <input type="text" name="question" value={data.question} onChange={handleChange} className="border w-full p-2 mb-2" />
 
                             <label className="block mb-2">Choices:</label>
-                            {newQuestion.choices.map((choice, index) => (
+                            {data.choices.map((choice, index) => (
                                 <div key={index} className="mb-2">
                                     <label className="block mb-1">{`Choice ${String.fromCharCode(65 + index)}`}</label>
                                     <input
@@ -104,7 +115,7 @@ export default function Questions() {
                             ))}
 
                             <label className="block mb-2">Correct Answer:</label>
-                            <input type="text" name="correct_answer" value={newQuestion.correct_answer} onChange={handleChange} className="border w-full p-2 mb-4" />
+                            <input type="text" name="correct_answer" value={data.correct_answer} onChange={handleChange} className="border w-full p-2 mb-4" />
 
                             <div className="flex justify-end space-x-2">
                                 <button type="button" onClick={toggleModal} className="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
