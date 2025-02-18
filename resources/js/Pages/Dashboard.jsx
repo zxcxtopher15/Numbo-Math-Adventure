@@ -247,10 +247,27 @@ export default function Dashboard() {
                                                             </div>
                                                             <div className="mt-2">
                                                                 <div className="flex justify-end gap-2">
-                                                                    <PrimaryButton className={` ${sample.textColor}`}>
-                                                                        {' '}
-                                                                        Start
-                                                                    </PrimaryButton>
+                                                                    <Link href={'/board'}>
+                                                                        <PrimaryButton
+                                                                            className={` ${sample.textColor}`}
+                                                                            onClick={() => {
+                                                                                let selectedItems =
+                                                                                    document.querySelectorAll(
+                                                                                        'input[type="checkbox"]:checked',
+                                                                                    );
+                                                                                let selectedItemsTitles = [];
+                                                                                selectedItems.forEach((item) => {
+                                                                                    selectedItemsTitles.push(item.value);
+                                                                                });
+                                                                                localStorage.setItem('schemaTitle', sample.title);
+                                                                                localStorage.setItem('categoryTitle', JSON.stringify(selectedItemsTitles));
+                                                                                localStorage.setItem('gameTitle', item.title);
+                                                                            }}
+                                                                        >
+                                                                            {' '}
+                                                                            Start
+                                                                        </PrimaryButton>
+                                                                    </Link>
                                                                 </div>
                                                             </div>
                                                         </DialogContent>
@@ -285,7 +302,15 @@ export default function Dashboard() {
                                                             </div>
                                                             <div className="flex justify-end">
                                                                 <Link href={'/board'}>
-                                                                    <PrimaryButton>Play</PrimaryButton>
+                                                                    <PrimaryButton
+                                                                        onClick={() => {
+                                                                            localStorage.setItem('schemaTitle', sample.title);
+                                                                            localStorage.setItem('categoryTitle', item.title);
+                                                                            localStorage.setItem('gameTitle', item.title);
+                                                                        }}
+                                                                    >
+                                                                        Play
+                                                                    </PrimaryButton>
                                                                 </Link>
                                                             </div>
                                                         </PopoverContent>

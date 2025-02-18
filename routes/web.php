@@ -59,6 +59,8 @@ Route::group(['middleware' => 'student'], function () {
     Route::post('/math-journey/reconnect', [MathJamController::class, 'reconnect']);
     Route::get('/math-journey/jam-stream-updates', [MathJamController::class, 'jamStreamUpdates']);
 
+    Route::get('/questions', [QuestionController::class, 'getQuestions']);
+
     Route::get('/board', function () {
         return Inertia::render('Jam/BoardContainer', request()->all());
     })->name('jam.BoardContainer');

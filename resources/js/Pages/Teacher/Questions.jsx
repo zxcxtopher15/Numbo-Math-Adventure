@@ -14,8 +14,9 @@ export default function Questions({ questions = [] }) {
     });
 
     const categories = {
-        Addition: ['Add Tens', 'Add Two Numbers', 'Addition Sentences', 'Complete the Equations', 'Add Three Numbers'],
-        Subtraction: ['Subtract Tens', 'Subtract Two Numbers', 'Subtraction Sentences']
+        Addition: ['Add Tens', 'Add Two Numbers', 'Addition Sentences', 'Complete the Equations (Addition)', 'Add Three Numbers'],
+        Subtraction: ['Subtract Tens', 'Subtract Two Numbers', 'Subtraction Sentences', 'Complete the Equations (Subtraction)', 'Subtract Doubles'],
+        Multiplication: ['Times Tables Race', 'Multiply and Match', 'Magic Multipliers', 'Multiplication Mystery'],
     };
 
     const toggleModal = () => {
