@@ -17,7 +17,9 @@ import { Link } from '@inertiajs/react';
 import { SvgAsset } from './SvgAsset';
 import Categories from './Categories';
 
-function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
+function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext, onPrev }) {
+    const { auth } = usePage().props;
+
     return (
         <div className="w-full h-full flex flex-col items-center justify-center bg-white p-6 rounded-3xl shadow-lg">
             <h2
@@ -33,12 +35,28 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
                         ? 'Great job!'
                         : `The correct answer is: ${correctAnswer}`}
             </p>
-            <button className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold mt-4" onClick={onNext}>
-                Next
-            </button>
+
+            <div className="flex gap-4 mt-4">
+                {!auth.user || auth.user.user_type !== 'Teacher' ? (
+                    <button
+                        className="bg-gray-500 text-white text-lg px-6 py-2 rounded-2xl font-semibold"
+                        onClick={onPrev}
+                    >
+                        Prev
+                    </button>
+                ) : null}
+
+                <button
+                    className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold"
+                    onClick={onNext}
+                >
+                    Next
+                </button>
+            </div>
         </div>
     );
 }
+
 
 function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
     const { width, height } = useWindowSize();
