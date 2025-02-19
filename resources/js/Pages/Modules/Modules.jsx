@@ -32,6 +32,7 @@ export default function Modules({}) {
             module_id: 1,
             module_name: 'Module 1 (Week 1)',
             module_desc: 'Description of Module 1 Lorem Description of Module 1 Lorem ',
+            module_file_desc: 'Lesson 1: Lorem Description of Module 1 Lorem ',
             file: [
                 {
                     file_name: 'Sample File 1',
@@ -47,6 +48,7 @@ export default function Modules({}) {
             module_id: 2,
             module_name: 'Module 2  (Week 2 - 3)',
             module_desc: 'Description of Module 2',
+            module_file_desc: 'Lesson 1: Lorem Description of Module 1 Lorem ',
             file: [
                 {
                     file_name: 'Sample File 1',
@@ -208,6 +210,8 @@ export default function Modules({}) {
                                                 </div>
                                             )}
                                             <div className="my-5 py-3 bg-white px-5 rounded-lg">
+                                                <h3 className="font-semibold my-4">{module.module_file_desc}</h3>
+
                                                 {module.file.map((file, index) => (
                                                     <div
                                                         key={index}
@@ -273,6 +277,14 @@ export default function Modules({}) {
                             onChange={handleChange}
                             className="border w-full p-2 mb-2"
                         />
+                        <InputLabel htmlFor="modile_file_desc" value="File Description" />
+                        <TextInput
+                            type="text"
+                            name="modile_file_desc"
+                            value={data.modile_file_desc}
+                            onChange={handleChange}
+                            className="border w-full p-2 mb-2"
+                        />
 
                         <InputLabel htmlFor="module_file" value="Module File" />
                         <div
@@ -332,7 +344,22 @@ export default function Modules({}) {
                             onChange={handleChange}
                             className="border w-full p-2 mb-2"
                         />
-
+                        <InputLabel htmlFor="module_desc" value="Description" />
+                        <TextInput
+                            type="text"
+                            name="module_desc"
+                            value={editModuleData ? editModuleData.module_desc : ''}
+                            onChange={handleChange}
+                            className="border w-full p-2 mb-2"
+                        />
+                        <InputLabel htmlFor="modile_file_desc" value="File Description" />
+                        <TextInput
+                            type="text"
+                            name="modile_file_desc"
+                            value={editModuleData ? editModuleData.modile_file_desc : ''}
+                            onChange={handleChange}
+                            className="border w-full p-2 mb-2"
+                        />
                         <InputLabel htmlFor="module_file" value="Module File" />
                         <div
                             {...getEditRootProps()}

@@ -3,6 +3,7 @@ import { Head, useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import Categories from '@/Components/Categories.jsx';
 import { BiDotsHorizontal } from 'react-icons/bi';
+import { FaTrashAlt } from 'react-icons/fa';
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from '@/components/ui/menubar';
 import Swal from 'sweetalert2';
 import TextInput from '@/Components/TextInput';
@@ -123,12 +124,12 @@ export default function Questions({ questions = [] }) {
                                                     className="flex items-center bg-white rounded-xl shadow-lg p-4 relative"
                                                 >
                                                     <div className="absolute top-4 right-4">
-                                                        <span
+                                                        <div
                                                             onClick={() => handleDelete(q.id)}
                                                             className="cursor-pointer bg-red-400 text-white font-medium text-xs p-1 px-4 rounded-lg"
                                                         >
-                                                            Delete
-                                                        </span>
+                                                            <FaTrashAlt />
+                                                        </div>
                                                     </div>
 
                                                     <div className="flex-1">

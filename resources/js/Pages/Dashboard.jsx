@@ -14,6 +14,11 @@ import {
 } from '@/Components/ui/dialog';
 import PrimaryButton from '@/Components/PrimaryButton';
 import Checkbox from '@/Components/Checkbox';
+import { SvgAsset } from '@/Components/SvgAsset';
+import Avatar from '@/Components/Avatar';
+
+import { StudentDashboard } from '@/Components/Dashboard/StudentDashboard';
+import { TeacherDashboard } from '@/Components/Dashboard/TeacherDashboard';
 
 const data = [
     {
@@ -162,6 +167,85 @@ const data = [
     },
 ];
 
+const students_data = [
+    {
+        name: 'Cardo Aguilar',
+        image: '',
+        scores: [
+            {
+                for: 'Pre-Assessment',
+                type: 'Addition',
+                category: 'Add Tens',
+                score: 10,
+                max_score: 25,
+                date: '2023-10-01 10:00:00',
+            },
+            {
+                for: 'Post-Assessment',
+                type: 'Subtraction',
+                category: 'Add two number',
+                score: 22,
+                max_score: 25,
+                date: '2023-10-02 11:00:00',
+            },
+            {
+                for: 'Quiz',
+                type: 'Multiplication',
+                category: 'Multiplication',
+                score: 10,
+                max_score: 10,
+                date: '2023-10-03 12:00:00',
+            },
+            {
+                for: 'Quiz',
+                type: 'Division',
+                category: 'Division',
+                score: 2,
+                max_score: 10,
+                date: '2023-10-04 13:00:00',
+            },
+        ],
+    },
+    {
+        name: 'Mya Calyfa',
+        image: '',
+        scores: [
+            {
+                for: 'Pre-Assessment',
+                type: 'Addition',
+                category: 'Addition',
+                score: 10,
+                max_score: 25,
+                date: '2023-10-01 10:30:00',
+            },
+            {
+                for: 'Post-Assessment',
+                type: 'Subtraction',
+                category: 'Subtraction',
+                score: 22,
+                max_score: 25,
+                date: '2023-10-02 11:30:00',
+            },
+            {
+                for: 'Quiz',
+                type: 'Multiplication',
+                category: 'Multiplication',
+                score: 10,
+                max_score: 10,
+                date: '2023-10-03 12:30:00',
+            },
+            {
+                for: 'Quiz',
+                type: 'Division',
+                category: 'Division',
+                score: 2,
+                max_score: 10,
+                date: '2023-10-04 13:30:00',
+            },
+        ],
+    },
+];
+
 export default function Dashboard() {
     const { auth } = usePage().props;
     const userType = auth?.user?.user_type;
@@ -169,183 +253,32 @@ export default function Dashboard() {
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Dashboard</h2>}>
             <Head title="Dashboard" />
-            {userType === 'Student' ? (
-                <div className="py-12">
-                    <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                        <div className="p-4 space-y-4">
-                            <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-4 ">
-                                {data.map((sample) => (
-                                    <div
-                                        key={sample.id}
-                                        className={`p-6 bg-gradient-to-tl ${sample.gradient} text-white rounded-3xl shadow-md relative min-h-72`}
-                                    >
-                                        <div className="w-8 h-8 top-7 right-5 absolute">
-                                            <Popover>
-                                                <PopoverTrigger>
-                                                    <div className="hover:text-green-200 hover:cursor-pointer hover:scale-110">
-                                                        <Info
-                                                            className={`w-6 h-6 bg-white ${sample.textColor} rounded-full`}
-                                                        />
-                                                    </div>
-                                                </PopoverTrigger>
-                                                <PopoverContent>{sample.description}</PopoverContent>
-                                            </Popover>
-                                        </div>
-                                        <div className="mt-1 text-3xl font-semibold max-w-[90%]">{sample.title}</div>
-
-                                        <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-2 mt-8">
-                                            {sample.items.map((item) => (
-                                                <>
-                                                    {item.id === 0 ? (
-                                                        <Dialog>
-                                                            <DialogTrigger asChild>
-                                                                <div
-                                                                    className={`p-4 bg-white ${sample.textColor} rounded-3xl shadow-md cursor-pointer`}
-                                                                >
-                                                                    <div className="flex items-center justify-between px-3">
-                                                                        <h2 className="text-lg font-semibold">
-                                                                            {item.title}
-                                                                        </h2>
-                                                                        <FaRandom className="w-5 h-5" />
-                                                                    </div>
-                                                                </div>
-                                                            </DialogTrigger>
-
-                                                            <DialogContent>
-                                                                <DialogTitle>{item.title}</DialogTitle>
-                                                                <DialogDescription>
-                                                                    {item.description}
-                                                                </DialogDescription>
-                                                                <div className="grid grid-cols-2 gap-2">
-                                                                    {sample?.items
-                                                                        .filter((item2) => item2.id !== 0)
-                                                                        .map((item2) => (
-                                                                            <div
-                                                                                key={item2.id}
-                                                                                className="flex items-center"
-                                                                            >
-                                                                                <div
-                                                                                    className={`p-4 bg-white rounded-2xl border-2 border-gray-400 w-full flex`}
-                                                                                >
-                                                                                    <Checkbox
-                                                                                        type="checkbox"
-                                                                                        className={`mr-2 bg-gray-300  h-6 w-6 ${sample.textColor}`}
-                                                                                        value={item2.title}
-                                                                                    />
-
-                                                                                    <div className="flex items-center justify-between px-3">
-                                                                                        <h2 className="font-semibold">
-                                                                                            {item2.title}
-                                                                                        </h2>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        ))}
-                                                                </div>
-                                                                <div className="mt-2">
-                                                                    <div className="flex justify-end gap-2">
-                                                                        <Link href={'/board'}>
-                                                                            <PrimaryButton
-                                                                                className={` ${sample.textColor}`}
-                                                                                onClick={() => {
-                                                                                    let selectedItems =
-                                                                                        document.querySelectorAll(
-                                                                                            'input[type="checkbox"]:checked',
-                                                                                        );
-                                                                                    let selectedItemsTitles = [];
-                                                                                    selectedItems.forEach((item) => {
-                                                                                        selectedItemsTitles.push(
-                                                                                            item.value,
-                                                                                        );
-                                                                                    });
-                                                                                    localStorage.setItem(
-                                                                                        'schemaTitle',
-                                                                                        sample.title,
-                                                                                    );
-                                                                                    localStorage.setItem(
-                                                                                        'categoryTitle',
-                                                                                        JSON.stringify(
-                                                                                            selectedItemsTitles,
-                                                                                        ),
-                                                                                    );
-                                                                                    localStorage.setItem(
-                                                                                        'gameTitle',
-                                                                                        item.title,
-                                                                                    );
-                                                                                }}
-                                                                            >
-                                                                                {' '}
-                                                                                Start
-                                                                            </PrimaryButton>
-                                                                        </Link>
-                                                                    </div>
-                                                                </div>
-                                                            </DialogContent>
-                                                        </Dialog>
-                                                    ) : (
-                                                        <Popover key={item.id}>
-                                                            <PopoverTrigger>
-                                                                <div
-                                                                    key={item.id}
-                                                                    className={`p-4 bg-white ${sample.textColor} rounded-3xl shadow-md`}
-                                                                >
-                                                                    <div className="flex items-center justify-between px-3">
-                                                                        <h2 className="font-semibold">{item.title}</h2>
-                                                                        <FaPlay className="w-5 h-5" />
-                                                                    </div>
-                                                                </div>
-                                                            </PopoverTrigger>
-                                                            <PopoverContent>
-                                                                <div className="mb-5">
-                                                                    <h1 className="font-semibold text-xl text-gray-700 ">
-                                                                        {item.title}
-                                                                    </h1>
-                                                                    <p className="text-gray-500">{item.description}</p>
-                                                                </div>
-                                                                <div className="text-center">
-                                                                    <p className={`text-sm text-gray-500`}>Example</p>
-                                                                    <h2
-                                                                        className={` font-semibold ${item.sample.length < 12 ? 'text-5xl' : item.sample.length < 30 ? 'text-2xl' : 'text-xl'} mb-5 ${sample.textColor}`}
-                                                                    >
-                                                                        {item.sample}
-                                                                    </h2>
-                                                                </div>
-                                                                <div className="flex justify-end">
-                                                                    <Link href={'/board'}>
-                                                                        <PrimaryButton
-                                                                            onClick={() => {
-                                                                                localStorage.setItem(
-                                                                                    'schemaTitle',
-                                                                                    sample.title,
-                                                                                );
-                                                                                localStorage.setItem(
-                                                                                    'categoryTitle',
-                                                                                    item.title,
-                                                                                );
-                                                                                localStorage.setItem(
-                                                                                    'gameTitle',
-                                                                                    item.title,
-                                                                                );
-                                                                            }}
-                                                                        >
-                                                                            Play
-                                                                        </PrimaryButton>
-                                                                    </Link>
-                                                                </div>
-                                                            </PopoverContent>
-                                                        </Popover>
-                                                    )}
-                                                </>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+            <div className="pt-12 sm:px-6 lg:px-11 max-w-[100rem] mx-auto">
+                <div className="grid lg:grid-cols-2 gap-4 bg-gradient-to-br from-[#6366F1] to-[#34D399] rounded-2xl min-h-96">
+                    <div className="w-full relative">
+                        <SvgAsset
+                            movement="sm"
+                            value="/images/assets/background/students_jam.svg"
+                            className="sm:h-[45rem] absolute sm:-top-40 top-0 left-0 z-0 "
+                            draggable={false}
+                        />
+                    </div>
+                    <div className="flex flex-col items-center justify-center relative z-1">
+                        <img src="/images/logo.png" alt="" className="h-32" />
+                        {userType !== 'Parent' && (
+                            <Link href={userType === 'Teacher' ? '/math-journey' : 'math-journey-join'}>
+                                <div className="border-2 border-gray-50 rounded-2xl px-4 py-1 font-semibold text-white transition duration-300 ease-in-out hover:scale-105 hover:bg-primary">
+                                    Math Journey{' '}
+                                </div>
+                            </Link>
+                        )}
                     </div>
                 </div>
+            </div>
+            {userType === 'Student' ? (
+                <StudentDashboard data={data} />
             ) : userType === 'Teacher' ? (
-                'Teacher Dashboard'
+                <TeacherDashboard data={students_data} />
             ) : (
                 'Parent Dashboard'
             )}
