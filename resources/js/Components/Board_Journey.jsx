@@ -18,8 +18,6 @@ import { SvgAsset } from './SvgAsset';
 import Categories from './Categories';
 
 function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
-    const { auth } = usePage().props;
-
     return (
         <div className="w-full h-full flex flex-col items-center justify-center bg-white p-6 rounded-3xl shadow-lg">
             <h2
@@ -129,6 +127,7 @@ export function Board_Journey({ data }) {
         correctQuestions: [],
     });
     const [timeSpent, setTimeSpent] = useState([]);
+    const { auth } = usePage().props;
 
     useEffect(() => {
         setStartTime(Date.now());
