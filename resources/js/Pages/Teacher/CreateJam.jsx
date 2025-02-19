@@ -397,9 +397,15 @@ const CreateJam = () => {
                                                         Cancel
                                                     </PrimaryButton>
 
-                                                    <Link href="math-journey/watch">
-                                                        <PrimaryButton className="w-max px-5">Start</PrimaryButton>
-                                                    </Link>
+                                                    {participants > 0 ? (
+                                                        <Link href="math-journey/watch">
+                                                            <PrimaryButton className="w-max px-5">Start</PrimaryButton>
+                                                        </Link>
+                                                    ) : (
+                                                        <PrimaryButton className="w-max px-5 opacity-50 cursor-not-allowed" disabled>
+                                                            Start
+                                                        </PrimaryButton>
+                                                    )}
                                                 </>
                                             ) : (
                                                 <>
