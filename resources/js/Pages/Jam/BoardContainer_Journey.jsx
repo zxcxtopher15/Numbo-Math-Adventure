@@ -33,7 +33,7 @@ export default function BoardContainer_Journey({ auth }) {
                 .then((data) => {
                     const formattedData = data.map((question) => ({
                         title: `${question.category} Challenge`,
-                        time: 40,
+                        time: existingJam.time_limit,
                         question_data: {
                             type: question.question_type || 'addition',
                             image: null,
