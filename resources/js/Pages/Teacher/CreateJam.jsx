@@ -400,7 +400,10 @@ const CreateJam = () => {
                                                     </PrimaryButton>
 
                                                     {hasJoinedParticipants ? (
-                                                        <Link href={`/math-journey/watch?category=${encodeURIComponent(existingJam.category)}`}>
+                                                        <Link
+                                                            href="/math-journey/watch"
+                                                            onClick={() => localStorage.setItem("category", existingJam.category)}
+                                                        >
                                                             <PrimaryButton className="w-max px-5">Start</PrimaryButton>
                                                         </Link>
                                                     ) : (

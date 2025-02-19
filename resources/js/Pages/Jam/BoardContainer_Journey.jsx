@@ -5,13 +5,8 @@ import { PageCountDown } from '@/Components/PageCountDown';
 
 export default function BoardContainer_Journey({ auth }) {
     const [showCountdown, setShowCountdown] = useState(true);
+    const [categoryTitle, setCategoryTitle] = useState('');
     const [questions, setQuestions] = useState([]);
-    const [categoryTitle, setCategory] = useState("");
-
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        setCategory(params.get("category"));
-    }, []);
 
     const shuffleArray = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
@@ -22,6 +17,8 @@ export default function BoardContainer_Journey({ auth }) {
     };
 
     useEffect(() => {
+        setCategoryTitle(localStorage.getItem('category') || 'Default Title');
+
         if (categoryTitle) {
             const categoryParam = Array.isArray(categoryTitle) ? JSON.stringify(categoryTitle) : categoryTitle;
 
@@ -52,6 +49,10 @@ export default function BoardContainer_Journey({ auth }) {
                 });
         }
     }, [categoryTitle]);
+
+    useEffect(() => {
+        setCategoryTitle(localStorage.getItem('categoryTitle') || 'Default Title');
+    }, []);
 
     const handleCountdownComplete = () => {
         setShowCountdown(false);
