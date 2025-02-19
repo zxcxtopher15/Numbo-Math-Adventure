@@ -323,7 +323,12 @@ const CreateJam = () => {
                                                             type="number"
                                                             className="w-full"
                                                             value={numQuestions}
-                                                            onChange={(e) => setNumQuestions(e.target.value)}
+                                                            min={1}
+                                                            max={60}
+                                                            onChange={(e) => {
+                                                                const value = Math.min(60, Number(e.target.value));
+                                                                setNumQuestions(value);
+                                                            }}
                                                         />
                                                     </div>
 
@@ -334,7 +339,12 @@ const CreateJam = () => {
                                                             type="number"
                                                             className="w-full"
                                                             value={timeLimit}
-                                                            onChange={(e) => setTimeLimit(e.target.value)}
+                                                            min={1}
+                                                            max={600}
+                                                            onChange={(e) => {
+                                                                const value = Math.min(600, Number(e.target.value));
+                                                                setTimeLimit(value);
+                                                            }}
                                                         />
                                                     </div>
 
