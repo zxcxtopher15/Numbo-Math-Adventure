@@ -56,7 +56,7 @@ Route::group(['middleware' => 'teacher'], function () {
 
     Route::get('/questions_list_teacher', [QuestionController::class, 'getQuestions']);
     Route::post('/math-journey/update-status', [MathJamController::class, 'update_status']);
-    Route::post('/save-ordered-questions', [MathJamController::class, 'saveOrderedQuestions']);
+    Route::post('/save_ordered_questions', [MathJamController::class, 'saveOrderedQuestions']);
 });
 
 Route::group(['middleware' => 'student'], function () {
