@@ -22,7 +22,7 @@ export default function BoardContainer_Journey({ auth }) {
         setExistingJam(localStorage.getItem('existingJam'));
 
         if (categoryTitle && existingJam) {
-            fetch(`/questions_list_teacher?categoryTitle=${categoryTitle}&num_questions=${existingJam.num_questions}`)
+            fetch(`/questions_list_teacher?categoryTitle=${categoryTitle}`)
                 .then((response) => response.json())
                 .then((data) => {
                     const formattedData = data.map((question) => ({
