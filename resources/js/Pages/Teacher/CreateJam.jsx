@@ -165,6 +165,7 @@ const CreateJam = () => {
                     title: 'Math Journey created successfully!',
                 });
                 setExistingJam(data.jam);
+                window.location.reload();
             } else {
                 Swal.fire({
                     icon: 'error',
