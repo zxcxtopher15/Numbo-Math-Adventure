@@ -10,6 +10,7 @@ export default function BoardContainer_Journey({ auth }) {
     const [existingJam, setExistingJam] = useState(null);
 
     console.log(questions);
+    console.log(existingJam);
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
