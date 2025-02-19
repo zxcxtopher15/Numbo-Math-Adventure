@@ -24,6 +24,8 @@ const CreateJam = () => {
     const [loading, setLoading] = useState(true);
     const [participants, setParticipants] = useState([]);
 
+    console.log(participants);
+
     useEffect(() => {
         const fetchExistingJam = async () => {
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
