@@ -128,7 +128,7 @@ export default function Questions({ questions = [] }) {
                                                 >
                                                     <div className="absolute top-4 right-4">
                                                         <span
-                                                            onClick={() => handleDeleteModule(module.module_id)}
+                                                            onClick={() => handleDelete(q.id)}
                                                             className="cursor-pointer bg-red-400 text-white font-medium text-xs p-1 px-4 rounded-lg"
                                                         >
                                                             Delete
