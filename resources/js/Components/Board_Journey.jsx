@@ -45,6 +45,14 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
     const { width, height } = useWindowSize();
     const [jamCategory, setJamCategory] = useState('');
     const [gameTitle, setGameTitle] = useState('');
+    const [existingJam, setExistingJam] = useState(null);
+
+    useEffect(() => {
+        const storedJam = localStorage.getItem('existingJam');
+        if (storedJam) {
+            setExistingJam(JSON.parse(storedJam));
+        }
+    }, []);
 
     useEffect(() => {
         if (gameTitle) {
@@ -64,6 +72,40 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
 
     const totalTimeInMinutes = Math.floor(totalTimeSpent / 60000);
     const totalTimeInSeconds = Math.floor((totalTimeSpent % 60000) / 1000);
+
+    const handleMainMenuClick = async (e) => {
+        if (!existingJam) return;
+
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        if (!baseUrl) {
+            console.error('Base URL not found.');
+            return;
+        }
+
+        const apiUrl = `${baseUrl}/math-journey/update-status`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    math_jam_id: existingJam.math_jam_id,
+                    status: 'ended',
+                }),
+            });
+
+            if (response.ok) {
+                console.log('Math Jam status updated to ended');
+                localStorage.removeItem('existingJam');
+            } else {
+                console.error('Failed to update Math Jam status');
+            }
+        } catch (error) {
+            console.error('Error updating Math Jam status:', error);
+        }
+    };
 
     return (
         <>
@@ -101,11 +143,8 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
                         </div>
                     </div>
                     <div className="flex py-4 w-full justify-between text-xl font-semibold text-white">
-                        <Link href="/dashboard" className="bg-warning rounded-2xl p-2">
+                        <Link href="/dashboard" className="bg-warning rounded-2xl p-2" onClick={handleMainMenuClick}>
                             Main Menu
-                        </Link>
-                        <Link href="/board" className="bg-primary  rounded-2xl p-2 px-4">
-                            Play Again
                         </Link>
                     </div>
                 </div>
@@ -129,16 +168,6 @@ export function Board_Journey({ data }) {
     });
     const [timeSpent, setTimeSpent] = useState([]);
     const { auth } = usePage().props;
-    const [existingJam, setExistingJam] = useState(null);
-
-    console.log(existingJam);
-
-    useEffect(() => {
-        const storedJam = localStorage.getItem('existingJam');
-        if (storedJam) {
-            setExistingJam(JSON.parse(storedJam));
-        }
-    }, []);
 
     useEffect(() => {
         setStartTime(Date.now());

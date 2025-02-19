@@ -313,4 +313,17 @@ class MathJamController extends Controller
             'Connection'    => 'keep-alive',
         ]);
     }
+
+    public function update_status(Request $request)
+    {
+        $mathJam = MathJam::where('math_jam_id', $request->math_jam_id)->first();
+
+        $mathJam->update([
+            'status' => $request->status,
+        ]);
+
+        return response()->json([
+            'message' => 'Update successful',
+        ]);
+    }
 }
