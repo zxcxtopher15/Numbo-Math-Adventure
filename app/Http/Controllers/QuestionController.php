@@ -35,14 +35,15 @@ class QuestionController extends Controller
     public function getQuestions(Request $request)
     {
         $categoryTitle = $request->query('categoryTitle');
+        $num_questions = $request->query('num_questions');
 
         $categories = is_array(json_decode($categoryTitle)) ? json_decode($categoryTitle) : [$categoryTitle];
 
         $questions = [];
 
-        if ($request->num_questions) {
-            $questionsPerCategory = floor($request->num_questions / count($categories));
-            $remainingQuestions = $request->num_questions;
+        if ($num_questions) {
+            $questionsPerCategory = floor($num_questions / count($categories));
+            $remainingQuestions = $num_questions;
         } else {
             $questionsPerCategory = floor(20 / count($categories));
             $remainingQuestions = 20;
