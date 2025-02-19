@@ -169,6 +169,8 @@ export function Board_Journey({ data }) {
     const [timeSpent, setTimeSpent] = useState([]);
     const { auth } = usePage().props;
 
+    console.log(data);
+
     useEffect(() => {
         setStartTime(Date.now());
     }, [currentQuestion]);
