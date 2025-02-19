@@ -28,7 +28,7 @@ export default function BoardContainer_Journey({ auth }) {
         setCategoryTitle(localStorage.getItem('category') || 'Default Title');
 
         if (categoryTitle) {
-            fetch(`/questions_list_teacher?categoryTitle=${categoryTitle}&num-questions=${existingJam.num_questions}`)
+            fetch(`/questions_list_teacher?categoryTitle=${categoryTitle}&num_questions=${existingJam.num_questions}`)
                 .then((response) => response.json())
                 .then((data) => {
                     const formattedData = data.map((question) => ({
