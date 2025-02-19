@@ -8,6 +8,8 @@ export default function BoardContainer_Journey({ auth }) {
     const [questions, setQuestions] = useState([]);
     const [existingJam, setExistingJam] = useState(null);
 
+    console.log("Questions:", questions);
+
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
@@ -29,9 +31,7 @@ export default function BoardContainer_Journey({ auth }) {
                 );
                 const data = await response.json();
 
-                const formattedData = data.map((question, index) => ({
-                    math_jam_id: existingJam.math_jam_id,
-                    order: index + 1,
+                const formattedData = data.map((question) => ({
                     title: `${question.category} Challenge`,
                     time: existingJam.time_limit,
                     question_data: {
@@ -41,17 +41,14 @@ export default function BoardContainer_Journey({ auth }) {
                         title: 'Solve This',
                         question: question.question,
                     },
-                    answers: question.choices.map((choice, i) => ({
-                        id: i + 1,
+                    answers: question.choices.map((choice, index) => ({
+                        id: index + 1,
                         answer: choice,
                         is_correct: choice === question.correct_answer,
                     })),
                 }));
 
-                const orderedQuestions = shuffleArray(formattedData);
-                setQuestions(orderedQuestions);
-
-                saveOrderedQuestions(orderedQuestions);
+                setQuestions(shuffleArray(formattedData));
             } catch (error) {
                 console.error('Error fetching questions:', error);
             }
@@ -59,23 +56,6 @@ export default function BoardContainer_Journey({ auth }) {
 
         fetchQuestions();
     }, [existingJam, categoryTitle]);
-
-    const saveOrderedQuestions = async (questions) => {
-        try {
-            const response = await fetch('/save_ordered_questions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ questions }),
-            });
-
-            const result = await response.json();
-            console.log('Questions saved:', result);
-        } catch (error) {
-            console.error('Error saving questions order:', error);
-        }
-    };
 
     const shuffleArray = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
