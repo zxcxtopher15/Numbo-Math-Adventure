@@ -16,57 +16,56 @@ export default function BoardContainer_Journey({ auth }) {
         }
     }, []);
 
-    useEffect(() => {
-        const storedCategory = localStorage.getItem('category');
-        if (storedCategory) {
-            setCategoryTitle(storedCategory);
-        }
-    }, []);
-
     const shuffleArray = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
+            [array[i], array[j]] = [array[j], array[i]]; 
         }
         return array;
     };
 
     useEffect(() => {
-        fetch(`/questions_list_teacher?categoryTitle=${categoryTitle}`)
-            .then((response) => response.json())
-            .then((data) => {
-                const formattedData = data.map((question) => ({
-                    title: `${question.category} Challenge`,
-                    time: existingJam.time_limit,
-                    question_data: {
-                        id: question.id,
-                        type: question.question_type || 'addition',
-                        image: null,
-                        title: 'Solve This',
-                        question: question.question,
-                    },
-                    answers: question.choices.map((choice, index) => ({
-                        id: index + 1,
-                        answer: choice,
-                        is_correct: choice === question.correct_answer,
-                    })),
-                }));
+        setCategoryTitle(localStorage.getItem('category') || 'Default Title');
 
-                const shuffledData = shuffleArray(formattedData);
-                setQuestions(shuffledData);
-            })
-            .catch((error) => {
-                console.error('Error fetching questions:', error);
-            });
-    }, []);
+        if (categoryTitle) {
+            fetch(`/questions_list_teacher?categoryTitle=${categoryTitle}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    const formattedData = data.map((question) => ({
+                        title: `${question.category} Challenge`,
+                        time: 40,
+                        question_data: {
+                            id: question.id,
+                            type: question.question_type || 'addition',
+                            image: null,
+                            title: 'Solve This',
+                            question: question.question,
+                        },
+                        answers: question.choices.map((choice, index) => ({
+                            id: index + 1,
+                            answer: choice,
+                            is_correct: choice === question.correct_answer,
+                        })),
+                    }));
+
+                    const shuffledData = shuffleArray(formattedData);
+                    setQuestions(shuffledData);
+                })
+                .catch((error) => {
+                    console.error('Error fetching questions:', error);
+                });
+        }
+    }, [categoryTitle]);
 
     const handleCountdownComplete = () => {
         setShowCountdown(false);
     };
 
     return (
-        <div className="overflow-hidden h-dvh lg:p-3 p-2 bg-gradient-to-br from-teal-400 to-yellow-200 box-border">
-            {showCountdown ? <PageCountDown onComplete={handleCountdownComplete} /> : <Board_Journey data={questions} />}
-        </div>
+        <>
+            <div className="overflow-hidden h-dvh lg:p-3 p-2 bg-gradient-to-br from-teal-400 to-yellow-200 box-border">
+                {showCountdown ? <PageCountDown onComplete={handleCountdownComplete} /> : <Board_Journey data={questions} />}
+            </div>
+        </>
     );
 }
