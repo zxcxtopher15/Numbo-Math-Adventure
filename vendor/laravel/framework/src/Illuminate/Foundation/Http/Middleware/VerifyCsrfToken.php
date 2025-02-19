@@ -47,7 +47,7 @@ class VerifyCsrfToken
         '/math-journey/reconnect',
         '/questions/store',
         '/math-journey/update-status',
-        '/save-ordered-questions',
+        '/save_ordered_questions',
     ];
 
     /**
