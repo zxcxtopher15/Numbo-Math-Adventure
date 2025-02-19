@@ -28,12 +28,12 @@ export default function BoardContainer_Journey({ auth }) {
         setCategoryTitle(localStorage.getItem('category') || 'Default Title');
 
         if (categoryTitle) {
-            fetch(`/questions_list_teacher?categoryTitle=${categoryTitle}`)
+            fetch(`/questions_list_teacher?categoryTitle=${categoryTitle}&num_questions=${existingJam.num_questions}`)
                 .then((response) => response.json())
                 .then((data) => {
                     const formattedData = data.map((question) => ({
                         title: `${question.category} Challenge`,
-                        time: 40,
+                        time: existingJam.time_limit,
                         question_data: {
                             id: question.id,
                             type: question.question_type || 'addition',
