@@ -115,6 +115,14 @@ const CreateJam = () => {
         };
     }, [auth.user.id]);
 
+    function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            const r = (Math.random() * 16) | 0,
+                v = c === 'x' ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+        });
+    }
+
     const handleCreateJam = async () => {
         if (existingJam) {
             alert('You already have an ongoing Math Journey. Please finish it before creating a new one.');
@@ -139,6 +147,7 @@ const CreateJam = () => {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 },
                 body: JSON.stringify({
+                    math_jam_id: generateUUID(),
                     teacher_id: auth.user.id,
                     num_questions: parseInt(numQuestions, 10),
                     time_limit: parseInt(timeLimit, 10),

@@ -37,7 +37,7 @@ class MathJamController extends Controller
         } while (MathJam::where('math_jam_code', $mathJamCode)->exists());
 
         $mathJam = MathJam::create([
-            'math_jam_id' => Str::uuid(),
+            'math_jam_id' => $request->math_jam_id,
             'math_jam_code' => $mathJamCode,
             'teacher_id' => $request->teacher_id,
             'num_questions' => $request->num_questions,
@@ -338,7 +338,6 @@ class MathJamController extends Controller
                 [
                     'math_jam_id' => $question['math_jam_id'],
                     'order_number' => $question['order'],
-                    'time' => $question['time'],
                 ]
             );
         }
