@@ -90,7 +90,7 @@ const CreateJam = () => {
         }
     }, [existingJam]);
 
-    console.log(existingJam);
+    console.log(localStorage.getItem('existingJam'));
 
     useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
