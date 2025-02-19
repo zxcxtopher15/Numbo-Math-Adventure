@@ -58,10 +58,6 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
     }, [jamCategory]);
 
     useEffect(() => {
-        setSchemeTitle(localStorage.getItem('gameTitle') || 'Default Title');
-    }, []);
-
-    useEffect(() => {
         setGameTitle(localStorage.getItem('category') || 'Default Title');
     }, []);
 
