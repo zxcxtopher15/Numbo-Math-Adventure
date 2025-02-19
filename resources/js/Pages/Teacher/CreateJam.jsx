@@ -24,8 +24,6 @@ const CreateJam = () => {
     const [loading, setLoading] = useState(true);
     const [participants, setParticipants] = useState([]);
 
-    console.log(participants);
-
     useEffect(() => {
         const fetchExistingJam = async () => {
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
@@ -399,7 +397,7 @@ const CreateJam = () => {
                                                         Cancel
                                                     </PrimaryButton>
 
-                                                    {participants > 0 ? (
+                                                    {participants.length > 0 ? (
                                                         <Link href="math-journey/watch">
                                                             <PrimaryButton className="w-max px-5">Start</PrimaryButton>
                                                         </Link>
