@@ -14,22 +14,20 @@ export default function BoardContainer_Journey({ auth }) {
         if (storedJam) {
             setExistingJam(JSON.parse(storedJam));
         }
-        const category = localStorage.getItem('category') || 'Default Title';
-        setCategoryTitle(category);
     }, []);
-
-    console.log(existingJam);
 
     const shuffleArray = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
+            [array[i], array[j]] = [array[j], array[i]]; 
         }
         return array;
     };
 
     useEffect(() => {
-        if (categoryTitle && existingJam) {
+        setCategoryTitle(localStorage.getItem('category') || 'Default Title');
+
+        if (categoryTitle) {
             fetch(`/questions_list_teacher?categoryTitle=${categoryTitle}&num_questions=${existingJam.num_questions}`)
                 .then((response) => response.json())
                 .then((data) => {
@@ -57,7 +55,7 @@ export default function BoardContainer_Journey({ auth }) {
                     console.error('Error fetching questions:', error);
                 });
         }
-    }, [categoryTitle, existingJam]);
+    }, [categoryTitle]);
 
     const handleCountdownComplete = () => {
         setShowCountdown(false);

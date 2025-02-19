@@ -169,8 +169,11 @@ const CreateJam = () => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Math Journey created successfully!',
+                }).then(() => {
+                    setExistingJam(data.jam);
+                    localStorage.setItem('existingJam', JSON.stringify(data.jam));
+                    window.location.reload();
                 });
-                setExistingJam(data.jam);
             } else {
                 Swal.fire({
                     icon: 'error',
