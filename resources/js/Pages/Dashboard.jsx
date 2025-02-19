@@ -16,7 +16,6 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import ShapeGenerator from '@/Components/ShapeGenerator';
 import Checkbox from '@/Components/Checkbox';
 
-// This is sample data with dynamic colors.
 const data = [
     {
         id: 1,
@@ -31,7 +30,6 @@ const data = [
                 description: 'Create your own custom category',
                 sample: 'Create your own custom category',
             },
-
             {
                 id: 1,
                 title: 'Add Tens',
@@ -77,7 +75,6 @@ const data = [
                 description: 'Create your own custom category',
                 sample: 'Create your own custom category',
             },
-
             {
                 id: 4,
                 title: 'Subtract Tens',
@@ -111,7 +108,6 @@ const data = [
                 description: 'Create your own custom category',
                 sample: 'Create your own custom category',
             },
-
             {
                 id: 7,
                 title: 'Item 7',
@@ -145,7 +141,6 @@ const data = [
                 description: 'Create your own custom category',
                 sample: 'Create your own custom category',
             },
-
             {
                 id: 10,
                 title: 'Item 10',

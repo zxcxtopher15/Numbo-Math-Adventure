@@ -11,12 +11,14 @@ import StudentList from '@/Components/StudentList';
 import Swal from 'sweetalert2';
 import LoadingScreen from '@/Components/LoadingScreen';
 import { Head } from '@inertiajs/react';
+import Categories from '@/Components/Categories';
 
 const CreateJam = () => {
     const { auth } = usePage().props;
     const [numQuestions, setNumQuestions] = useState(5);
     const [timeLimit, setTimeLimit] = useState(30);
-    const [category, setCategory] = useState('math');
+    const [category, setCategory] = useState('');
+    const [journeyFor, setJourneyFor] = useState('');
     const [showScores, setShowScores] = useState(true);
     const [existingJam, setExistingJam] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -128,6 +130,7 @@ const CreateJam = () => {
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
+                    'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 },
@@ -135,6 +138,7 @@ const CreateJam = () => {
                     teacher_id: auth.user.id,
                     num_questions: parseInt(numQuestions, 10),
                     time_limit: parseInt(timeLimit, 10),
+                    math_journey_for: journeyFor,
                     category,
                     show_scores: showScores ? 1 : 0,
                 }),
@@ -289,12 +293,18 @@ const CreateJam = () => {
                                                             </span>
                                                         </p>
                                                         <p className="font-semibold">
+                                                            Math Journey For:{' '}
+                                                            <span className="font-normal">{existingJam.math_journey_for}</span>
+                                                        </p>
+                                                        <p className="font-semibold">
                                                             Category:{' '}
                                                             <span className="font-normal">{existingJam.category}</span>
                                                         </p>
                                                         <p className="font-semibold">
                                                             Status:{' '}
-                                                            <span className="font-normal">{existingJam.status}</span>
+                                                            <span className="font-normal">
+                                                                {existingJam.status.charAt(0).toUpperCase() + existingJam.status.slice(1)}
+                                                            </span>
                                                         </p>
                                                     </div>
                                                     <div className="bg-white flex-1 m-1 mb-5 rounded-3xl overflow-y-auto">
@@ -324,6 +334,22 @@ const CreateJam = () => {
                                                         />
                                                     </div>
 
+                                                    <div className="mb-7">
+                                                        <InputLabel value="Math Journey For:" />
+                                                        <SelectInput
+                                                            className="custom-class"
+                                                            isFocused={true}
+                                                            placeholder="Select an option"
+                                                            value={journeyFor}
+                                                            onChange={(e) => setJourneyFor(e.target.value)}
+                                                        >
+                                                            <option value="Assignment">Assignment</option>
+                                                            <option value="Pre-Assessment">Pre-Assessment</option>
+                                                            <option value="Post-Assessment">Post-Assessment</option>
+                                                            <option value="Quiz">Quiz</option>
+                                                        </SelectInput>
+                                                    </div>
+
                                                     {/* Category Selection */}
                                                     <div className="mb-7">
                                                         <InputLabel value="Question Category" />
@@ -334,9 +360,15 @@ const CreateJam = () => {
                                                             value={category}
                                                             onChange={(e) => setCategory(e.target.value)}
                                                         >
-                                                            <option value="math">Math</option>
-                                                            <option value="science">Science</option>
-                                                            <option value="history">History</option>
+                                                            {Object.entries(Categories).map(([type, options]) => (
+                                                                <optgroup key={type} label={type}>
+                                                                    {options.map((cat) => (
+                                                                        <option key={cat} value={cat}>
+                                                                            {cat}
+                                                                        </option>
+                                                                    ))}
+                                                                </optgroup>
+                                                            ))}
                                                         </SelectInput>
                                                     </div>
 
@@ -365,7 +397,9 @@ const CreateJam = () => {
                                                         Cancel
                                                     </PrimaryButton>
 
-                                                    <PrimaryButton className="w-max px-5">Start</PrimaryButton>
+                                                    <Link href="math-journey/watch">
+                                                        <PrimaryButton className="w-max px-5">Start</PrimaryButton>
+                                                    </Link>
                                                 </>
                                             ) : (
                                                 <>

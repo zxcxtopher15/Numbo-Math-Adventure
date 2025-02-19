@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import Categories from '@/Components/Categories.jsx';
 
 export default function Questions({ questions = [] }) {
     const { auth } = usePage().props;
@@ -12,12 +13,6 @@ export default function Questions({ questions = [] }) {
         choices: ['', '', '', ''],
         correct_answer: '',
     });
-
-    const categories = {
-        Addition: ['Add Tens', 'Add Two Numbers', 'Addition Sentences', 'Complete the Equations (Addition)', 'Add Three Numbers'],
-        Subtraction: ['Subtract Tens', 'Subtract Two Numbers', 'Subtraction Sentences', 'Complete the Equations (Subtraction)', 'Subtract Doubles'],
-        Multiplication: ['Times Tables Race', 'Multiply and Match', 'Magic Multipliers', 'Multiplication Mystery'],
-    };
 
     const toggleModal = () => {
         setIsModalOpen(!isModalOpen);
@@ -90,7 +85,7 @@ export default function Questions({ questions = [] }) {
                             <label className="block mb-2">Category:</label>
                             <select name="category" value={data.category} onChange={handleChange} className="border w-full p-2 mb-2">
                                 <option value="">Select Category</option>
-                                {Object.entries(categories).map(([type, options]) => (
+                                {Object.entries(Categories).map(([type, options]) => (
                                     <optgroup key={type} label={type}>
                                         {options.map((cat) => (
                                             <option key={cat} value={cat}>{cat}</option>

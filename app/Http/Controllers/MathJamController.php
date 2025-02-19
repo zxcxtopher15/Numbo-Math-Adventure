@@ -16,6 +16,7 @@ class MathJamController extends Controller
         $request->validate([
             'num_questions' => 'required|integer|min:1',
             'time_limit' => 'required|integer|min:10',
+            'math_journey_for' => 'required|string',
             'category' => 'required|string',
             'show_scores' => 'required|boolean',
         ]);
@@ -40,6 +41,7 @@ class MathJamController extends Controller
             'teacher_id' => $request->teacher_id,
             'num_questions' => $request->num_questions,
             'time_limit' => $request->time_limit,
+            'math_journey_for' => $request->math_journey_for,
             'category' => $request->category,
             'show_scores' => $request->show_scores,
             'status' => 'waiting',

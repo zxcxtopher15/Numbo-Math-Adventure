@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('math_jam_id')->constrained()->onDelete('cascade');
             $table->foreignId('student_id')->constrained('users')->onDelete('cascade');
+            $table->string('math_journey_for');
             $table->string('status')->default('joined');
             $table->integer('score')->default(0);
             $table->timestamp('joined_at')->useCurrent();
