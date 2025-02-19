@@ -40,8 +40,6 @@ class QuestionController extends Controller
 
         $questions = [];
 
-        echo '<pre>'; print_r($request); exit;
-
         if ($request->num_questions) {
             $questionsPerCategory = floor($request->num_questions / count($categories));
             $remainingQuestions = $request->num_questions;
