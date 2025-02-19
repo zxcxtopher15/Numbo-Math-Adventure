@@ -49,6 +49,11 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::get('/math-journey/watch', function () {
         return Inertia::render('Jam/BoardContainer_Journey', request()->all());
     })->name('journey.start');
+
+    Route::get('/modules', function () {
+        return Inertia::render('Modules/Modules', request()->all());
+    })->name('modules.Modules');
+
 });
 
 Route::group(['middleware' => 'student'], function () {
