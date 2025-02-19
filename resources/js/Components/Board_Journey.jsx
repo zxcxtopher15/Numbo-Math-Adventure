@@ -1,5 +1,5 @@
 import { FaPause } from 'react-icons/fa';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, usePage } from 'react';
 import { motion } from 'framer-motion';
 import { CountdownCircleTimer } from 'react-countdown-circle-timer';
 import {
