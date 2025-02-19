@@ -46,7 +46,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
     const [gameTitle, setGameTitle] = useState('');
 
     useEffect(() => {
-        if (jamCategory) {
+        if (gameTitle) {
             for (const [category, games] of Object.entries(Categories)) {
                 if (games.includes(gameTitle)) {
                     setJamCategory(category);
@@ -55,7 +55,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
             }
             setJamCategory("");
         }
-    }, [jamCategory]);
+    }, [gameTitle]);
 
     useEffect(() => {
         setGameTitle(localStorage.getItem('category') || 'Default Title');
