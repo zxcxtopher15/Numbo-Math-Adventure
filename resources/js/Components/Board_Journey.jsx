@@ -129,6 +129,16 @@ export function Board_Journey({ data }) {
     });
     const [timeSpent, setTimeSpent] = useState([]);
     const { auth } = usePage().props;
+    const [existingJam, setExistingJam] = useState(null);
+
+    console.log(existingJam);
+
+    useEffect(() => {
+        const storedJam = localStorage.getItem('existingJam');
+        if (storedJam) {
+            setExistingJam(JSON.parse(storedJam));
+        }
+    }, []);
 
     useEffect(() => {
         setStartTime(Date.now());
@@ -237,16 +247,16 @@ export function Board_Journey({ data }) {
             <div className="w-full h-full bg-white rounded-3xl p-6">
                 <div className="flex flex-col justify-between w-full h-full">
                     <div className="flex items-center justify-between w-full">
-                        <div className="flex gap-2 rounded-3xl w-max bg-gray-200 p-3">
-                            {auth.user && auth.user.user_type == 'Teacher' && (
+                        {auth.user && auth.user.user_type == 'Teacher' && (
+                            <div className="flex gap-2 rounded-3xl w-max bg-gray-200 p-3">
                                 <button
                                     className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold"
                                     onClick={handleNext}
                                 >
                                     Next
                                 </button>
-                            )}
-                        </div>
+                            </div>
+                        )}
 
                         <Dialog onOpenChange={(open) => (open ? handleDialogOpen() : handleDialogClose())}>
                             <DialogTrigger asChild>

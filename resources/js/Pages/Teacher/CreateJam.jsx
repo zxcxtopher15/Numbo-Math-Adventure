@@ -25,7 +25,7 @@ const CreateJam = () => {
     const [loading, setLoading] = useState(true);
     const [participants, setParticipants] = useState([]);
     const hasJoinedParticipants = participants.some(participant => participant.status === "joined");
-    
+
     useEffect(() => {
         const fetchExistingJam = async () => {
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
@@ -42,15 +42,17 @@ const CreateJam = () => {
 
                 if (response.ok && data.jam) {
                     setExistingJam(data.jam);
+                    localStorage.setItem('existingJam', JSON.stringify(data.jam));
                 } else {
                     setExistingJam(null);
+                    localStorage.removeItem('existingJam');
                 }
             } catch (error) {
                 console.error('Error fetching existing jam:', error);
             } finally {
                 setTimeout(() => {
                     setLoading(false);
-                }, 2000); //
+                }, 2000);
             }
         };
 
