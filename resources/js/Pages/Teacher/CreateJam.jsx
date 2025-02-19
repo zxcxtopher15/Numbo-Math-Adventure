@@ -165,6 +165,8 @@ const CreateJam = () => {
                     title: 'Math Journey created successfully!',
                 });
                 setExistingJam(data.jam);
+                localStorage.setItem('existingJam', JSON.stringify(data.jam));
+                localStorage.setItem('category', existingJam.category);
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -481,19 +483,9 @@ const CreateJam = () => {
                                                             Go Back
                                                         </PrimaryButton>
                                                     </Link>
-                                                    <Link
-                                                        onClick={(e) => {
-                                                            handleCreateJam();
-                                                            if (existingJam) {
-                                                                localStorage.setItem("category", existingJam.category);
-                                                                localStorage.setItem("existingJam", JSON.stringify(existingJam));
-                                                            }
-                                                        }}
-                                                    >
-                                                        <PrimaryButton className="w-max px-5">
-                                                            Create
-                                                        </PrimaryButton>
-                                                    </Link>
+                                                    <PrimaryButton onClick={handleCreateJam} className="w-max px-5">
+                                                        Create
+                                                    </PrimaryButton>
                                                 </>
                                             )}
                                         </div>
