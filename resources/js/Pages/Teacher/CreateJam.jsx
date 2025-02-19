@@ -12,6 +12,7 @@ import Swal from 'sweetalert2';
 import LoadingScreen from '@/Components/LoadingScreen';
 import { Head } from '@inertiajs/react';
 import Categories from '@/Components/Categories';
+import BoardContainer_Journey from '../Jam/BoardContainer_Journey';
 
 const CreateJam = () => {
     const { auth } = usePage().props;
@@ -399,7 +400,7 @@ const CreateJam = () => {
                                                     </PrimaryButton>
 
                                                     {hasJoinedParticipants ? (
-                                                        <Link href="math-journey/watch">
+                                                        <Link href={`/math-journey/watch?category=${encodeURIComponent(existingJam.category)}`}>
                                                             <PrimaryButton className="w-max px-5">Start</PrimaryButton>
                                                         </Link>
                                                     ) : (
