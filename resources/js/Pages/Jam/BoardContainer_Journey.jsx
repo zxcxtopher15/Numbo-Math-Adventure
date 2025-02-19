@@ -8,6 +8,9 @@ export default function BoardContainer_Journey({ auth }) {
     const [categoryTitle, setCategoryTitle] = useState('');
     const [questions, setQuestions] = useState([]);
 
+    console.log(categoryTitle);
+    console.log(questions);
+
     const shuffleArray = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
