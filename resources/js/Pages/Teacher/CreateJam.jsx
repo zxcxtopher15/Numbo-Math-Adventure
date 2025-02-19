@@ -172,7 +172,6 @@ const CreateJam = () => {
                 }).then(() => {
                     setExistingJam(data.jam);
                     localStorage.setItem('existingJam', JSON.stringify(data.jam));
-                    window.location.reload();
                 });
             } else {
                 Swal.fire({
@@ -275,8 +274,7 @@ const CreateJam = () => {
             });
 
             if (response.ok) {
-                console.log('Math Jam status updated to ended');
-                localStorage.removeItem('existingJam');
+                // console.log('Math Jam status updated to start');
             } else {
                 console.error('Failed to update Math Jam status');
             }
@@ -284,7 +282,6 @@ const CreateJam = () => {
             console.error('Error updating Math Jam status:', error);
         }
     };
-
 
     const waitingList = participants
         .filter((participant) => participant.status === 'joined')
