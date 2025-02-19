@@ -247,7 +247,20 @@ export default function Dashboard() {
                                                             </div>
                                                             <div className="mt-2">
                                                                 <div className="flex justify-end gap-2">
-                                                                    <PrimaryButton className={` ${sample.textColor}`}>
+                                                                    <PrimaryButton
+                                                                        className={` ${sample.textColor}`}
+                                                                        onClick={() => {
+                                                                            let selectedItems =
+                                                                                document.querySelectorAll(
+                                                                                    'input[type="checkbox"]:checked',
+                                                                                );
+                                                                            let selectedItemsTitles = [];
+                                                                            selectedItems.forEach((item) => {
+                                                                                selectedItemsTitles.push(item.value);
+                                                                            });
+                                                                            console.log(selectedItemsTitles);
+                                                                        }}
+                                                                    >
                                                                         {' '}
                                                                         Start
                                                                     </PrimaryButton>
