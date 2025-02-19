@@ -482,7 +482,6 @@ const CreateJam = () => {
                                                         </PrimaryButton>
                                                     </Link>
                                                     <Link
-                                                        href="/math-journey/watch"
                                                         onClick={(e) => {
                                                             handleCreateJam();
                                                             if (existingJam) {
