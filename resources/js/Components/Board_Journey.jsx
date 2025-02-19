@@ -17,7 +17,7 @@ import { Link } from '@inertiajs/react';
 import { SvgAsset } from './SvgAsset';
 import Categories from './Categories';
 
-function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext, onPrev }) {
+function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
     const { auth } = usePage().props;
 
     return (
@@ -35,28 +35,12 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext, onPrev }) {
                         ? 'Great job!'
                         : `The correct answer is: ${correctAnswer}`}
             </p>
-
-            <div className="flex gap-4 mt-4">
-                {!auth.user || auth.user.user_type !== 'Teacher' ? (
-                    <button
-                        className="bg-gray-500 text-white text-lg px-6 py-2 rounded-2xl font-semibold"
-                        onClick={onPrev}
-                    >
-                        Prev
-                    </button>
-                ) : null}
-
-                <button
-                    className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold"
-                    onClick={onNext}
-                >
-                    Next
-                </button>
-            </div>
+            <button className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold mt-4" onClick={onNext}>
+                Next
+            </button>
         </div>
     );
 }
-
 
 function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
     const { width, height } = useWindowSize();
@@ -254,18 +238,14 @@ export function Board_Journey({ data }) {
                 <div className="flex flex-col justify-between w-full h-full">
                     <div className="flex items-center justify-between w-full">
                         <div className="flex gap-2 rounded-3xl w-max bg-gray-200 p-3">
-                            <button
-                                className="bg-warning text-white text-lg px-6 py-2 rounded-2xl font-semibold"
-                                onClick={() => setCurrentQuestion((prev) => (prev > 0 ? prev - 1 : prev))}
-                            >
-                                Prev
-                            </button>
-                            <button
-                                className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold"
-                                onClick={handleNext}
-                            >
-                                Next
-                            </button>
+                            {auth.user && auth.user.user_type == 'Teacher' && (
+                                <button
+                                    className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold"
+                                    onClick={handleNext}
+                                >
+                                    Next
+                                </button>
+                            )}
                         </div>
 
                         <Dialog onOpenChange={(open) => (open ? handleDialogOpen() : handleDialogClose())}>
