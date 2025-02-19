@@ -20,9 +20,7 @@ export default function BoardContainer_Journey({ auth }) {
         setCategoryTitle(localStorage.getItem('category') || 'Default Title');
 
         if (categoryTitle) {
-            const categoryParam = Array.isArray(categoryTitle) ? JSON.stringify(categoryTitle) : categoryTitle;
-
-            fetch(`/questions_list_teacher?categoryTitle=${categoryParam}`)
+            fetch(`/questions_list_teacher?categoryTitle=${categoryTitle}`)
                 .then((response) => response.json())
                 .then((data) => {
                     const formattedData = data.map((question) => ({
