@@ -85,6 +85,14 @@ const CreateJam = () => {
     }, []);
 
     useEffect(() => {
+        if (existingJam) {
+            localStorage.setItem('existingJam', JSON.stringify(existingJam));
+        }
+    }, [existingJam]);
+
+    console.log(existingJam);
+
+    useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         const sseUrl = `${baseUrl}/math-journey/stream-participants?teacher_id=${auth.user.id}`;
 
@@ -165,8 +173,6 @@ const CreateJam = () => {
                     title: 'Math Journey created successfully!',
                 });
                 setExistingJam(data.jam);
-                localStorage.setItem('existingJam', JSON.stringify(data.jam));
-                localStorage.setItem('category', existingJam.category);
             } else {
                 Swal.fire({
                     icon: 'error',
