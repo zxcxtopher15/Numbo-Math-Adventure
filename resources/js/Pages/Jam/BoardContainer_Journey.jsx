@@ -7,6 +7,14 @@ export default function BoardContainer_Journey({ auth }) {
     const [showCountdown, setShowCountdown] = useState(true);
     const [categoryTitle, setCategoryTitle] = useState('');
     const [questions, setQuestions] = useState([]);
+    const [category, setCategory] = useState("");
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        setCategory(params.get("category"));
+    }, []);
+
+    console.log(category);
 
     const shuffleArray = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
