@@ -167,7 +167,6 @@ const CreateJam = () => {
                     if (data.jam) {
                         localStorage.setItem('existingJam', JSON.stringify(data.jam));
                     }
-                    window.location.reload();
                 });
             } else {
                 Swal.fire({
@@ -427,7 +426,12 @@ const CreateJam = () => {
                                                     {hasJoinedParticipants ? (
                                                         <Link
                                                             href="/math-journey/watch"
-                                                            onClick={() => localStorage.setItem("category", existingJam.category)}
+                                                            onClick={() => {
+                                                                if (existingJam) {
+                                                                    localStorage.setItem("category", existingJam.category);
+                                                                    localStorage.setItem("existingJam", JSON.stringify(existingJam));
+                                                                }
+                                                            }}
                                                         >
                                                             <PrimaryButton className="w-max px-5">Start</PrimaryButton>
                                                         </Link>
