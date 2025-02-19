@@ -90,8 +90,6 @@ const CreateJam = () => {
         }
     }, [existingJam]);
 
-    console.log(localStorage.getItem('existingJam'));
-
     useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         const sseUrl = `${baseUrl}/math-journey/stream-participants?teacher_id=${auth.user.id}`;
