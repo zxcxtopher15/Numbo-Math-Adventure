@@ -9,6 +9,15 @@ export default function BoardContainer_Journey({ auth }) {
     const [questions, setQuestions] = useState([]);
     const [existingJam, setExistingJam] = useState(null);
 
+    useEffect(() => {
+        const storedJam = localStorage.getItem('existingJam');
+        if (storedJam) {
+            setExistingJam(JSON.parse(storedJam));
+        }
+    }, []);
+
+    console.log(existingJam);
+    
     const shuffleArray = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -18,16 +27,15 @@ export default function BoardContainer_Journey({ auth }) {
     };
 
     useEffect(() => {
-        setCategoryTitle(localStorage.getItem('category'));
-        setExistingJam(localStorage.getItem('existingJam'));
+        setCategoryTitle(localStorage.getItem('category') || 'Default Title');
 
-        if (categoryTitle && existingJam) {
+        if (categoryTitle) {
             fetch(`/questions_list_teacher?categoryTitle=${categoryTitle}`)
                 .then((response) => response.json())
                 .then((data) => {
                     const formattedData = data.map((question) => ({
                         title: `${question.category} Challenge`,
-                        time: existingJam.time_limit,
+                        time: 40,
                         question_data: {
                             id: question.id,
                             type: question.question_type || 'addition',
@@ -49,7 +57,7 @@ export default function BoardContainer_Journey({ auth }) {
                     console.error('Error fetching questions:', error);
                 });
         }
-    }, [categoryTitle, existingJam]);
+    }, [categoryTitle]);
 
     const handleCountdownComplete = () => {
         setShowCountdown(false);
