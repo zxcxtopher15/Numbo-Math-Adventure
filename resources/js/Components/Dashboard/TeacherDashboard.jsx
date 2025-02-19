@@ -72,11 +72,11 @@ export function TeacherDashboard(result) {
                                                 <h1 className="rounded-2xl  text-warning font-bold text-3xl">80%</h1>
                                             </div>
                                         </div>
-                                        <div className="p-4 mt-3 bg-gray-200 rounded-2xl">
+                                        <div className="p-4 mt-3 bg-gray-100 rounded-2xl">
                                             <h1 className="font-semibold text-xl text-primary">Recent Results</h1>
                                             {student.scores.map((score, index) => (
                                                 <div key={score.id} className="flex items-center justify-between mb-2">
-                                                    <div className="flex md:flex-row flex-col md:items-center items-start justify-between gap-2 bg-gray-200 p-2  border-b border-blue-200 w-full">
+                                                    <div className="flex md:flex-row flex-col md:items-center items-start justify-between gap-2 p-2  border-b border-blue-200 w-full">
                                                         <div className="flex gap-3">
                                                             <p className="font-semibold">{index + 1}.</p>
                                                             <div className="flex flex-col">
