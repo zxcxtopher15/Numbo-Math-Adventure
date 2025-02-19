@@ -163,11 +163,8 @@ const CreateJam = () => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Math Journey created successfully!',
-                }).then(() => {
-                    if (data.jam) {
-                        localStorage.setItem('existingJam', JSON.stringify(data.jam));
-                    }
                 });
+                setExistingJam(data.jam);
             } else {
                 Swal.fire({
                     icon: 'error',
