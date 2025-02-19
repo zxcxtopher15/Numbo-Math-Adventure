@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import Categories from '@/Components/Categories.jsx';
 import { BiDotsHorizontal } from 'react-icons/bi';
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from '@/components/ui/menubar';
 import Swal from 'sweetalert2';
@@ -21,11 +22,6 @@ export default function Questions({ questions = [] }) {
         choices: ['', '', '', ''],
         correct_answer: '',
     });
-
-    const categories = {
-        Addition: ['Add Tens', 'Add Two Numbers', 'Addition Sentences', 'Complete the Equations', 'Add Three Numbers'],
-        Subtraction: ['Subtract Tens', 'Subtract Two Numbers', 'Subtraction Sentences'],
-    };
 
     const toggleModal = () => {
         setIsModalOpen(!isModalOpen);
@@ -183,7 +179,7 @@ export default function Questions({ questions = [] }) {
                             className="border w-full p-2 mb-2"
                         >
                             <option value="">Select Category</option>
-                            {Object.entries(categories).map(([type, options]) => (
+                            {Object.entries(Categories).map(([type, options]) => (
                                 <optgroup key={type} label={type}>
                                     {options.map((cat) => (
                                         <option key={cat} value={cat}>

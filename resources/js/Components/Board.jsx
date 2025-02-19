@@ -16,96 +16,12 @@ import { useWindowSize } from 'react-use';
 import { Link } from '@inertiajs/react';
 import { SvgAsset } from './SvgAsset';
 
-const data = [
-    {
-        title: 'Addition Challenge',
-        time: 4,
-        question_data: {
-            type: 'addition',
-            image: null,
-            title: 'Solve This',
-            question: '1 + 1 = ?',
-        },
-        answers: [
-            { id: 1, answer: '2', is_correct: true },
-            { id: 2, answer: '3', is_correct: false },
-            { id: 3, answer: '4', is_correct: false },
-            { id: 4, answer: '5', is_correct: false },
-        ],
-    },
-    {
-        title: 'Subtraction Challenge',
-        time: 50,
-        question_data: {
-            type: 'subtraction',
-            image: null,
-            title: 'Solve This',
-            question: '5 - 2 = ?',
-        },
-        answers: [
-            { id: 1, answer: '3', is_correct: true },
-            { id: 2, answer: '4', is_correct: false },
-            { id: 3, answer: '5', is_correct: false },
-            { id: 4, answer: '6', is_correct: false },
-        ],
-    },
-    {
-        title: 'Addition Challenge',
-        time: 4,
-        question_data: {
-            type: 'addition',
-            image: null,
-            title: 'Solve This',
-            question: '2 + 2 = ?',
-        },
-        answers: [
-            { id: 1, answer: '4', is_correct: true },
-            { id: 2, answer: '5', is_correct: false },
-            { id: 3, answer: '6', is_correct: false },
-            { id: 4, answer: '7', is_correct: false },
-        ],
-    },
-    {
-        title: 'Subtraction Challenge',
-        time: 50,
-        question_data: {
-            type: 'subtraction',
-            image: null,
-            title: 'Solve This',
-            question: '8 - 3 = ?',
-        },
-        answers: [
-            { id: 1, answer: '5', is_correct: true },
-            { id: 2, answer: '6', is_correct: false },
-            { id: 3, answer: '7', is_correct: false },
-            { id: 4, answer: '8', is_correct: false },
-        ],
-    },
-    {
-        title: 'Addition Challenge',
-        time: 4,
-        question_data: {
-            type: 'addition',
-            image: null,
-            title: 'Solve This',
-            question: '3 + 3 = ?',
-        },
-        answers: [
-            { id: 1, answer: '6', is_correct: true },
-            { id: 2, answer: '5', is_correct: false },
-            { id: 3, answer: '7', is_correct: false },
-            { id: 4, answer: '8', is_correct: false },
-        ],
-    },
-];
-
 function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center bg-white p-6 rounded-3xl shadow-lg">
             <h2
-                className={`text-3xl font-bold text-center ${
-                    isTimeUp ? 'text-orange-500' : isCorrect ? 'text-green-500' : 'text-red-500'
-                }`}
+                className={`text-3xl font-bold text-center ${isTimeUp ? 'text-orange-500' : isCorrect ? 'text-green-500' : 'text-red-500'
+                    }`}
             >
                 {isTimeUp ? "Time's Up!" : isCorrect ? 'Correct!' : 'Incorrect'}
             </h2>
@@ -113,8 +29,8 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
                 {isTimeUp
                     ? 'You ran out of time.'
                     : isCorrect
-                      ? 'Great job!'
-                      : `The correct answer is: ${correctAnswer}`}
+                        ? 'Great job!'
+                        : `The correct answer is: ${correctAnswer}`}
             </p>
             <button className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold mt-4" onClick={onNext}>
                 Next
@@ -123,26 +39,44 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
     );
 }
 
-function TotalResult({ totalQuestions, gameState }) {
+function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
     const { width, height } = useWindowSize();
+    const [schemaTitle, setSchemeTitle] = useState('');
+    const [categoryTitle, setCategoryTitle] = useState('');
+    const [gameTitle, setGameTitle] = useState('');
+
+    useEffect(() => {
+        setSchemeTitle(localStorage.getItem('schemaTitle') || 'Default Title');
+    }, []);
+
+    useEffect(() => {
+        setCategoryTitle(localStorage.getItem('categoryTitle') || 'Default Title');
+    }, []);
+
+    useEffect(() => {
+        setGameTitle(localStorage.getItem('gameTitle') || 'Default Title');
+    }, []);
+
+    const totalTimeInMinutes = Math.floor(totalTimeSpent / 60000);
+    const totalTimeInSeconds = Math.floor((totalTimeSpent % 60000) / 1000);
 
     return (
         <>
             <Confetti width={width} height={height} />
 
-            <div className="w-full h-full flex  items-center justify-between bg-white sm:p-8 p-2 rounded-3xl shadow-lg box-border">
-                <div className="hidden sm:flex  w-full h-full justify-center items-end p-10 relative">
+            <div className="w-full h-full flex  items-center justify-between bg-white p-6 rounded-3xl shadow-lg box-border">
+                <div className="w-full h-full justify-center items-end p-10 relative">
                     <h1 className="text-6xl font-bold text-primary relative z-10">GREAT JOB!!!</h1>
 
-                    <div className="justify-center items-center h-full w-full">
+                    <div className="flex justify-center items-center h-full w-full">
                         <SvgAsset
                             movement="sm"
                             value="/images/assets/background/students_result.svg"
-                            className=" hidden sm:block sm:absolute top-0 sm:right-40 md:right-0 h-full z-0"
+                            className=" hidden sm:block sm:absolute top-0 right-40 h-full z-0"
                         />
                     </div>
                 </div>
-                <div className="flex flex-col bg-gray-200 h-full rounded-3xl sm:p-6 p-2 w-full gap-4 sm:w-1/3 md:w-3/4 lg:w-1/3">
+                <div className="flex flex-col bg-gray-200 h-full rounded-3xl p-6 gap-4 lg:w-1/3">
                     <div className="flex justify-start items-center w-full p-4 bg-white rounded-3xl px-6 gap-8 ">
                         <img className="w-14 h-14" src="/images/assets/stars/glossy_3.svg" alt="" />
                         <h1 className="text-warning font-bold  text-6xl">
@@ -153,12 +87,12 @@ function TotalResult({ totalQuestions, gameState }) {
                     <div className="bg-white h-full rounded-3xl  p-4 space-y-4  mt-4">
                         <div className="bg-primary text-white p-4 rounded-3xl font-semibold text-2xl">
                             {' '}
-                            Time: 2 mins 30 secs
+                            Time: {totalTimeInMinutes} min {totalTimeInSeconds} sec
                         </div>
                         <div className="bg-success text-white rounded-3xl p-4 flex flex-col full justify-center items-center">
                             {' '}
-                            <h3 className="text-xl font-semibold">Addtion Challenge</h3>
-                            <h1 className="text-4xl font-bold">Add Tens</h1>
+                            <h3 className="text-xl font-semibold">{schemaTitle}</h3>
+                            <h1 className="text-4xl font-bold">{gameTitle}</h1>
                         </div>
                     </div>
                     <div className="flex py-4 w-full justify-between text-xl font-semibold text-white">
@@ -175,7 +109,7 @@ function TotalResult({ totalQuestions, gameState }) {
     );
 }
 
-export function Board() {
+export function Board({ data }) {
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
     const [startTime, setStartTime] = useState(Date.now());
@@ -188,6 +122,11 @@ export function Board() {
         userAnswers: [],
         correctQuestions: [],
     });
+    const [timeSpent, setTimeSpent] = useState([]);
+
+    useEffect(() => {
+        setStartTime(Date.now());
+    }, [currentQuestion]);
 
     const handleDialogOpen = () => setIsPaused(true);
     const handleDialogClose = () => {
@@ -216,6 +155,12 @@ export function Board() {
         setIsCorrect(false); // Reset the isCorrect state
 
         setIsAnswered(true);
+
+        const endTime = Date.now();
+        const questionTime = endTime - startTime;
+
+        setTimeSpent((prev) => [...prev, questionTime]);
+
         const correct = answer ? answer.is_correct : false;
         setCorrectAnswer(correct ? answer.answer : data[currentQuestion].answers.find((a) => a.is_correct).answer);
 
@@ -252,6 +197,11 @@ export function Board() {
 
     const handleTimeUp = () => {
         if (!isAnswered) {
+            const endTime = Date.now();
+            const questionTime = endTime - startTime;
+
+            setTimeSpent((prev) => [...prev, questionTime]);
+
             setIsTimeUp(true);
             setCorrectAnswer(data[currentQuestion].answers.find((a) => a.is_correct).answer);
 
@@ -272,8 +222,10 @@ export function Board() {
 
     const isGameFinished = currentQuestion >= data.length;
 
+    const totalTimeSpent = timeSpent.reduce((acc, time) => acc + time, 0);
+
     return isGameFinished ? (
-        <TotalResult totalQuestions={data.length} gameState={gameState} />
+        <TotalResult totalQuestions={data.length} gameState={gameState} totalTimeSpent={totalTimeSpent} />
     ) : (
         <>
             <div className="w-full h-full bg-white rounded-3xl p-6">

@@ -46,6 +46,9 @@ Route::group(['middleware' => 'teacher'], function () {
 
     Route::get('/questions', [QuestionController::class, 'index'])->name('questions');
     Route::post('/questions/store', [QuestionController::class, 'store'])->name('questions.store');
+    Route::get('/math-journey/watch', function () {
+        return Inertia::render('Jam/BoardContainer_Journey', request()->all());
+    })->name('journey.start');
 
     Route::get('/modules', function () {
         return Inertia::render('Modules/Modules', request()->all());
@@ -64,10 +67,15 @@ Route::group(['middleware' => 'student'], function () {
     Route::post('/math-journey/reconnect', [MathJamController::class, 'reconnect']);
     Route::get('/math-journey/jam-stream-updates', [MathJamController::class, 'jamStreamUpdates']);
 
+    Route::get('/questions_list', [QuestionController::class, 'getQuestions']);
+
     Route::get('/board', function () {
         return Inertia::render('Jam/BoardContainer', request()->all());
     })->name('jam.BoardContainer');
- 
+
+    Route::get('/math-journey/play', function () {
+        return Inertia::render('Jam/BoardContainer_Journey', request()->all());
+    })->name('journey.play');
 });
 
 Route::group(['middleware' => 'parent'], function () {});

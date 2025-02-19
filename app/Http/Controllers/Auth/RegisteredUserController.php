@@ -32,7 +32,22 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'email' => [
+                'required',
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->user_type === 'Student' && !str_ends_with($value, '@my.jru.edu')) {
+                        $fail('Students must use a @my.jru.edu email address.');
+                    }
+                    if ($request->user_type === 'Teacher' && !str_ends_with($value, '@jru.edu')) {
+                        $fail('Teachers must use a @jru.edu email address.');
+                    }
+                },
+                'unique:users,email',
+            ],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 

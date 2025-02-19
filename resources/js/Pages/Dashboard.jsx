@@ -16,7 +16,6 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import ShapeGenerator from '@/Components/ShapeGenerator';
 import Checkbox from '@/Components/Checkbox';
 
-// This is sample data with dynamic colors.
 const data = [
     {
         id: 1,
@@ -31,7 +30,6 @@ const data = [
                 description: 'Create your own custom category',
                 sample: 'Create your own custom category',
             },
-
             {
                 id: 1,
                 title: 'Add Tens',
@@ -52,7 +50,7 @@ const data = [
             },
             {
                 id: 4,
-                title: 'Complete The Equations',
+                title: 'Complete The Equations (Addition)',
                 description: 'Complete the equations',
                 sample: '1 + 5 = 6',
             },
@@ -77,7 +75,6 @@ const data = [
                 description: 'Create your own custom category',
                 sample: 'Create your own custom category',
             },
-
             {
                 id: 4,
                 title: 'Subtract Tens',
@@ -111,7 +108,6 @@ const data = [
                 description: 'Create your own custom category',
                 sample: 'Create your own custom category',
             },
-
             {
                 id: 7,
                 title: 'Item 7',
@@ -145,7 +141,6 @@ const data = [
                 description: 'Create your own custom category',
                 sample: 'Create your own custom category',
             },
-
             {
                 id: 10,
                 title: 'Item 10',
@@ -240,17 +235,18 @@ export default function Dashboard() {
                                                                                         value={item2.title}
                                                                                     />
 
-                                                                                    <div className="flex items-center justify-between px-3">
-                                                                                        <h2 className="font-semibold">
-                                                                                            {item2.title}
-                                                                                        </h2>
-                                                                                    </div>
+                                                                                <div className="flex items-center justify-between px-3">
+                                                                                    <h2 className="font-semibold">
+                                                                                        {item2.title}
+                                                                                    </h2>
                                                                                 </div>
                                                                             </div>
-                                                                        ))}
-                                                                </div>
-                                                                <div className="mt-2">
-                                                                    <div className="flex justify-end gap-2">
+                                                                        </div>
+                                                                    ))}
+                                                            </div>
+                                                            <div className="mt-2">
+                                                                <div className="flex justify-end gap-2">
+                                                                    <Link href={'/board'}>
                                                                         <PrimaryButton
                                                                             className={` ${sample.textColor}`}
                                                                             onClick={() => {
@@ -260,70 +256,74 @@ export default function Dashboard() {
                                                                                     );
                                                                                 let selectedItemsTitles = [];
                                                                                 selectedItems.forEach((item) => {
-                                                                                    selectedItemsTitles.push(
-                                                                                        item.value,
-                                                                                    );
+                                                                                    selectedItemsTitles.push(item.value);
                                                                                 });
-                                                                                console.log(selectedItemsTitles);
+                                                                                localStorage.setItem('schemaTitle', sample.title);
+                                                                                localStorage.setItem('categoryTitle', JSON.stringify(selectedItemsTitles));
+                                                                                localStorage.setItem('gameTitle', item.title);
                                                                             }}
                                                                         >
                                                                             {' '}
                                                                             Start
                                                                         </PrimaryButton>
-                                                                    </div>
-                                                                </div>
-                                                            </DialogContent>
-                                                        </Dialog>
-                                                    ) : (
-                                                        <Popover key={item.id}>
-                                                            <PopoverTrigger>
-                                                                <div
-                                                                    key={item.id}
-                                                                    className={`p-4 bg-white ${sample.textColor} rounded-3xl shadow-md`}
-                                                                >
-                                                                    <div className="flex items-center justify-between px-3">
-                                                                        <h2 className="font-semibold">{item.title}</h2>
-                                                                        <FaPlay className="w-5 h-5" />
-                                                                    </div>
-                                                                </div>
-                                                            </PopoverTrigger>
-                                                            <PopoverContent>
-                                                                <div className="mb-5">
-                                                                    <h1 className="font-semibold text-xl text-gray-700 ">
-                                                                        {item.title}
-                                                                    </h1>
-                                                                    <p className="text-gray-500">{item.description}</p>
-                                                                </div>
-                                                                <div className="text-center">
-                                                                    <p className={`text-sm text-gray-500`}>Example</p>
-                                                                    <h2
-                                                                        className={` font-semibold ${item.sample.length < 12 ? 'text-5xl' : item.sample.length < 30 ? 'text-2xl' : 'text-xl'} mb-5 ${sample.textColor}`}
-                                                                    >
-                                                                        {item.sample}
-                                                                    </h2>
-                                                                </div>
-                                                                <div className="flex justify-end">
-                                                                    <Link href={'/board'}>
-                                                                        <PrimaryButton>Play</PrimaryButton>
                                                                     </Link>
                                                                 </div>
-                                                            </PopoverContent>
-                                                        </Popover>
-                                                    )}
-                                                </>
-                                            ))}
-                                        </div>
+                                                            </div>
+                                                        </DialogContent>
+                                                    </Dialog>
+                                                ) : (
+                                                    <Popover key={item.id}>
+                                                        <PopoverTrigger>
+                                                            <div
+                                                                key={item.id}
+                                                                className={`p-4 bg-white ${sample.textColor} rounded-3xl shadow-md`}
+                                                            >
+                                                                <div className="flex items-center justify-between px-3">
+                                                                    <h2 className="font-semibold">{item.title}</h2>
+                                                                    <FaPlay className="w-5 h-5" />
+                                                                </div>
+                                                            </div>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent>
+                                                            <div className="mb-5">
+                                                                <h1 className="font-semibold text-xl text-gray-700 ">
+                                                                    {item.title}
+                                                                </h1>
+                                                                <p className="text-gray-500">{item.description}</p>
+                                                            </div>
+                                                            <div className="text-center">
+                                                                <p className={`text-sm text-gray-500`}>Example</p>
+                                                                <h2
+                                                                    className={` font-semibold ${item.sample.length < 12 ? 'text-5xl' : item.sample.length < 30 ? 'text-2xl' : 'text-xl'} mb-5 ${sample.textColor}`}
+                                                                >
+                                                                    {item.sample}
+                                                                </h2>
+                                                            </div>
+                                                            <div className="flex justify-end">
+                                                                <Link href={'/board'}>
+                                                                    <PrimaryButton
+                                                                        onClick={() => {
+                                                                            localStorage.setItem('schemaTitle', sample.title);
+                                                                            localStorage.setItem('categoryTitle', item.title);
+                                                                            localStorage.setItem('gameTitle', item.title);
+                                                                        }}
+                                                                    >
+                                                                        Play
+                                                                    </PrimaryButton>
+                                                                </Link>
+                                                            </div>
+                                                        </PopoverContent>
+                                                    </Popover>
+                                                )}
+                                            </>
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
-            ) : userType === 'Teacher' ? (
-                'Teacher Dashboard'
-            ) : (
-                ''
-            )}
+            </div>
         </AuthenticatedLayout>
     );
 }

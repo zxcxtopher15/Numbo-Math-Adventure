@@ -15,6 +15,7 @@ class MathJam extends Model
         'teacher_id',
         'num_questions',
         'time_limit',
+        'math_journey_for',
         'category',
         'show_scores',
         'status',
