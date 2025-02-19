@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MathJam;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\OrderedQuestion;
 use App\Models\MathJamParticipant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -325,5 +326,23 @@ class MathJamController extends Controller
         return response()->json([
             'message' => 'Update successful',
         ]);
+    }
+
+    public function saveOrderedQuestions(Request $request)
+    {
+        $questions = $request->input('questions');
+
+        foreach ($questions as $question) {
+            OrderedQuestion::updateOrCreate(
+                ['question_id' => $question['question_data']['id']],
+                [
+                    'math_jam_id' => $question['math_jam_id'],
+                    'order_number' => $question['order'],
+                    'time' => $question['time'],
+                ]
+            );
+        }
+
+        return response()->json(['status' => 'success', 'message' => 'Questions saved successfully']);
     }
 }
