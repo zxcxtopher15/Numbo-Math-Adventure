@@ -481,9 +481,20 @@ const CreateJam = () => {
                                                             Go Back
                                                         </PrimaryButton>
                                                     </Link>
-                                                    <PrimaryButton onClick={handleCreateJam} className="w-max px-5">
-                                                        Create
-                                                    </PrimaryButton>
+                                                    <Link
+                                                        href="/math-journey/watch"
+                                                        onClick={(e) => {
+                                                            handleCreateJam();
+                                                            if (existingJam) {
+                                                                localStorage.setItem("category", existingJam.category);
+                                                                localStorage.setItem("existingJam", JSON.stringify(existingJam));
+                                                            }
+                                                        }}
+                                                    >
+                                                        <PrimaryButton className="w-max px-5">
+                                                            Create
+                                                        </PrimaryButton>
+                                                    </Link>
                                                 </>
                                             )}
                                         </div>
