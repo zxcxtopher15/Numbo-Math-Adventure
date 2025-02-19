@@ -169,8 +169,6 @@ export function Board_Journey({ data }) {
     const [timeSpent, setTimeSpent] = useState([]);
     const { auth } = usePage().props;
 
-    console.log(data);
-
     useEffect(() => {
         setStartTime(Date.now());
     }, [currentQuestion]);
@@ -323,7 +321,7 @@ export function Board_Journey({ data }) {
                                         key={answer.id}
                                         className={`${colors[index % colors.length]} text-center text-white text-2xl font-bold w-full min-w-56 rounded-2xl p-4 hover:bg-opacity-75 active:bg-opacity-50`}
                                         onClick={() => handleAnswer(answer)}
-                                        disabled={isAnswered}
+                                        disabled={isAnswered || auth.user.user_type === "Teacher"}
                                     >
                                         {answer.answer}
                                     </button>

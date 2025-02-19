@@ -7,6 +7,14 @@ export default function BoardContainer_Journey({ auth }) {
     const [showCountdown, setShowCountdown] = useState(true);
     const [categoryTitle, setCategoryTitle] = useState('');
     const [questions, setQuestions] = useState([]);
+    const [existingJam, setExistingJam] = useState(null);
+
+    useEffect(() => {
+        const storedJam = localStorage.getItem('existingJam');
+        if (storedJam) {
+            setExistingJam(JSON.parse(storedJam));
+        }
+    }, []);
 
     const shuffleArray = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
