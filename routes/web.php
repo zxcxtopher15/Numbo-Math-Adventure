@@ -54,6 +54,7 @@ Route::group(['middleware' => 'teacher'], function () {
         return Inertia::render('Modules/Modules', request()->all());
     })->name('modules.Modules');
 
+    Route::get('/questions_list_teacher', [QuestionController::class, 'getQuestions']);
 });
 
 Route::group(['middleware' => 'student'], function () {

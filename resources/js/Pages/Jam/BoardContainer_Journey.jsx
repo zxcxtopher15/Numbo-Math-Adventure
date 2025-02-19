@@ -8,8 +8,6 @@ export default function BoardContainer_Journey({ auth }) {
     const [categoryTitle, setCategoryTitle] = useState('');
     const [questions, setQuestions] = useState([]);
 
-    console.log(categoryTitle);
-
     const shuffleArray = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -19,12 +17,12 @@ export default function BoardContainer_Journey({ auth }) {
     };
 
     useEffect(() => {
-        setCategoryTitle(localStorage.getItem('jamCategory') || 'Default Title');
+        setCategoryTitle(localStorage.getItem('category') || 'Default Title');
 
         if (categoryTitle) {
             const categoryParam = Array.isArray(categoryTitle) ? JSON.stringify(categoryTitle) : categoryTitle;
 
-            fetch(`/questions_list?categoryTitle=${categoryParam}`)
+            fetch(`/questions_list_teacher?categoryTitle=${categoryParam}`)
                 .then((response) => response.json())
                 .then((data) => {
                     const formattedData = data.map((question) => ({
