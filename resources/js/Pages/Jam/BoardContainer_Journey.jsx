@@ -8,8 +8,6 @@ export default function BoardContainer_Journey({ auth }) {
     const [questions, setQuestions] = useState([]);
     const [existingJam, setExistingJam] = useState(null);
 
-    console.log("Questions:", questions);
-
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
@@ -27,7 +25,7 @@ export default function BoardContainer_Journey({ auth }) {
         const fetchQuestions = async () => {
             try {
                 const response = await fetch(
-                    `/questions_list_teacher?categoryTitle=${categoryTitle}&num_questions=${existingJam.num_questions}`
+                    `/questions_list_teacher?categoryTitle=${categoryTitle}`
                 );
                 const data = await response.json();
 
