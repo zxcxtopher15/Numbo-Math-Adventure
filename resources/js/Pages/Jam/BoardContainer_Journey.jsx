@@ -35,6 +35,7 @@ export default function BoardContainer_Journey({ auth }) {
                         title: `${question.category} Challenge`,
                         time: existingJam.time_limit,
                         question_data: {
+                            num_questions: existingJam.num_questions,
                             type: question.question_type || 'addition',
                             image: null,
                             title: 'Solve This',

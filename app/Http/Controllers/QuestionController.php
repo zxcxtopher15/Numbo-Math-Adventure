@@ -39,8 +39,14 @@ class QuestionController extends Controller
         $categories = is_array(json_decode($categoryTitle)) ? json_decode($categoryTitle) : [$categoryTitle];
 
         $questions = [];
-        $questionsPerCategory = floor(20 / count($categories));
-        $remainingQuestions = 20;
+
+        if ($request->num_questions) {
+            $questionsPerCategory = floor($request->num_questions / count($categories));
+            $remainingQuestions = $request->num_questions;
+        } else {
+            $questionsPerCategory = floor(20 / count($categories));
+            $remainingQuestions = 20;
+        }
 
         $allFetchedQuestions = [];
 
