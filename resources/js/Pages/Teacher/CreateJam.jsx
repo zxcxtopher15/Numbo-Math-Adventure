@@ -242,6 +242,41 @@ const CreateJam = () => {
         }
     };
 
+    const handleStart = async () => {
+        if (!existingJam) return;
+
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        if (!baseUrl) {
+            console.error('Base URL not found.');
+            return;
+        }
+
+        const apiUrl = `${baseUrl}/math-journey/update-status`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    math_jam_id: existingJam.math_jam_id,
+                    status: 'started',
+                }),
+            });
+
+            if (response.ok) {
+                console.log('Math Jam status updated to ended');
+                localStorage.removeItem('existingJam');
+            } else {
+                console.error('Failed to update Math Jam status');
+            }
+        } catch (error) {
+            console.error('Error updating Math Jam status:', error);
+        }
+    };
+
+
     const waitingList = participants
         .filter((participant) => participant.status === 'joined')
         .map((participant) => ({
@@ -423,7 +458,8 @@ const CreateJam = () => {
                                                     {hasJoinedParticipants ? (
                                                         <Link
                                                             href="/math-journey/watch"
-                                                            onClick={() => {
+                                                            onClick={(e) => {
+                                                                handleStart();
                                                                 if (existingJam) {
                                                                     localStorage.setItem("category", existingJam.category);
                                                                     localStorage.setItem("existingJam", JSON.stringify(existingJam));
