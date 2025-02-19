@@ -16,22 +16,24 @@ export default function BoardContainer_Journey({ auth }) {
         }
     }, []);
 
+    useEffect(() => {
+        const storedCategory = localStorage.getItem('category');
+        if (storedCategory) {
+            setCategoryTitle(storedCategory);
+        }
+    }, []);
+
     const shuffleArray = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
+            [array[i], array[j]] = [array[j], array[i]]; 
         }
         return array;
     };
 
     useEffect(() => {
-        if (!existingJam) return;
-        
-        const storedCategoryTitle = localStorage.getItem('category') || 'Default Title';
-        setCategoryTitle(storedCategoryTitle);
-
-        if (storedCategoryTitle && existingJam) {
-            fetch(`/questions_list_teacher?categoryTitle=${storedCategoryTitle}&num_questions=${existingJam.num_questions}`)
+        if (categoryTitle && existingJam) {
+            fetch(`/questions_list_teacher?categoryTitle=${categoryTitle}&num_questions=${existingJam.num_questions}`)
                 .then((response) => response.json())
                 .then((data) => {
                     const formattedData = data.map((question) => ({
@@ -58,21 +60,15 @@ export default function BoardContainer_Journey({ auth }) {
                     console.error('Error fetching questions:', error);
                 });
         }
-    }, [existingJam]);
-
-    useEffect(() => {
-        setCategoryTitle(localStorage.getItem('categoryTitle') || 'Default Title');
-    }, []);
+    }, [categoryTitle, existingJam]);
 
     const handleCountdownComplete = () => {
         setShowCountdown(false);
     };
 
     return (
-        <>
-            <div className="overflow-hidden h-dvh lg:p-3 p-2 bg-gradient-to-br from-teal-400 to-yellow-200 box-border">
-                {showCountdown ? <PageCountDown onComplete={handleCountdownComplete} /> : <Board_Journey data={questions} />}
-            </div>
-        </>
+        <div className="overflow-hidden h-dvh lg:p-3 p-2 bg-gradient-to-br from-teal-400 to-yellow-200 box-border">
+            {showCountdown ? <PageCountDown onComplete={handleCountdownComplete} /> : <Board_Journey data={questions} />}
+        </div>
     );
 }
