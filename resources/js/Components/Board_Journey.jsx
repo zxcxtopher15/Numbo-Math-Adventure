@@ -15,6 +15,7 @@ import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
 import { Link } from '@inertiajs/react';
 import { SvgAsset } from './SvgAsset';
+import Categories from './Categories';
 
 function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
     return (
@@ -41,20 +42,27 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
 
 function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
     const { width, height } = useWindowSize();
-    const [schemaTitle, setSchemeTitle] = useState('');
-    const [categoryTitle, setCategoryTitle] = useState('');
+    const [jamCategory, setJamCategory] = useState('');
     const [gameTitle, setGameTitle] = useState('');
 
     useEffect(() => {
-        setSchemeTitle(localStorage.getItem('schemaTitle') || 'Default Title');
+        if (jamCategory) {
+            for (const [category, games] of Object.entries(Categories)) {
+                if (games.includes(gameTitle)) {
+                    setJamCategory(category);
+                    return;
+                }
+            }
+            setJamCategory("");
+        }
+    }, [jamCategory]);
+
+    useEffect(() => {
+        setSchemeTitle(localStorage.getItem('gameTitle') || 'Default Title');
     }, []);
 
     useEffect(() => {
-        setCategoryTitle(localStorage.getItem('categoryTitle') || 'Default Title');
-    }, []);
-
-    useEffect(() => {
-        setGameTitle(localStorage.getItem('gameTitle') || 'Default Title');
+        setGameTitle(localStorage.getItem('category') || 'Default Title');
     }, []);
 
     const totalTimeInMinutes = Math.floor(totalTimeSpent / 60000);
@@ -91,7 +99,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
                         </div>
                         <div className="bg-success text-white rounded-3xl p-4 flex flex-col full justify-center items-center">
                             {' '}
-                            <h3 className="text-xl font-semibold">{schemaTitle}</h3>
+                            <h3 className="text-xl font-semibold">{jamCategory}</h3>
                             <h1 className="text-4xl font-bold">{gameTitle}</h1>
                         </div>
                     </div>
