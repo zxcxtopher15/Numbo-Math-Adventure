@@ -86,7 +86,7 @@ export default function Questions({ questions = [] }) {
                             </button>
                         </div>
 
-                        {Object.keys(categories).map((category) => {
+                        {Object.keys(Categories).map((category) => {
                             const gradient =
                                 category === 'Addition'
                                     ? 'to-[#CDDA1E] from-[#50DE65]'
@@ -116,7 +116,7 @@ export default function Questions({ questions = [] }) {
                                     <h1 className="text-2xl font-semibold mb-4 text-white"> {category}</h1>
                                     <div className="grid grid-cols-1 lg:grid-cols-2 sm:gap-4 gap-2">
                                         {questions
-                                            .filter((q) => categories[category].includes(q.category))
+                                            .filter((q) => Categories[category].includes(q.category))
                                             .map((q) => (
                                                 <div
                                                     key={Math.random().toString(36).substr(2, 9)}
