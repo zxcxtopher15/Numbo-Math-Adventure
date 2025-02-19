@@ -19,7 +19,7 @@ export default function BoardContainer_Journey({ auth }) {
     };
 
     useEffect(() => {
-        setCategoryTitle(localStorage.getItem('category') || 'Default Title');
+        setCategoryTitle(localStorage.getItem('jamCategory') || 'Default Title');
 
         if (categoryTitle) {
             const categoryParam = Array.isArray(categoryTitle) ? JSON.stringify(categoryTitle) : categoryTitle;

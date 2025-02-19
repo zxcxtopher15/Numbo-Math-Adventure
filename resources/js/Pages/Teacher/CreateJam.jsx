@@ -25,7 +25,7 @@ const CreateJam = () => {
     const [loading, setLoading] = useState(true);
     const [participants, setParticipants] = useState([]);
     const hasJoinedParticipants = participants.some(participant => participant.status === "joined");
-    
+
     useEffect(() => {
         const fetchExistingJam = async () => {
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
@@ -402,7 +402,7 @@ const CreateJam = () => {
                                                     {hasJoinedParticipants ? (
                                                         <Link
                                                             href="/math-journey/watch"
-                                                            onClick={() => localStorage.setItem("category", existingJam.category)}
+                                                            onClick={() => localStorage.setItem("jamCategory", existingJam.category)}
                                                         >
                                                             <PrimaryButton className="w-max px-5">Start</PrimaryButton>
                                                         </Link>
