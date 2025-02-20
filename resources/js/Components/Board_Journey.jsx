@@ -243,33 +243,30 @@ export function Board_Journey({ data }) {
     }, []);
 
     const handleDisconnect = async () => {
-        const existingJam = JSON.parse(localStorage.getItem("existingJam"));
+        const existingJam = JSON.parse(localStorage.getItem('existingJam'));
 
         if (!existingJam || !existingJam.math_jam_id) return;
 
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
 
         const apiUrl = `${baseUrl}/math-journey/disconnect_jam`;
 
         try {
-            const response = await fetch(apiUrl, {
-                method: "POST",
+            await fetch(apiUrl, {
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.getAttribute("content"),
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 },
                 body: JSON.stringify({
                     math_jam_id: existingJam.math_jam_id,
                 }),
             });
 
-            if (response.ok) {
-                localStorage.removeItem("existingJam");
-                window.location.href = `${baseUrl}/math-journey`;
-            }
+            window.location.href = `${baseUrl}/math-journey`;
         } catch (err) {
-            console.error("Error during disconnect:", err);
+            console.error('Error during disconnect:', err);
         }
     };
 
