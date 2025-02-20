@@ -429,4 +429,21 @@ class MathJamController extends Controller
 
         return response()->json(['message' => 'MathJam not found', 'error' => true], 404);
     }
+
+    public function updatePauseStatus(Request $request)
+    {
+        $mathJamId = $request->input('math_jam_id');
+        $status = $request->input('is_pause');
+
+        $mathJam = MathJam::find($mathJamId);
+
+        if (!$mathJam) {
+            return response()->json(['message' => 'Math Jam not found'], 404);
+        }
+
+        $mathJam->is_pause = $status;
+        $mathJam->save();
+
+        return response()->json(['message' => 'Math Jam paused successfully'], 200);
+    }
 }

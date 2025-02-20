@@ -22,9 +22,8 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center bg-white p-6 rounded-3xl shadow-lg">
             <h2
-                className={`text-3xl font-bold text-center ${
-                    isTimeUp ? 'text-orange-500' : isCorrect ? 'text-green-500' : 'text-red-500'
-                }`}
+                className={`text-3xl font-bold text-center ${isTimeUp ? 'text-orange-500' : isCorrect ? 'text-green-500' : 'text-red-500'
+                    }`}
             >
                 {isTimeUp ? "Time's Up!" : isCorrect ? 'Correct!' : 'Incorrect'}
             </h2>
@@ -32,8 +31,8 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
                 {isTimeUp
                     ? 'You ran out of time.'
                     : isCorrect
-                      ? 'Great job!'
-                      : `The correct answer is: ${correctAnswer}`}
+                        ? 'Great job!'
+                        : `The correct answer is: ${correctAnswer}`}
             </p>
             <button className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold mt-4" onClick={onNext}>
                 Next
@@ -174,10 +173,75 @@ export function Board_Journey({ data }) {
         setStartTime(Date.now());
     }, [currentQuestion]);
 
-    const handleDialogOpen = () => setIsPaused(true);
-    const handleDialogClose = () => {
+    const handleDialogOpen = async () => {
+        if (!existingJam) return;
+
+        setIsPaused(true);
+
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        if (!baseUrl) {
+            console.error('Base URL not found.');
+            return;
+        }
+
+        const apiUrl = `${baseUrl}/math-journey/update-pause-status`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    math_jam_id: existingJam.math_jam_id,
+                    is_pause: 1,
+                }),
+            });
+
+            if (response.ok) {
+                // console.log("Math Jam paused successfully.");
+                setExistingJam({ ...existingJam, is_pause: 1 }); // Update the state
+            } else {
+                console.error("Failed to pause Math Jam.");
+            }
+        } catch (error) {
+            console.error("Error updating pause status:", error);
+        }
+    };
+
+    const handleDialogClose = async () => {
         setIsPaused(false);
         setStartTime(Date.now());
+
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        if (!baseUrl) {
+            console.error('Base URL not found.');
+            return;
+        }
+
+        const apiUrl = `${baseUrl}/math-journey/update-pause-status`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    math_jam_id: existingJam.math_jam_id,
+                    is_pause: 0,
+                }),
+            });
+
+            if (response.ok) {
+                // console.log("Math Jam paused successfully.");
+                setExistingJam({ ...existingJam, is_pause: 0 });
+            } else {
+                console.error("Failed to pause Math Jam.");
+            }
+        } catch (error) {
+            console.error("Error updating pause status:", error);
+        }
     };
     useEffect(() => {
         const handleVisibilityChange = () => {

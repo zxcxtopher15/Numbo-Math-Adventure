@@ -50,6 +50,7 @@ class VerifyCsrfToken
         '/save_ordered_questions',
         '/ordered-questions/*',
         '/math-journey/disconnect_jam',
+        '/math-journey/update-pause-status',
     ];
 
     /**
