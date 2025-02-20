@@ -445,4 +445,20 @@ class MathJamController extends Controller
 
         return response()->json(['message' => 'Math Jam paused successfully'], 200);
     }
+
+    public function update_current_question(Request $request)
+    {
+        $current_question_id = $request->input('current_question_id');
+
+        $mathJam = MathJam::where('math_jam_id', $request->math_jam_id)->first();
+
+        if (!$mathJam) {
+            return response()->json(['message' => 'Math Jam not found'], 404);
+        }
+
+        $mathJam->current_question_id = $current_question_id;
+        $mathJam->save();
+
+        return response()->json(['message' => 'Math Jam current question updated successfully'], 200);
+    }
 }

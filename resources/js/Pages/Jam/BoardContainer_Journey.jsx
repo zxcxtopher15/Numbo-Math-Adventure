@@ -127,6 +127,8 @@ export default function BoardContainer_Journey({ auth }) {
                                 is_correct: choice === item.question.correct_answer,
                             })),
                         })));
+
+                        updateCurrentQuestionId(questions.question_data.id);
                     } else {
                         fetchNewQuestions();
                     }
@@ -159,6 +161,10 @@ export default function BoardContainer_Journey({ auth }) {
                 const shuffledData = shuffleArray(formattedData);
                 saveOrderedQuestions(shuffledData);
                 setQuestions(shuffledData);
+
+                if (shuffledData.length > 0) {
+                    updateCurrentQuestionId(shuffledData[0].question_data.id);
+                }
             })
             .catch((error) => {
                 console.error('Error fetching questions:', error);
@@ -192,6 +198,32 @@ export default function BoardContainer_Journey({ auth }) {
             console.log('Ordered questions saved successfully');
         } catch (error) {
             console.error('Error saving ordered questions:', error);
+        }
+    };
+
+    const updateCurrentQuestionId = async (questionId) => {
+        if (!existingJam || !existingJam.math_jam_id) return;
+
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        if (!baseUrl) return;
+
+        try {
+            const response = await fetch(`${baseUrl}/math-journey/update_current_question`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({
+                    math_jam_id: existingJam.math_jam_id,
+                    current_question_id: questionId,
+                }),
+            });
+
+            const data = await response.json();
+            console.log('Updated current_question_id:', data);
+        } catch (error) {
+            console.error('Error updating current_question_id:', error);
         }
     };
 
