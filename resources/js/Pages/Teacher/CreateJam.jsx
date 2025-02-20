@@ -41,9 +41,8 @@ const CreateJam = () => {
                 const response = await fetch(apiUrl);
                 const data = await response.json();
 
-                console.log(data);
-
                 if (response.ok && data.jam) {
+                    console.log(data);
                     setExistingJam(data.jam);
                     localStorage.setItem('existingJam', JSON.stringify(data.jam));
 
