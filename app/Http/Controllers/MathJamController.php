@@ -68,12 +68,12 @@ class MathJamController extends Controller
             if ($hasQuestions) {
                 return response()->json([
                     'jam' => $existingJam,
-                    'message' => 'This math jam already has questions.'
+                    'hasQuestions' => true
                 ]);
             } else {
                 return response()->json([
                     'jam' => $existingJam,
-                    'message' => 'Math jam found but has no questions, status set to waiting.'
+                    'hasQuestions' => false
                 ]);
             }
         }
