@@ -13,7 +13,6 @@ import LoadingScreen from '@/Components/LoadingScreen';
 import { Head } from '@inertiajs/react';
 import Categories from '@/Components/Categories';
 import BoardContainer_Journey from '../Jam/BoardContainer_Journey';
-import { Inertia } from '@inertiajs/inertia';
 
 const CreateJam = () => {
     const { auth } = usePage().props;
@@ -374,13 +373,9 @@ const CreateJam = () => {
                 // console.log('Math Jam status updated to start');
 
                 if (status == "started") {
-                    Inertia.visit('/math-journey/watch', {
-                        method: 'get',
-                        preserveState: true,
-                        replace: true,
-                    });
+                    window.location.href = '/math-journey/watch'
                 }
-
+                
                 const updatedJam = { ...existingJam, status };
                 setExistingJam(updatedJam);
                 setShowReconnectModal(false);

@@ -21,6 +21,33 @@ export default function BoardContainer_Journey({ auth }) {
     }, []);
 
     useEffect(() => {
+        if (existingJam?.math_jam_id) {
+            const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+            if (!baseUrl) return;
+
+            fetch(`${baseUrl}/math-journey/update-status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                },
+                body: JSON.stringify({
+                    math_jam_id: existingJam.math_jam_id,
+                    status: 'started'
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log('Status updated:', data);
+                })
+                .catch((error) => {
+                    console.error('Error updating status:', error);
+                });
+        }
+    }, [existingJam]);
+
+
+    useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
 
         const disableRightClick = (event) => {
