@@ -40,13 +40,9 @@ const CreateJam = () => {
                 const response = await fetch(apiUrl);
                 const data = await response.json();
 
-                if ((response.ok && data.jam) || data.redirect) {
+                if (response.ok && data.jam) {
                     setExistingJam(data.jam);
                     localStorage.setItem('existingJam', JSON.stringify(data.jam));
-
-                    if (data.redirect) {
-                        window.location.href = data.redirect;
-                    }
                 } else {
                     setExistingJam(null);
                     localStorage.removeItem('existingJam');
@@ -279,7 +275,7 @@ const CreateJam = () => {
 
     const handleDisconnect = async () => {
         const existingJam = JSON.parse(localStorage.getItem('existingJam'));
-
+        
         if (!existingJam || !existingJam.math_jam_id) return;
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
