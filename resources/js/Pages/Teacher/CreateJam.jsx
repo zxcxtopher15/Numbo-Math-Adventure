@@ -28,6 +28,7 @@ const CreateJam = () => {
     const hasJoinedParticipants = participants.some((participant) => participant.status === 'joined');
     const [showReconnectModal, setShowReconnectModal] = useState(false);
     const [hasQuestions, setHasQuestions] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchExistingJam = async () => {
