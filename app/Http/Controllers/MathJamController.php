@@ -435,7 +435,7 @@ class MathJamController extends Controller
         $mathJamId = $request->input('math_jam_id');
         $status = $request->input('is_pause');
 
-        $mathJam = MathJam::find($mathJamId);
+        $mathJam = MathJam::where('math_jam_id', $request->math_jam_id)->first();
 
         if (!$mathJam) {
             return response()->json(['message' => 'Math Jam not found'], 404);
