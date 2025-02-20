@@ -28,7 +28,7 @@ export default function BoardContainer_Journey({ auth }) {
         setCategoryTitle(localStorage.getItem('category') || 'Default Title');
 
         if (existingJam?.math_jam_id) {
-            fetch(`/get_ordered_questions?mathJamId=${existingJam.math_jam_id}`)
+            fetch(`/get_ordered_questions?math_jam_id=${existingJam.math_jam_id}`)
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.length > 0) {
