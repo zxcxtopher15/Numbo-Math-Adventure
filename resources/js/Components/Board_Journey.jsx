@@ -310,8 +310,6 @@ export function Board_Journey({ data }) {
         if (currentQuestion < data.length) {
             const currentQuestionId = data[currentQuestion].question_data.id;
 
-            updateCurrentQuestionId(currentQuestionId);
-
             try {
                 const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
                     method: 'DELETE',
@@ -325,6 +323,8 @@ export function Board_Journey({ data }) {
                 }
 
                 console.log(`Question ${currentQuestionId} deleted successfully`);
+
+                updateCurrentQuestionId(currentQuestionId);
             } catch (error) {
                 console.error('Error deleting question:', error.message);
             }
