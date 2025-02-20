@@ -128,25 +128,25 @@ const CreateJam = () => {
 
         // window.addEventListener('beforeunload', beforeUnloadHandler);
 
-        const offlineHandler = () => {
-            handleDisconnect();
-            Swal.fire({
-                icon: 'error',
-                title: 'Connection Lost',
-                text: 'You have been disconnected due to a lost internet connection.',
-                confirmButtonColor: '#d33',
-                allowOutsideClick: false,
-            }).then(() => {
-                window.location.reload();
-            });
-        };
+        // const offlineHandler = () => {
+        //     handleDisconnect();
+        //     Swal.fire({
+        //         icon: 'error',
+        //         title: 'Connection Lost',
+        //         text: 'You have been disconnected due to a lost internet connection.',
+        //         confirmButtonColor: '#d33',
+        //         allowOutsideClick: false,
+        //     }).then(() => {
+        //         window.location.reload();
+        //     });
+        // };
 
-        window.addEventListener('offline', offlineHandler);
+        // window.addEventListener('offline', offlineHandler);
 
         return () => {
             eventSource?.close();
-            window.removeEventListener('beforeunload', beforeUnloadHandler);
-            window.removeEventListener('offline', offlineHandler);
+            // window.removeEventListener('beforeunload', beforeUnloadHandler);
+            // window.removeEventListener('offline', offlineHandler);
         };
     }, [auth.user.id]);
 
