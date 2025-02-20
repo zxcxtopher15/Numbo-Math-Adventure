@@ -371,6 +371,11 @@ const CreateJam = () => {
 
             if (response.ok) {
                 // console.log('Math Jam status updated to start');
+
+                if (status == "started") {
+                    handleStart();
+                }
+                
                 const updatedJam = { ...existingJam, status };
                 setExistingJam(updatedJam);
                 setShowReconnectModal(false);
