@@ -19,7 +19,7 @@ export default function BoardContainer_Journey({ auth }) {
     const shuffleArray = (array) => {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]]; 
+            [array[i], array[j]] = [array[j], array[i]];
         }
         return array;
     };
@@ -49,6 +49,7 @@ export default function BoardContainer_Journey({ auth }) {
                     }));
 
                     const shuffledData = shuffleArray(formattedData);
+                    saveOrderedQuestions(shuffledData);
                     setQuestions(shuffledData);
                 })
                 .catch((error) => {
@@ -56,6 +57,32 @@ export default function BoardContainer_Journey({ auth }) {
                 });
         }
     }, [categoryTitle]);
+
+    const saveOrderedQuestions = async (questions) => {
+        const orderedQuestions = questions.map((question, index) => ({
+            math_jam_id: existingJam.math_jam_id,
+            question_id: question.question_data.id,
+            order_number: index + 1,
+        }));
+
+        try {
+            const response = await fetch('/save_ordered_questions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ orderedQuestions }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save ordered questions');
+            }
+
+            console.log('Ordered questions saved successfully');
+        } catch (error) {
+            console.error('Error saving ordered questions:', error);
+        }
+    };
 
     const handleCountdownComplete = () => {
         setShowCountdown(false);

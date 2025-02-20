@@ -332,14 +332,16 @@ class MathJamController extends Controller
     {
         $questions = $request->input('questions');
 
+        if (!$questions || !is_array($questions)) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid data provided'], 400);
+        }
+
         foreach ($questions as $question) {
-            OrderedQuestion::updateOrCreate(
-                ['question_id' => $question['question_data']['id']],
-                [
-                    'math_jam_id' => $question['math_jam_id'],
-                    'order_number' => $question['order'],
-                ]
-            );
+            OrderedQuestion::create([
+                'math_jam_id'  => $question['math_jam_id'],
+                'question_id'  => $question['question_id'],
+                'order_number' => $question['order_number'],
+            ]);
         }
 
         return response()->json(['status' => 'success', 'message' => 'Questions saved successfully']);
