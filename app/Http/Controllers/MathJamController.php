@@ -359,4 +359,20 @@ class MathJamController extends Controller
             'message' => 'Questions saved successfully'
         ]);
     }
+
+    public function getOrderedQuestions(Request $request)
+    {
+        $mathJamId = $request->query('math_jam_id');
+
+        if (!$mathJamId) {
+            return response()->json(['status' => 'error', 'message' => 'Missing math_jam_id'], 400);
+        }
+
+        $questions = OrderedQuestion::where('math_jam_id', $mathJamId)
+            ->orderBy('order_number')
+            ->with('questions')
+            ->get();
+
+        return response()->json($questions);
+    }
 }

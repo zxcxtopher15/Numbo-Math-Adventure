@@ -27,36 +27,55 @@ export default function BoardContainer_Journey({ auth }) {
     useEffect(() => {
         setCategoryTitle(localStorage.getItem('category') || 'Default Title');
 
-        if (categoryTitle) {
-            fetch(`/questions_list_teacher?categoryTitle=${categoryTitle}&num_questions=${existingJam.num_questions}`)
+        if (existingJam?.math_jam_id) {
+            // Check if questions are already saved
+            fetch(`/get_ordered_questions?math_jam_id=${existingJam.math_jam_id}`)
                 .then((response) => response.json())
                 .then((data) => {
-                    const formattedData = data.map((question) => ({
-                        title: `${question.category} Challenge`,
-                        time: existingJam.time_limit,
-                        question_data: {
-                            id: question.id,
-                            type: question.question_type || 'addition',
-                            image: null,
-                            title: 'Solve This',
-                            question: question.question,
-                        },
-                        answers: question.choices.map((choice, index) => ({
-                            id: index + 1,
-                            answer: choice,
-                            is_correct: choice === question.correct_answer,
-                        })),
-                    }));
-
-                    const shuffledData = shuffleArray(formattedData);
-                    saveOrderedQuestions(shuffledData);
-                    setQuestions(shuffledData);
+                    if (data.length > 0) {
+                        console.log('Loaded saved questions from database:', data);
+                        setQuestions(data);
+                    } else {
+                        // Fetch new questions if no saved data exists
+                        fetchNewQuestions();
+                    }
                 })
                 .catch((error) => {
-                    console.error('Error fetching questions:', error);
+                    console.error('Error fetching ordered questions:', error);
+                    fetchNewQuestions();
                 });
         }
-    }, [categoryTitle]);
+    }, [existingJam]);
+
+    const fetchNewQuestions = () => {
+        fetch(`/questions_list_teacher?categoryTitle=${categoryTitle}&num_questions=${existingJam.num_questions}`)
+            .then((response) => response.json())
+            .then((data) => {
+                const formattedData = data.map((question) => ({
+                    title: `${question.category} Challenge`,
+                    time: existingJam.time_limit,
+                    question_data: {
+                        id: question.id,
+                        type: question.question_type || 'addition',
+                        image: null,
+                        title: 'Solve This',
+                        question: question.question,
+                    },
+                    answers: question.choices.map((choice, index) => ({
+                        id: index + 1,
+                        answer: choice,
+                        is_correct: choice === question.correct_answer,
+                    })),
+                }));
+
+                const shuffledData = shuffleArray(formattedData);
+                saveOrderedQuestions(shuffledData);
+                setQuestions(shuffledData);
+            })
+            .catch((error) => {
+                console.error('Error fetching questions:', error);
+            });
+    };
 
     const saveOrderedQuestions = async (questions) => {
         const orderedQuestions = questions.map((question, index) => ({
@@ -93,10 +112,8 @@ export default function BoardContainer_Journey({ auth }) {
     };
 
     return (
-        <>
-            <div className="overflow-hidden h-dvh lg:p-3 p-2 bg-gradient-to-br from-teal-400 to-yellow-200 box-border">
-                {showCountdown ? <PageCountDown onComplete={handleCountdownComplete} /> : <Board_Journey data={questions} />}
-            </div>
-        </>
+        <div className="overflow-hidden h-dvh lg:p-3 p-2 bg-gradient-to-br from-teal-400 to-yellow-200 box-border">
+            {showCountdown ? <PageCountDown onComplete={handleCountdownComplete} /> : <Board_Journey data={questions} />}
+        </div>
     );
 }
