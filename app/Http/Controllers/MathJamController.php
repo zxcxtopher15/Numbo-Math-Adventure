@@ -343,7 +343,7 @@ class MathJamController extends Controller
 
         $mathJam->update([
             'status' => $request->status,
-            'date_updated' => now(),
+            'updated_at' => now(),
         ]);
 
         return response()->json([
@@ -421,7 +421,7 @@ class MathJamController extends Controller
 
         if ($mathJam) {
             $mathJam->status = 'disconnected';
-            $mathJam->date_updated = now();
+            $mathJam->updated_at = now();
             $mathJam->save();
 
             return response()->json([
@@ -460,7 +460,7 @@ class MathJamController extends Controller
         }
 
         $mathJam->current_question_id = $current_question_id;
-        $mathJam->date_updated = now();
+        $mathJam->updated_at = now();
         $mathJam->save();
 
         return response()->json(['message' => 'Math Jam current question updated successfully'], 200);
