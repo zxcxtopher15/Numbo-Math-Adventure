@@ -46,7 +46,6 @@ const CreateJam = () => {
 
                     if (data.redirect) {
                         window.location.href = data.redirect;
-                        return;
                     }
                 } else {
                     setExistingJam(null);
