@@ -22,15 +22,12 @@ const JoinJam = () => {
     const [score, setScore] = useState(0);
     const [loading, setLoading] = useState(false);
     const hasReloaded = useRef(false);
-    const [tempJamCode, setTempJamCode] = useState("");
 
     useEffect(() => {
         sessionStorage.setItem('jamCode', jamCode);
     }, [jamCode]);
 
     const handleJoinJam = async () => {
-        setJamCode(tempJamCode);
-        
         if (!studentId) {
             Swal.fire({
                 icon: 'error',
@@ -380,8 +377,8 @@ const JoinJam = () => {
                                     <TextInput
                                         type="text"
                                         id="jamCode"
-                                        value={tempJamCode}
-                                        onChange={(e) => setTempJamCode(e.target.value)}
+                                        value={jamCode}
+                                        onChange={(e) => setJamCode(e.target.value)}
                                         className="w-full mt-1 p-2 border rounded"
                                         placeholder="Enter Math Journey Code"
                                     />
