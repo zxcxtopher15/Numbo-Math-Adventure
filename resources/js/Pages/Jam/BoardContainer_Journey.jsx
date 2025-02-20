@@ -12,13 +12,17 @@ export default function BoardContainer_Journey({ auth }) {
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
-            setExistingJam(JSON.parse(storedJam));
+            const parsedJam = JSON.parse(storedJam);
+            setExistingJam(parsedJam);
+            if (parsedJam.status === "disconnected") {
+                window.location.href = '/math-journey';
+            }
         }
     }, []);
 
     useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-
+        
         const disableRightClick = (event) => {
             event.preventDefault();
         };
@@ -76,16 +80,10 @@ export default function BoardContainer_Journey({ auth }) {
     const handleDisconnect = async () => {
         const existingJam = JSON.parse(localStorage.getItem('existingJam'));
 
-        if (!existingJam || !existingJam.math_jam_id) {
-            window.location.href = `/math-journey`;
-            return;
-        }
+        if (!existingJam || !existingJam.math_jam_id) return;
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-        if (!baseUrl) {
-            window.location.href = `/math-journey`;
-            return;
-        }
+        if (!baseUrl) return;
 
         const apiUrl = `${baseUrl}/math-journey/disconnect_jam`;
 
@@ -100,12 +98,8 @@ export default function BoardContainer_Journey({ auth }) {
                     math_jam_id: existingJam.math_jam_id,
                 }),
             });
-
-            // Redirect after API call is completed
-            window.location.href = `/math-journey`;
         } catch (err) {
             console.error('Error during disconnect:', err);
-            window.location.href = `/math-journey`; // Ensure redirection even if the API call fails
         }
     };
 
@@ -134,7 +128,7 @@ export default function BoardContainer_Journey({ auth }) {
                             })),
                         })));
                     } else {
-                        fetchNewQuestions(); // Fallback if no saved questions exist
+                        fetchNewQuestions();
                     }
                 })
                 .catch((error) => console.error('Error fetching ordered questions:', error));
@@ -169,36 +163,6 @@ export default function BoardContainer_Journey({ auth }) {
             .catch((error) => {
                 console.error('Error fetching questions:', error);
             });
-    };
-
-    const saveOrderedQuestions = async (questions) => {
-        const orderedQuestions = questions.map((question, index) => ({
-            math_jam_id: existingJam?.math_jam_id,
-            question_id: question.question_data.id,
-            order_number: index + 1,
-        }));
-
-        try {
-            const response = await fetch('/save_ordered_questions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({ questions: orderedQuestions }),
-            });
-
-            const data = await response.json();
-            console.log('Response:', data);
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to save ordered questions');
-            }
-
-            console.log('Ordered questions saved successfully');
-        } catch (error) {
-            console.error('Error saving ordered questions:', error);
-        }
     };
 
     const handleCountdownComplete = () => {
