@@ -14,7 +14,6 @@ export default function BoardContainer_Journey({ auth }) {
         if (storedJam) {
             const parsedJam = JSON.parse(storedJam);
             setExistingJam(parsedJam);
-
             if (parsedJam.status === "disconnected") {
                 window.location.href = '/math-journey';
             }
@@ -27,6 +26,7 @@ export default function BoardContainer_Journey({ auth }) {
             if (!baseUrl) return;
 
             if (existingJam.status === 'disconnected') {
+                // Update status to 'started' after reconnecting
                 fetch(`${baseUrl}/math-journey/update-status`, {
                     method: 'POST',
                     headers: {
@@ -54,9 +54,14 @@ export default function BoardContainer_Journey({ auth }) {
     }, [existingJam]);
 
     useEffect(() => {
-        const disableRightClick = (event) => event.preventDefault();
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+
+        const disableRightClick = (event) => {
+            event.preventDefault();
+        };
+
         const disableReload = (event) => {
-            if (event.key === 'F5' || (event.ctrlKey && (event.key === 'r' || event.key === 'R'))) {
+            if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.ctrlKey && event.key === 'R')) {
                 event.preventDefault();
                 Swal.fire({
                     icon: 'warning',
@@ -69,6 +74,7 @@ export default function BoardContainer_Journey({ auth }) {
         const beforeUnloadHandler = (event) => {
             handleDisconnect();
         };
+
 
         const offlineHandler = () => {
             handleDisconnect();
@@ -103,7 +109,12 @@ export default function BoardContainer_Journey({ auth }) {
     };
 
     const handleDisconnect = async () => {
-        if (!existingJam || !existingJam.math_jam_id) return;
+        const existingJam = localStorage.getItem('existingJam');
+
+        if (!existingJam) return;
+
+        const parsedJam = JSON.parse(existingJam);
+        if (!parsedJam || !parsedJam.math_jam_id) return;
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
@@ -118,7 +129,7 @@ export default function BoardContainer_Journey({ auth }) {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
                 },
                 body: JSON.stringify({
-                    math_jam_id: existingJam.math_jam_id,
+                    math_jam_id: parsedJam.math_jam_id,
                 }),
             });
 
@@ -130,10 +141,9 @@ export default function BoardContainer_Journey({ auth }) {
             const data = await response.json();
 
             if (data?.jam) {
-                const updatedJam = { ...data.jam, status: 'disconnected' };
-                localStorage.setItem('existingJam', JSON.stringify(updatedJam));
-                setExistingJam(updatedJam);
+                localStorage.setItem('existingJam', JSON.stringify(data.jam));
             } else {
+                console.warn('No valid jam data in response');
                 localStorage.removeItem('existingJam');
             }
         } catch (err) {
