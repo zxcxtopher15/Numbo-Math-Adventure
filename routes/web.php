@@ -82,7 +82,7 @@ Route::group(['middleware' => 'student'], function () {
     })->name('jam.BoardContainer');
 
     Route::get('/math-journey/play', function () {
-        return Inertia::render('Jam/BoardContainer_Journey', request()->all());
+        return Inertia::render('Jam/BoardContainer_student', request()->all());
     })->name('journey.play');
 });
 

@@ -255,8 +255,8 @@ const JoinJam = () => {
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
 
-                if (data && (data.status === 'waiting' || data.status === 'started')) {
-                    // console.log(data);
+                if (data && (data.status === 'started')) {
+                    window.location.href = '/math-journey/play';
                 } else {
                     if (data.status === 'cancelled' || data.status === 'ended') {
                         eventSource.close();
