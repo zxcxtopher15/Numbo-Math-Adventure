@@ -132,7 +132,7 @@ export function TeacherDashboard(result) {
                         </div>
                         {/* Skill Analysis */}
                         <div className="bg-gradient-to-r from-fuchsia-600 to-purple-600 rounded-2xl p-8">
-                            <h2 className="text-lg font-semibold text-white mb-3">Skill Analysis</h2>
+                            <h2 className="text-lg font-semibold text-white mb-3">Overall Skill Analysis</h2>
                             <Line className="w-full text-white p-5 rounded-2xl" data={lineData} options={options} />
                         </div>
                     </div>
