@@ -261,7 +261,7 @@ export function Board_Journey({ data }) {
         }
     };
 
-    const handleTimeUp = () => {
+    const handleTimeUp = async () => {
         if (!isAnswered) {
             const endTime = Date.now();
             const questionTime = endTime - startTime;
@@ -281,6 +281,25 @@ export function Board_Journey({ data }) {
                 ...prevState,
                 userAnswers: [...prevState.userAnswers, newUserAnswer],
             }));
+
+            const currentQuestionId = data[currentQuestion].question_data.id;
+
+            try {
+                const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+
+                console.log(`Question ${currentQuestionId} deleted successfully`);
+            } catch (error) {
+                console.error("Error deleting question:", error.message);
+            }
         }
     };
 
