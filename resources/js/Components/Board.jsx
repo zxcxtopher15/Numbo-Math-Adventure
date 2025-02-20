@@ -20,8 +20,9 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center bg-white p-6 rounded-3xl shadow-lg">
             <h2
-                className={`text-3xl font-bold text-center ${isTimeUp ? 'text-orange-500' : isCorrect ? 'text-green-500' : 'text-red-500'
-                    }`}
+                className={`text-3xl font-bold text-center ${
+                    isTimeUp ? 'text-orange-500' : isCorrect ? 'text-green-500' : 'text-red-500'
+                }`}
             >
                 {isTimeUp ? "Time's Up!" : isCorrect ? 'Correct!' : 'Incorrect'}
             </h2>
@@ -29,8 +30,8 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
                 {isTimeUp
                     ? 'You ran out of time.'
                     : isCorrect
-                        ? 'Great job!'
-                        : `The correct answer is: ${correctAnswer}`}
+                      ? 'Great job!'
+                      : `The correct answer is: ${correctAnswer}`}
             </p>
             <button className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold mt-4" onClick={onNext}>
                 Next
@@ -137,10 +138,11 @@ export function Board({ data }) {
     useEffect(() => {
         const handleVisibilityChange = () => {
             if (document.visibilityState === 'hidden') {
-                setIsPaused(true);
+                localStorage.setItem('pausedTime', Date.now());
             } else {
-                setIsPaused(false);
-                setStartTime(Date.now());
+                const pausedAt = parseInt(localStorage.getItem('pausedTime'), 10) || Date.now();
+                const timeElapsed = Date.now() - pausedAt;
+                setStartTime((prev) => prev + timeElapsed);
             }
         };
 

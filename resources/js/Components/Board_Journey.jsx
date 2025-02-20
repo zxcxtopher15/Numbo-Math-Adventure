@@ -22,8 +22,9 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center bg-white p-6 rounded-3xl shadow-lg">
             <h2
-                className={`text-3xl font-bold text-center ${isTimeUp ? 'text-orange-500' : isCorrect ? 'text-green-500' : 'text-red-500'
-                    }`}
+                className={`text-3xl font-bold text-center ${
+                    isTimeUp ? 'text-orange-500' : isCorrect ? 'text-green-500' : 'text-red-500'
+                }`}
             >
                 {isTimeUp ? "Time's Up!" : isCorrect ? 'Correct!' : 'Incorrect'}
             </h2>
@@ -31,8 +32,8 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
                 {isTimeUp
                     ? 'You ran out of time.'
                     : isCorrect
-                        ? 'Great job!'
-                        : `The correct answer is: ${correctAnswer}`}
+                      ? 'Great job!'
+                      : `The correct answer is: ${correctAnswer}`}
             </p>
             <button className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold mt-4" onClick={onNext}>
                 Next
@@ -62,7 +63,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
                     return;
                 }
             }
-            setJamCategory("");
+            setJamCategory('');
         }
     }, [gameTitle]);
 
@@ -178,14 +179,14 @@ export function Board_Journey({ data }) {
         setIsPaused(false);
         setStartTime(Date.now());
     };
-
     useEffect(() => {
         const handleVisibilityChange = () => {
             if (document.visibilityState === 'hidden') {
-                setIsPaused(true);
+                localStorage.setItem('pausedTime', Date.now());
             } else {
-                setIsPaused(false);
-                setStartTime(Date.now());
+                const pausedAt = parseInt(localStorage.getItem('pausedTime'), 10) || Date.now();
+                const timeElapsed = Date.now() - pausedAt;
+                setStartTime((prev) => prev + timeElapsed);
             }
         };
 
@@ -241,8 +242,8 @@ export function Board_Journey({ data }) {
                 const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
                     method: 'DELETE',
                     headers: {
-                        'Content-Type': 'application/json'
-                    }
+                        'Content-Type': 'application/json',
+                    },
                 });
 
                 if (!response.ok) {
@@ -251,7 +252,7 @@ export function Board_Journey({ data }) {
 
                 console.log(`Question ${currentQuestionId} deleted successfully`);
             } catch (error) {
-                console.error("Error deleting question:", error.message);
+                console.error('Error deleting question:', error.message);
             }
 
             setIsAnswered(false);
@@ -288,8 +289,8 @@ export function Board_Journey({ data }) {
                 const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
                     method: 'DELETE',
                     headers: {
-                        'Content-Type': 'application/json'
-                    }
+                        'Content-Type': 'application/json',
+                    },
                 });
 
                 if (!response.ok) {
@@ -298,7 +299,7 @@ export function Board_Journey({ data }) {
 
                 console.log(`Question ${currentQuestionId} deleted successfully`);
             } catch (error) {
-                console.error("Error deleting question:", error.message);
+                console.error('Error deleting question:', error.message);
             }
         }
     };
@@ -361,7 +362,7 @@ export function Board_Journey({ data }) {
                                         key={answer.id}
                                         className={`${colors[index % colors.length]} text-center text-white text-2xl font-bold w-full min-w-56 rounded-2xl p-4 hover:bg-opacity-75 active:bg-opacity-50`}
                                         onClick={() => handleAnswer(answer)}
-                                        disabled={isAnswered || auth.user.user_type === "Teacher"}
+                                        disabled={isAnswered || auth.user.user_type === 'Teacher'}
                                     >
                                         {answer.answer}
                                     </button>
