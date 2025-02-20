@@ -331,19 +331,31 @@ class MathJamController extends Controller
     public function saveOrderedQuestions(Request $request)
     {
         if (!$request->has('questions') || !is_array($request->input('questions'))) {
-            return response()->json(['status' => 'error', 'message' => 'Invalid data provided', 'data_received' => $request->all()], 400);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid data provided',
+                'data_received' => $request->all()
+            ], 400);
         }
 
         $questions = $request->input('questions');
 
         foreach ($questions as $question) {
-            OrderedQuestion::create([
-                'math_jam_id'  => $question['math_jam_id'],
-                'question_id'  => $question['question_id'],
-                'order_number' => $question['order_number'],
-            ]);
+            $exists = OrderedQuestion::where('math_jam_id', $question['math_jam_id'])
+                ->exists();
+
+            if (!$exists) {
+                OrderedQuestion::create([
+                    'math_jam_id'  => $question['math_jam_id'],
+                    'question_id'  => $question['question_id'],
+                    'order_number' => $question['order_number'],
+                ]);
+            }
         }
 
-        return response()->json(['status' => 'success', 'message' => 'Questions saved successfully']);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Questions saved successfully'
+        ]);
     }
 }

@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class OrderedQuestion extends Model {
     use HasFactory;
 
-    protected $fillable = ['math_jam_id', 'question_id', 'order_number', 'time'];
+    protected $fillable = ['math_jam_id', 'question_id', 'order_number'];
 }
