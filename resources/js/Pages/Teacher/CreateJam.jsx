@@ -274,8 +274,10 @@ const CreateJam = () => {
     };
 
     const handleDisconnect = async () => {
+        const existingJam = JSON.parse(localStorage.getItem('existingJam'));
+
         console.log(existingJam);
-        if (!existingJam) return;
+        if (!existingJam || !existingJam.math_jam_id) return;
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
