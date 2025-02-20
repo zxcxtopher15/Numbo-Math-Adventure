@@ -65,18 +65,7 @@ class MathJamController extends Controller
         if ($existingJam) {
             $hasQuestions = OrderedQuestion::where('math_jam_id', $existingJam->math_jam_id)->exists();
 
-            if ($hasQuestions) {
-                if ($existingJam->status === 'disconnected') {
-                    $existingJam->status = 'started';
-                }
-                $existingJam->save();
-
-                return response()->json(['jam' => $existingJam]);
-
-                return response()->json([
-                    'redirect' => route('journey.start')
-                ]);                
-            } else {
+            if (!$hasQuestions) {
                 $existingJam->status = 'waiting';
             }
 
