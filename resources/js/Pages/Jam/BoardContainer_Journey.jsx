@@ -92,7 +92,7 @@ export default function BoardContainer_Journey({ auth }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
                 },
                 body: JSON.stringify({
                     math_jam_id: existingJam.math_jam_id,
@@ -100,10 +100,8 @@ export default function BoardContainer_Journey({ auth }) {
             });
 
             if (response.ok) {
-                localStorage.setItem(
-                    'existingJam',
-                    JSON.stringify(response.jam),
-                );
+                const data = await response.json();
+                localStorage.setItem('existingJam', JSON.stringify(data.jam));
             }
         } catch (err) {
             console.error('Error during disconnect:', err);
