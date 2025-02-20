@@ -112,9 +112,9 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
         <>
             <Confetti width={width} height={height} />
 
-            <div className="w-full h-full flex  items-center justify-between bg-white p-6 rounded-3xl shadow-lg box-border">
-                <div className="w-full h-full justify-center items-end p-10 relative">
-                    <h1 className="text-6xl font-bold text-primary relative z-10">GREAT JOB!!!</h1>
+            <div className="w-full h-full flex flex-col lg:flex-row items-center justify-between bg-white p-6 rounded-3xl shadow-lg box-border">
+                <div className="w-full lg:h-full h-max lg:w-1/2 justify-center items-end lg:px-10 lg:text-start text-center py-5 relative">
+                    <h1 className="lg:text-6xl text-5xl font-bold text-primary relative z-10">GREAT JOB!!!</h1>
 
                     <div className="lg:flex hidden justify-center items-center h-full w-full ">
                         <SvgAsset
@@ -124,7 +124,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
                         />
                     </div>
                 </div>
-                <div className="flex flex-col bg-gray-200 h-full rounded-3xl md:p-6 p-2 gap-4 lg:w-4/12 sm:w-full ">
+                <div className="flex flex-col bg-gray-200 h-full rounded-3xl md:p-6 p-2 gap-4 lg:w-4/12 sm:w-full w-full ">
                     <div className="flex justify-start items-center w-full p-4 bg-white rounded-3xl px-6 gap-8 ">
                         <img className="w-14 h-14" src="/images/assets/stars/glossy_3.svg" alt="" />
                         <h1 className="text-warning font-bold  text-6xl">
