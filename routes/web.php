@@ -24,6 +24,10 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/modules', function () {
+    return Inertia::render('Modules/Modules', request()->all());
+})->name('modules.Modules');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -49,10 +53,6 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::get('/math-journey/watch', function () {
         return Inertia::render('Jam/BoardContainer_Journey', request()->all());
     })->name('journey.start');
-
-    Route::get('/modules', function () {
-        return Inertia::render('Modules/Modules', request()->all());
-    })->name('modules.Modules');
 
     Route::get('/questions_list_teacher', [QuestionController::class, 'getQuestions']);
     Route::post('/math-journey/update-status', [MathJamController::class, 'update_status']);
