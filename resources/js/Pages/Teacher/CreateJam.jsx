@@ -43,11 +43,7 @@ const CreateJam = () => {
                 if (response.ok && data.jam) {
                     setExistingJam(data.jam);
                     localStorage.setItem('existingJam', JSON.stringify(data.jam));
-
-                    if (data.redirect) {
-                        window.location.href = data.redirect;
-                        return;
-                    }
+                    console.log(data.redirect);
                 } else {
                     setExistingJam(null);
                     localStorage.removeItem('existingJam');
