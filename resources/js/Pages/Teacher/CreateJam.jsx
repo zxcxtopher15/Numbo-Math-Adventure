@@ -372,9 +372,9 @@ const CreateJam = () => {
             if (response.ok) {
                 // console.log('Math Jam status updated to start');
 
-                // if (status == "started") {
-                //     window.location.href = '/math-journey/watch'
-                // }
+                if (status == "started") {
+                    window.location.href = '/math-journey/watch'
+                }
                 
                 const updatedJam = { ...existingJam, status };
                 setExistingJam(updatedJam);

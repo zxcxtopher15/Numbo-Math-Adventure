@@ -14,11 +14,47 @@ export default function BoardContainer_Journey({ auth }) {
         if (storedJam) {
             const parsedJam = JSON.parse(storedJam);
             setExistingJam(parsedJam);
+            handleReconnect();
             if (parsedJam.status === "disconnected") {
                 window.location.href = '/math-journey';
             }
         }
     }, []);
+
+    const handleReconnect = async () => {
+        if (!existingJam) return;
+
+        let status = "";
+
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        if (!baseUrl) {
+            console.error('Base URL not found.');
+            return;
+        }
+
+        const apiUrl = `${baseUrl}/math-journey/update-status`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    math_jam_id: existingJam.math_jam_id,
+                    status: "started",
+                }),
+            });
+
+            if (response.ok) {
+                // console.log('Math Jam status updated to start');
+            } else {
+                console.error('Failed to update Math Jam status');
+            }
+        } catch (error) {
+            console.error('Error updating Math Jam status:', error);
+        }
+    };
 
     useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
