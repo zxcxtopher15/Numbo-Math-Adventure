@@ -370,7 +370,7 @@ class MathJamController extends Controller
 
         $questions = OrderedQuestion::where('math_jam_id', $mathJamId)
             ->orderBy('order_number')
-            ->with('questions')
+            ->with('question')
             ->get();
 
         return response()->json($questions);
