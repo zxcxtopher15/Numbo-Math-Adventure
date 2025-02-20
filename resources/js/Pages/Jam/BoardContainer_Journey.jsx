@@ -60,7 +60,7 @@ export default function BoardContainer_Journey({ auth }) {
 
     const saveOrderedQuestions = async (questions) => {
         const orderedQuestions = questions.map((question, index) => ({
-            math_jam_id: existingJam.math_jam_id,
+            math_jam_id: existingJam?.math_jam_id,
             question_id: question.question_data.id,
             order_number: index + 1,
         }));
@@ -70,12 +70,16 @@ export default function BoardContainer_Journey({ auth }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                 },
-                body: JSON.stringify({ orderedQuestions }),
+                body: JSON.stringify({ questions: orderedQuestions }),
             });
 
+            const data = await response.json();
+            console.log('Response:', data);
+
             if (!response.ok) {
-                throw new Error('Failed to save ordered questions');
+                throw new Error(data.message || 'Failed to save ordered questions');
             }
 
             console.log('Ordered questions saved successfully');

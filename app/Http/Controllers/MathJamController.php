@@ -330,11 +330,11 @@ class MathJamController extends Controller
 
     public function saveOrderedQuestions(Request $request)
     {
-        $questions = $request->input('questions');
-
-        if (!$questions || !is_array($questions)) {
-            return response()->json(['status' => 'error', 'message' => 'Invalid data provided'], 400);
+        if (!$request->has('questions') || !is_array($request->input('questions'))) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid data provided', 'data_received' => $request->all()], 400);
         }
+
+        $questions = $request->input('questions');
 
         foreach ($questions as $question) {
             OrderedQuestion::create([
