@@ -432,13 +432,15 @@ class MathJamController extends Controller
 
     public function updatePauseStatus(Request $request)
     {
+        $status = $request->input('is_paused');
+
         $mathJam = MathJam::where('math_jam_id', $request->math_jam_id)->first();
 
         if (!$mathJam) {
             return response()->json(['message' => 'Math Jam not found'], 404);
         }
 
-        $mathJam->is_paused = $request->status;
+        $mathJam->is_paused = $status;
         $mathJam->save();
 
         return response()->json(['message' => 'Math Jam paused successfully'], 200);
