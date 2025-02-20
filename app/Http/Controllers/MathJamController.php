@@ -62,6 +62,20 @@ class MathJamController extends Controller
             ->whereIn('status', ['waiting', 'started', 'disconnected'])
             ->first();
 
+        if ($existingJam) {
+            $hasQuestions = OrderedQuestion::where('math_jam_id', $existingJam->math_jam_id)->exists();
+
+            if ($hasQuestions) {
+                if ($existingJam->status === 'disconnected') {
+                    $existingJam->status = 'started';
+                }
+            } else {
+                $existingJam->status = 'waiting';
+            }
+
+            $existingJam->save();
+        }
+
         return response()->json(['jam' => $existingJam]);
     }
 
