@@ -173,7 +173,7 @@ const students_data = [
         image: '',
         scores: [
             {
-                for: 'Pre-Assessment',
+                math_journey_for: 'Pre-Assessment',
                 type: 'Addition',
                 category: 'Add Tens',
                 score: 10,
@@ -181,7 +181,7 @@ const students_data = [
                 date: '2023-10-01 10:00:00',
             },
             {
-                for: 'Post-Assessment',
+                math_journey_for: 'Post-Assessment',
                 type: 'Subtraction',
                 category: 'Add two number',
                 score: 22,
@@ -189,7 +189,7 @@ const students_data = [
                 date: '2023-10-02 11:00:00',
             },
             {
-                for: 'Quiz',
+                math_journey_for: 'Quiz',
                 type: 'Multiplication',
                 category: 'Multiplication',
                 score: 10,
@@ -197,7 +197,7 @@ const students_data = [
                 date: '2023-10-03 12:00:00',
             },
             {
-                for: 'Quiz',
+                math_journey_for: 'Quiz',
                 type: 'Division',
                 category: 'Division',
                 score: 2,
@@ -205,7 +205,7 @@ const students_data = [
                 date: '2023-10-04 13:00:00',
             },
             {
-                for: 'Pre-Assessment',
+                math_journey_for: 'Pre-Assessment',
                 type: 'Addition',
                 category: 'Addition',
                 score: 10,
@@ -213,7 +213,7 @@ const students_data = [
                 date: '2023-10-01 10:30:00',
             },
             {
-                for: 'Post-Assessment',
+                math_journey_for: 'Post-Assessment',
                 type: 'Subtraction',
                 category: 'Subtraction',
                 score: 22,
@@ -221,7 +221,7 @@ const students_data = [
                 date: '2023-10-02 11:30:00',
             },
             {
-                for: 'Quiz',
+                math_journey_for: 'Quiz',
                 type: 'Multiplication',
                 category: 'Multiplication',
                 score: 10,
@@ -229,7 +229,7 @@ const students_data = [
                 date: '2023-10-03 12:30:00',
             },
             {
-                for: 'Quiz',
+                math_journey_for: 'Quiz',
                 type: 'Division',
                 category: 'Division',
                 score: 2,
@@ -243,7 +243,7 @@ const students_data = [
         image: '',
         scores: [
             {
-                for: 'Pre-Assessment',
+                math_journey_for: 'Pre-Assessment',
                 type: 'Addition',
                 category: 'Addition',
                 score: 10,
@@ -251,7 +251,7 @@ const students_data = [
                 date: '2023-10-01 10:30:00',
             },
             {
-                for: 'Post-Assessment',
+                math_journey_for: 'Post-Assessment',
                 type: 'Subtraction',
                 category: 'Subtraction',
                 score: 22,
@@ -259,7 +259,7 @@ const students_data = [
                 date: '2023-10-02 11:30:00',
             },
             {
-                for: 'Quiz',
+                math_journey_for: 'Quiz',
                 type: 'Multiplication',
                 category: 'Multiplication',
                 score: 10,
@@ -267,7 +267,7 @@ const students_data = [
                 date: '2023-10-03 12:30:00',
             },
             {
-                for: 'Quiz',
+                math_journey_for: 'Quiz',
                 type: 'Division',
                 category: 'Division',
                 score: 2,
