@@ -69,6 +69,11 @@ class MathJamController extends Controller
                 if ($existingJam->status === 'disconnected') {
                     $existingJam->status = 'started';
                 }
+                $existingJam->save();
+
+                return response()->json([
+                    'redirect' => url('/math-journey/watch')
+                ]);
             } else {
                 $existingJam->status = 'waiting';
             }
