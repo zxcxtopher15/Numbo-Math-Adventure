@@ -111,7 +111,7 @@ export default function BoardContainer_Journey({ auth }) {
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.length > 0) {
-                        setQuestions(data.map((item) => ({
+                        const formattedQuestions = data.map((item) => ({
                             title: `${item.question.category} Challenge`,
                             time: existingJam.time_limit,
                             question_data: {
@@ -126,9 +126,13 @@ export default function BoardContainer_Journey({ auth }) {
                                 answer: choice,
                                 is_correct: choice === item.question.correct_answer,
                             })),
-                        })));
+                        }));
 
-                        updateCurrentQuestionId(questions.question_data.id);
+                        setQuestions(formattedQuestions);
+
+                        if (formattedQuestions.length > 0) {
+                            updateCurrentQuestionId(formattedQuestions[0].question_data.id);
+                        }
                     } else {
                         fetchNewQuestions();
                     }
