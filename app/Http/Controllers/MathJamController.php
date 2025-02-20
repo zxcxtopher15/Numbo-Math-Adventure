@@ -444,6 +444,7 @@ class MathJamController extends Controller
         }
 
         $mathJam->is_paused = $status;
+        $mathJam->updated_at = now();
         $mathJam->save();
 
         return response()->json(['message' => 'Math Jam paused successfully'], 200);
