@@ -337,6 +337,8 @@ export function Board_Journey({ data }) {
     useEffect(() => {
         if (currentQuestion < data.length) {
             updateCurrentQuestionId(data[currentQuestion].question_data.id);
+        } else {
+            updateCurrentQuestionId(0);
         }
     }, [currentQuestion]);
 
