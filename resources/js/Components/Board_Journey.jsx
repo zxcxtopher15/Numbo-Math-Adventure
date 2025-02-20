@@ -197,8 +197,7 @@ export function Board_Journey({ data }) {
     }, []);
 
     const handleAnswer = (answer) => {
-        setIsCorrect(false); // Reset the isCorrect state
-
+        setIsCorrect(false);
         setIsAnswered(true);
 
         const endTime = Date.now();
@@ -231,33 +230,41 @@ export function Board_Journey({ data }) {
                 correctQuestions: newCorrectQuestions,
             };
         });
+
+        deleteCurrentQuestion();
     };
 
-    const handleNext = async () => {
-        if (currentQuestion < data.length) {
-            const currentQuestionId = data[currentQuestion].question_data.id;
+    const deleteCurrentQuestion = async () => {
+        const currentQuestionId = data[currentQuestion]?.question_data?.id;
 
-            try {
-                const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
+        if (!currentQuestionId) return;
 
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.statusText}`);
+        try {
+            const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
                 }
+            });
 
-                console.log(`Question ${currentQuestionId} deleted successfully`);
-            } catch (error) {
-                console.error("Error deleting question:", error.message);
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
             }
+
+            console.log(`Question ${currentQuestionId} deleted successfully`);
+        } catch (error) {
+            console.error("Error deleting question:", error.message);
+        }
+    };
+
+    const handleNext = () => {
+        if (currentQuestion < data.length) {
+            deleteCurrentQuestion();
 
             setIsAnswered(false);
             setIsTimeUp(false);
             setCorrectAnswer('');
-            setCurrentQuestion((prev) => (prev < data.length - 1 ? prev + 1 : prev + 1));
+            setCurrentQuestion((prev) => (prev < data.length - 1 ? prev + 1 : prev));
         }
     };
 
@@ -281,8 +288,11 @@ export function Board_Journey({ data }) {
                 ...prevState,
                 userAnswers: [...prevState.userAnswers, newUserAnswer],
             }));
+
+            deleteCurrentQuestion();
         }
     };
+
 
     const colors = ['bg-blue-400', 'bg-purple-400', 'bg-pink-400', 'bg-green-400', 'bg-yellow-400', 'bg-red-400'];
 
