@@ -369,10 +369,11 @@ const CreateJam = () => {
                 }),
             });
 
-            setShowReconnectModal(false);
-
             if (response.ok) {
                 // console.log('Math Jam status updated to start');
+                const updatedJam = { ...existingJam, status };
+                setExistingJam(updatedJam);
+                setShowReconnectModal(false);
             } else {
                 console.error('Failed to update Math Jam status');
             }
