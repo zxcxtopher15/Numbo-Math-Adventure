@@ -308,7 +308,7 @@ export function Board_Journey({ data }) {
 
     const handleNext = async () => {
         if (currentQuestion < data.length) {
-            const currentQuestionId = data[currentQuestion]?.question_data?.id;
+            const currentQuestionId = data[currentQuestion].question_data.id;
 
             try {
                 const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
@@ -330,16 +330,15 @@ export function Board_Journey({ data }) {
             setIsAnswered(false);
             setIsTimeUp(false);
             setCorrectAnswer('');
-
-            setCurrentQuestion((prev) => (prev < data.length - 1 ? prev + 1 : 0));
+            setCurrentQuestion((prev) => (prev < data.length - 1 ? prev + 1 : prev + 1));
         }
     };
 
     useEffect(() => {
-        if (data.length > 0) {
-            updateCurrentQuestionId(data[currentQuestion]?.question_data?.id || 0);
+        if (currentQuestion < data.length) {
+            updateCurrentQuestionId(data[currentQuestion].question_data.id);
         }
-    }, [currentQuestion, data]);
+    }, [currentQuestion]);
 
     const handleTimeUp = async () => {
         if (!isAnswered) {
