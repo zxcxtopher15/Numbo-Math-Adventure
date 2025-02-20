@@ -10,17 +10,22 @@ export default function BoardContainer_Journey({ auth }) {
     const [existingJam, setExistingJam] = useState(null);
 
     useEffect(() => {
-        const handleStorageChange = (event) => {
-            if (event.key === 'existingJam') {
-                setExistingJam(JSON.parse(event.newValue));
+        const storedJam = localStorage.getItem('existingJam');
+        if (storedJam) {
+            const parsedJam = JSON.parse(storedJam);
+            setExistingJam(parsedJam);
+            if (parsedJam.status === "disconnected") {
+                window.location.href = '/math-journey';
             }
-        };
+        }
+    }, []);
 
-        window.addEventListener('storage', handleStorageChange);
-
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-        };
+    useEffect(() => {
+        if (existingJam) {
+            if (existingJam.status === "disconnected") {
+                window.location.href = '/math-journey';
+            }
+        }
     }, []);
 
     useEffect(() => {
@@ -101,6 +106,10 @@ export default function BoardContainer_Journey({ auth }) {
                     math_jam_id: existingJam.math_jam_id,
                 }),
             });
+
+            let status = "disconnected";
+            const updatedJam = { ...existingJam, status };
+            setExistingJam(updatedJam);
         } catch (err) {
             console.error('Error during disconnect:', err);
         }
