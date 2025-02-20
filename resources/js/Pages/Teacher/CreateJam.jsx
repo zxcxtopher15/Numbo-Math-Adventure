@@ -341,18 +341,12 @@ const CreateJam = () => {
     const handleReconnect = async () => {
         if (!existingJam) return;
 
-        let status = "";
+        let status = hasQuestions ? "started" : "waiting";
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) {
             console.error('Base URL not found.');
             return;
-        }
-
-        if (hasQuestions) {
-            status = "started";
-        } else {
-            status = "waiting";
         }
 
         const apiUrl = `${baseUrl}/math-journey/update-status`;
@@ -370,15 +364,13 @@ const CreateJam = () => {
             });
 
             if (response.ok) {
-                // console.log('Math Jam status updated to start');
-
-                if (status == "started") {
-                    window.location.href = '/math-journey/watch'
-                }
-                
                 const updatedJam = { ...existingJam, status };
                 setExistingJam(updatedJam);
                 setShowReconnectModal(false);
+
+                if (status === "started") {
+                    window.history.pushState({}, '', '/math-journey/watch');
+                }
             } else {
                 console.error('Failed to update Math Jam status');
             }

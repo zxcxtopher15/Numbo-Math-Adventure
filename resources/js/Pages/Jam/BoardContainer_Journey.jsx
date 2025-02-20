@@ -39,7 +39,6 @@ export default function BoardContainer_Journey({ auth }) {
         };
 
         const beforeUnloadHandler = (event) => {
-            console.log("beforeunload triggered");
             handleDisconnect();
         };
 
