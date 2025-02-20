@@ -40,7 +40,7 @@ export default function BoardContainer_Journey({ auth }) {
 
         const beforeUnloadHandler = (event) => {
             handleDisconnect();
-            window.location.href = '/math-journey';
+            window.location.href = `${baseUrl}/math-journey`;
         };
 
         const offlineHandler = () => {
@@ -52,7 +52,7 @@ export default function BoardContainer_Journey({ auth }) {
                 confirmButtonColor: '#d33',
                 allowOutsideClick: false,
             }).then(() => {
-                window.location.href = '/math-journey';
+                window.location.href = `${baseUrl}/math-journey`;
             });
         };
 

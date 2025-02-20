@@ -323,8 +323,6 @@ export function Board_Journey({ data }) {
                 }
 
                 console.log(`Question ${currentQuestionId} deleted successfully`);
-
-                updateCurrentQuestionId(currentQuestionId);
             } catch (error) {
                 console.error('Error deleting question:', error.message);
             }
@@ -335,6 +333,12 @@ export function Board_Journey({ data }) {
             setCurrentQuestion((prev) => (prev < data.length - 1 ? prev + 1 : prev + 1));
         }
     };
+
+    useEffect(() => {
+        if (currentQuestion < data.length) {
+            updateCurrentQuestionId(data[currentQuestion].question_data.id);
+        }
+    }, [currentQuestion]);
 
     const handleTimeUp = async () => {
         if (!isAnswered) {
