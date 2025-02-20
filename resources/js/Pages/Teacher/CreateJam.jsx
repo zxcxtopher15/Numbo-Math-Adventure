@@ -274,7 +274,8 @@ const CreateJam = () => {
     };
 
     const handleDisconnect = async () => {
-        if (!existingJam.math_jam_id) return;
+        console.log(existingJam);
+        if (!existingJam) return;
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
