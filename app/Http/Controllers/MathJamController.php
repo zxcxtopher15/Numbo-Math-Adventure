@@ -59,7 +59,7 @@ class MathJamController extends Controller
         $teacherId = $request->query('teacher_id');
 
         $existingJam = MathJam::where('teacher_id', $teacherId)
-            ->whereIn('status', ['waiting', 'started'])
+            ->whereIn('status', ['waiting', 'started', 'disconnected'])
             ->first();
 
         return response()->json(['jam' => $existingJam]);
