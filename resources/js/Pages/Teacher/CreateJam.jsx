@@ -26,6 +26,7 @@ const CreateJam = () => {
     const [participants, setParticipants] = useState([]);
     const hasJoinedParticipants = participants.some((participant) => participant.status === 'joined');
     const [showReconnectModal, setShowReconnectModal] = useState(false);
+    const [hasQuestions, setHasQuestions] = useState('');
 
     useEffect(() => {
         const fetchExistingJam = async () => {
@@ -42,10 +43,9 @@ const CreateJam = () => {
                 const data = await response.json();
 
                 if (response.ok && data.jam) {
-                    console.log(data);
                     setExistingJam(data.jam);
                     localStorage.setItem('existingJam', JSON.stringify(data.jam));
-
+                    setHasQuestions(data.hasQuestions);
                     if (data.jam.status == 'disconnected') {
                         setShowReconnectModal(true);
                     }
@@ -338,6 +338,47 @@ const CreateJam = () => {
         }
     };
 
+    const handleReconnect = async () => {
+        if (!existingJam) return;
+
+        let status = "";
+
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        if (!baseUrl) {
+            console.error('Base URL not found.');
+            return;
+        }
+
+        if (hasQuestions) {
+            status = "started";
+        } else {
+            status = "waiting";
+        }
+
+        const apiUrl = `${baseUrl}/math-journey/update-status`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    math_jam_id: existingJam.math_jam_id,
+                    status: status,
+                }),
+            });
+
+            if (response.ok) {
+                // console.log('Math Jam status updated to start');
+            } else {
+                console.error('Failed to update Math Jam status');
+            }
+        } catch (error) {
+            console.error('Error updating Math Jam status:', error);
+        }
+    };
+
     const waitingList = participants
         .filter((participant) => participant.status === 'joined')
         .map((participant) => ({
@@ -356,7 +397,10 @@ const CreateJam = () => {
                         <div className="bg-white rounded-3xl p-8 text-center">
                             <h2 className="text-3xl font-bold mb-4 text-danger">Reconnection Required</h2>
                             <p className="mb-4">Your session was disconnected. Click below to reconnect.</p>
-                            <button className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold">
+                            <button
+                                className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold"
+                                onClick={handleReconnect}
+                            >
                                 Reconnect
                             </button>
                         </div>
