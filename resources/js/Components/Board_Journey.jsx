@@ -238,7 +238,7 @@ export function Board_Journey({ data }) {
             const currentQuestionId = data[currentQuestion].question_data.id;
 
             try {
-                const response = await fetch(`/api/ordered-questions/${currentQuestionId}`, {
+                const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json'
