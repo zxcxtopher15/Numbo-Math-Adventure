@@ -264,7 +264,9 @@ export function Board_Journey({ data }) {
                 }),
             });
 
-            window.location.href = `${baseUrl}/math-journey`;
+            setTimeout(() => {
+                window.location.assign(`${baseUrl}/math-journey`);
+            }, 500);
         } catch (err) {
             console.error('Error during disconnect:', err);
         }
