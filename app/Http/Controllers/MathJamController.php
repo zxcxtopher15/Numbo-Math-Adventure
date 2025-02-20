@@ -65,14 +65,23 @@ class MathJamController extends Controller
         if ($existingJam) {
             $hasQuestions = OrderedQuestion::where('math_jam_id', $existingJam->math_jam_id)->exists();
 
-            if (!$hasQuestions) {
-                $existingJam->status = 'waiting';
+            if ($hasQuestions) {
+                return response()->json([
+                    'jam' => $existingJam,
+                    'message' => 'This math jam already has questions.'
+                ]);
+            } else {
+                return response()->json([
+                    'jam' => $existingJam,
+                    'message' => 'Math jam found but has no questions, status set to waiting.'
+                ]);
             }
-
-            $existingJam->save();
         }
 
-        return response()->json(['jam' => $existingJam]);
+        return response()->json([
+            'jam' => null,
+            'message' => 'No existing math jam found.'
+        ]);
     }
 
     public function streamMathJamParticipants(Request $request)
