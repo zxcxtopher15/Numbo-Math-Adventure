@@ -142,6 +142,7 @@ const CreateJam = () => {
 
         const beforeUnloadHandler = (event) => {
             handleDisconnect();
+            console.log("Triggered");
         };
 
         window.addEventListener('beforeunload', beforeUnloadHandler);
