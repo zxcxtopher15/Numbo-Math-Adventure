@@ -168,31 +168,6 @@ export function Board_Journey({ data }) {
     });
     const [timeSpent, setTimeSpent] = useState([]);
     const { auth } = usePage().props;
-    
-    useEffect(() => {
-        const disableRightClick = (event) => {
-            event.preventDefault();
-        };
-
-        const disableReload = (event) => {
-            if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.ctrlKey && event.key === 'R')) {
-                event.preventDefault();
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Action Blocked',
-                    text: 'Page reload is disabled on this section.',
-                });
-            }
-        };
-
-        document.addEventListener('contextmenu', disableRightClick);
-        window.addEventListener('keydown', disableReload);
-
-        return () => {
-            document.removeEventListener('contextmenu', disableRightClick);
-            window.removeEventListener('keydown', disableReload);
-        };
-    }, []);
 
     useEffect(() => {
         setStartTime(Date.now());

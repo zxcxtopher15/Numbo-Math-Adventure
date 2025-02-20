@@ -18,7 +18,7 @@ export default function BoardContainer_Journey({ auth }) {
 
     useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-        
+
         const disableRightClick = (event) => {
             event.preventDefault();
         };
@@ -76,7 +76,10 @@ export default function BoardContainer_Journey({ auth }) {
     const handleDisconnect = async () => {
         const existingJam = JSON.parse(localStorage.getItem('existingJam'));
 
-        if (!existingJam || !existingJam.math_jam_id) return;
+        if (!existingJam || !existingJam.math_jam_id) {
+            window.location.href = `${baseUrl}/math-journey`;
+            return;
+        }
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
@@ -96,6 +99,8 @@ export default function BoardContainer_Journey({ auth }) {
             });
         } catch (err) {
             console.error('Error during disconnect:', err);
+        } finally {
+            window.location.href = `${baseUrl}/math-journey`;
         }
     };
 
