@@ -10,16 +10,17 @@ export default function BoardContainer_Journey({ auth }) {
     const [existingJam, setExistingJam] = useState(null);
 
     useEffect(() => {
-        const storedJam = localStorage.getItem('existingJam');
-        if (storedJam) {
-            const parsedJam = JSON.parse(storedJam);
-            setExistingJam(parsedJam);
-            console.log(parsedJam);
-            if (parsedJam.status === "disconnected") {
-                console.log("DISCONNECTED: " + parsedJam);
-                window.location.href = '/math-journey';
+        const handleStorageChange = (event) => {
+            if (event.key === 'existingJam') {
+                setExistingJam(JSON.parse(event.newValue));
             }
-        }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, []);
 
     useEffect(() => {
@@ -42,17 +43,11 @@ export default function BoardContainer_Journey({ auth }) {
 
         const beforeUnloadHandler = (event) => {
             handleDisconnect();
-            let status = "disconnected";
-            const updatedJam = { ...existingJam, status };
-            setExistingJam(updatedJam);
             window.location.href = `${baseUrl}/math-journey`;
         };
 
         const offlineHandler = () => {
             handleDisconnect();
-            let status = "disconnected";
-            const updatedJam = { ...existingJam, status };
-            setExistingJam(updatedJam);
             Swal.fire({
                 icon: 'error',
                 title: 'Connection Lost',
