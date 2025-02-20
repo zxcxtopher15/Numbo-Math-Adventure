@@ -24,7 +24,7 @@ const CreateJam = () => {
     const [existingJam, setExistingJam] = useState(null);
     const [loading, setLoading] = useState(true);
     const [participants, setParticipants] = useState([]);
-    const hasJoinedParticipants = participants.some(participant => participant.status === "joined");
+    const hasJoinedParticipants = participants.some((participant) => participant.status === 'joined');
     const [showReconnectModal, setShowReconnectModal] = useState(false);
 
     useEffect(() => {
@@ -45,7 +45,7 @@ const CreateJam = () => {
                     setExistingJam(data.jam);
                     localStorage.setItem('existingJam', JSON.stringify(data.jam));
 
-                    if (data.jam.status == "disconnected") {
+                    if (data.jam.status == 'disconnected') {
                         setShowReconnectModal(true);
                     }
                 } else {
@@ -176,7 +176,7 @@ const CreateJam = () => {
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
-                    'Accept': 'application/json',
+                    Accept: 'application/json',
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 },
@@ -349,12 +349,16 @@ const CreateJam = () => {
     return (
         <>
             <Head title="Math Journey" />
-            {showReconnectModal && (
-                <div className="overlay">
-                    <div className="modal">
-                        <h2>Reconnection Required</h2>
-                        <p>Your session was disconnected. Click below to reconnect.</p>
-                        <button>Reconnect</button>
+            {!showReconnectModal && (
+                <div className="fixed inset-0 z-50">
+                    <div className="flex items-center justify-center p-2 h-full w-full bg-success bg-opacity-30">
+                        <div className="bg-white rounded-3xl p-8 text-center">
+                            <h2 className="text-3xl font-bold mb-4 text-danger">Reconnection Required</h2>
+                            <p className="mb-4">Your session was disconnected. Click below to reconnect.</p>
+                            <button className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold">
+                                Reconnect
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -411,7 +415,9 @@ const CreateJam = () => {
                                                         </p>
                                                         <p className="font-semibold">
                                                             Math Journey For:{' '}
-                                                            <span className="font-normal">{existingJam.math_journey_for}</span>
+                                                            <span className="font-normal">
+                                                                {existingJam.math_journey_for}
+                                                            </span>
                                                         </p>
                                                         <p className="font-semibold">
                                                             Category:{' '}
@@ -420,7 +426,8 @@ const CreateJam = () => {
                                                         <p className="font-semibold">
                                                             Status:{' '}
                                                             <span className="font-normal">
-                                                                {existingJam.status.charAt(0).toUpperCase() + existingJam.status.slice(1)}
+                                                                {existingJam.status.charAt(0).toUpperCase() +
+                                                                    existingJam.status.slice(1)}
                                                             </span>
                                                         </p>
                                                     </div>
@@ -530,15 +537,24 @@ const CreateJam = () => {
                                                             onClick={(e) => {
                                                                 handleStart();
                                                                 if (existingJam) {
-                                                                    localStorage.setItem("category", existingJam.category);
-                                                                    localStorage.setItem("existingJam", JSON.stringify(existingJam));
+                                                                    localStorage.setItem(
+                                                                        'category',
+                                                                        existingJam.category,
+                                                                    );
+                                                                    localStorage.setItem(
+                                                                        'existingJam',
+                                                                        JSON.stringify(existingJam),
+                                                                    );
                                                                 }
                                                             }}
                                                         >
                                                             <PrimaryButton className="w-max px-5">Start</PrimaryButton>
                                                         </Link>
                                                     ) : (
-                                                        <PrimaryButton className="w-max px-5 opacity-50 cursor-not-allowed" disabled>
+                                                        <PrimaryButton
+                                                            className="w-max px-5 opacity-50 cursor-not-allowed"
+                                                            disabled
+                                                        >
                                                             Start
                                                         </PrimaryButton>
                                                     )}

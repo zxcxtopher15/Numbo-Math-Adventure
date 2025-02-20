@@ -25,7 +25,7 @@ export function TeacherDashboard(result) {
             <div className="mx-auto max-w-[100rem] sm:px-6 lg:px-8">
                 <div className="sm:p-4 p-0 space-y-5">
                     <div className="grid md:grid-cols-2 grid-cols-1 text-white gap-5 mb-14">
-                        <div className="bg-gradient-to-br from-[#fdbdbd] to-[#92e0ff] rounded-2xl p-8 grid md:grid-cols-5 grid-cols-1">
+                        <div className="bg-gradient-to-tl from-[#fdbdbd] to-[#92e0ff] rounded-2xl p-8 grid md:grid-cols-5 grid-cols-1">
                             <div className="flex flex-col justify-center col-span-3">
                                 <h2 className="text-3xl font-bold mb-4">Overall Student Performance</h2>
                                 <p className="font-light text-lg">
