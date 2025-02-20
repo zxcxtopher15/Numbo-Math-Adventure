@@ -202,13 +202,13 @@ export function Board_Journey({ data }) {
                 },
                 body: JSON.stringify({
                     math_jam_id: existingJam.math_jam_id,
-                    is_pause: 1,
+                    is_paused: 1,
                 }),
             });
 
             if (response.ok) {
                 // console.log("Math Jam paused successfully.");
-                setExistingJam({ ...existingJam, is_pause: 1 }); // Update the state
+                setExistingJam({ ...existingJam, is_paused: 1 }); // Update the state
             } else {
                 console.error("Failed to pause Math Jam.");
             }
@@ -237,13 +237,13 @@ export function Board_Journey({ data }) {
                 },
                 body: JSON.stringify({
                     math_jam_id: existingJam.math_jam_id,
-                    is_pause: 0,
+                    is_paused: 0,
                 }),
             });
 
             if (response.ok) {
                 // console.log("Math Jam paused successfully.");
-                setExistingJam({ ...existingJam, is_pause: 0 });
+                setExistingJam({ ...existingJam, is_paused: 0 });
             } else {
                 console.error("Failed to pause Math Jam.");
             }
