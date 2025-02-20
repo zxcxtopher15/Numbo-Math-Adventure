@@ -168,6 +168,14 @@ export function Board_Journey({ data }) {
     });
     const [timeSpent, setTimeSpent] = useState([]);
     const { auth } = usePage().props;
+    const [existingJam, setExistingJam] = useState(null);
+
+    useEffect(() => {
+        const storedJam = localStorage.getItem('existingJam');
+        if (storedJam) {
+            setExistingJam(JSON.parse(storedJam));
+        }
+    }, []);
 
     useEffect(() => {
         setStartTime(Date.now());
