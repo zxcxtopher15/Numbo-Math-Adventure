@@ -22,12 +22,15 @@ const JoinJam = () => {
     const [score, setScore] = useState(0);
     const [loading, setLoading] = useState(false);
     const hasReloaded = useRef(false);
+    const [tempJamCode, setTempJamCode] = useState("");
 
     useEffect(() => {
         sessionStorage.setItem('jamCode', jamCode);
     }, [jamCode]);
 
     const handleJoinJam = async () => {
+        setJamCode(tempJamCode);
+        
         if (!studentId) {
             Swal.fire({
                 icon: 'error',
@@ -241,6 +244,86 @@ const JoinJam = () => {
         }
     };
 
+    useEffect(() => {
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+
+        if (!jamCode || !studentId) return;
+
+        const sseUrl = `${baseUrl}/math-journey/jam-stream-updates?math_jam_code=${jamCode}`;
+        let eventSource;
+
+        const connectSSE = () => {
+            eventSource = new EventSource(sseUrl);
+
+            eventSource.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+
+                if (data && (data.status === 'waiting' || data.status === 'started')) {
+                    // console.log(data);
+                } else {
+                    if (data.status === 'cancelled' || data.status === 'ended') {
+                        eventSource.close();
+
+                        Swal.fire({
+                            icon: data.status === 'cancelled' ? 'error' : 'info',
+                            title: data.status === 'cancelled' ? 'Math Journey Cancelled' : 'Math Journey Ended',
+                            text:
+                                data.status === 'cancelled'
+                                    ? 'The Math Journey session has been cancelled.'
+                                    : 'The Math Journey session has ended. Thank you for participating!',
+                            confirmButtonColor: '#d33',
+                            allowOutsideClick: false,
+                        }).then(() => {
+                            if (!hasReloaded.current) {
+                                hasReloaded.current = true;
+                                handleDisconnect();
+                                window.location.reload();
+                            }
+                        });
+
+                        return;
+                    }
+                }
+            };
+
+            eventSource.onerror = () => {
+                eventSource.close();
+                setTimeout(() => {
+                    connectSSE();
+                }, 1000);
+            };
+        };
+
+        connectSSE();
+
+        const beforeUnloadHandler = (event) => {
+            handleDisconnect();
+        };
+
+        window.addEventListener('beforeunload', beforeUnloadHandler);
+
+        const offlineHandler = () => {
+            handleDisconnect();
+            Swal.fire({
+                icon: 'error',
+                title: 'Connection Lost',
+                text: 'You have been disconnected due to a lost internet connection.',
+                confirmButtonColor: '#d33',
+                allowOutsideClick: false,
+            }).then(() => {
+                window.location.reload();
+            });
+        };
+
+        window.addEventListener('offline', offlineHandler);
+
+        return () => {
+            eventSource?.close();
+            window.removeEventListener('beforeunload', beforeUnloadHandler);
+            window.removeEventListener('offline', offlineHandler);
+        };
+    }, [jamCode, studentId]);
+
     return (
         <>
             <Head title="Math Journey" />
@@ -297,8 +380,8 @@ const JoinJam = () => {
                                     <TextInput
                                         type="text"
                                         id="jamCode"
-                                        value={jamCode}
-                                        onChange={(e) => setJamCode(e.target.value)}
+                                        value={tempJamCode}
+                                        onChange={(e) => setTempJamCode(e.target.value)}
                                         className="w-full mt-1 p-2 border rounded"
                                         placeholder="Enter Math Journey Code"
                                     />
