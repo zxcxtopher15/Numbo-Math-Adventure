@@ -25,6 +25,7 @@ const CreateJam = () => {
     const [loading, setLoading] = useState(true);
     const [participants, setParticipants] = useState([]);
     const hasJoinedParticipants = participants.some(participant => participant.status === "joined");
+    const [showReconnectModal, setShowReconnectModal] = useState(false);
 
     useEffect(() => {
         const fetchExistingJam = async () => {
@@ -43,6 +44,10 @@ const CreateJam = () => {
                 if (response.ok && data.jam) {
                     setExistingJam(data.jam);
                     localStorage.setItem('existingJam', JSON.stringify(data.jam));
+
+                    if (data.jam.status == "disconnected") {
+                        setShowReconnectModal(true);
+                    }
                 } else {
                     setExistingJam(null);
                     localStorage.removeItem('existingJam');
@@ -275,7 +280,7 @@ const CreateJam = () => {
 
     const handleDisconnect = async () => {
         const existingJam = JSON.parse(localStorage.getItem('existingJam'));
-        
+
         if (!existingJam || !existingJam.math_jam_id) return;
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
@@ -344,6 +349,15 @@ const CreateJam = () => {
     return (
         <>
             <Head title="Math Journey" />
+            {showReconnectModal && (
+                <div className="overlay">
+                    <div className="modal">
+                        <h2>Reconnection Required</h2>
+                        <p>Your session was disconnected. Click below to reconnect.</p>
+                        <button>Reconnect</button>
+                    </div>
+                </div>
+            )}
             <BoardOverlay>
                 <div className="w-full h-full bg-white rounded-3xl sm:p-8 p-2 flex flex-col justify-center relative overflow-hidden box-border">
                     <img
