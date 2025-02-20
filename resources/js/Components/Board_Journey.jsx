@@ -263,10 +263,7 @@ export function Board_Journey({ data }) {
                     math_jam_id: existingJam.math_jam_id,
                 }),
             });
-
-            setTimeout(() => {
-                window.location.assign(`${baseUrl}/math-journey`);
-            }, 500);
+            window.location.href = `${baseUrl}/math-journey`;
         } catch (err) {
             console.error('Error during disconnect:', err);
         }
