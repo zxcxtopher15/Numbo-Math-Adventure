@@ -234,6 +234,7 @@ export function Board_Journey({ data }) {
     };
 
     const handleNext = () => {
+        console.log(data);
         setIsAnswered(false);
         setIsTimeUp(false);
         setCorrectAnswer('');
