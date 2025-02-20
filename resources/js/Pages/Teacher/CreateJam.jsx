@@ -59,6 +59,30 @@ const CreateJam = () => {
         fetchExistingJam();
     }, [auth.user.id]);
 
+    const handleDisconnect = async () => {
+        if (!existingJam.math_jam_id) return;
+
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        if (!baseUrl) return;
+
+        const apiUrl = `${baseUrl}/math-journey/disconnect_jam`;
+
+        try {
+            await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({
+                    math_jam_id: existingJam.math_jam_id,
+                }),
+            });
+        } catch (err) {
+            console.error('Error during disconnect:', err);
+        }
+    };
+
     useEffect(() => {
         const disableRightClick = (event) => {
             event.preventDefault();
@@ -116,8 +140,31 @@ const CreateJam = () => {
 
         connectSSE();
 
+        const beforeUnloadHandler = (event) => {
+            handleDisconnect();
+        };
+
+        window.addEventListener('beforeunload', beforeUnloadHandler);
+
+        const offlineHandler = () => {
+            handleDisconnect();
+            Swal.fire({
+                icon: 'error',
+                title: 'Connection Lost',
+                text: 'You have been disconnected due to a lost internet connection.',
+                confirmButtonColor: '#d33',
+                allowOutsideClick: false,
+            }).then(() => {
+                window.location.reload();
+            });
+        };
+
+        window.addEventListener('offline', offlineHandler);
+
         return () => {
             eventSource?.close();
+            window.removeEventListener('beforeunload', beforeUnloadHandler);
+            window.removeEventListener('offline', offlineHandler);
         };
     }, [auth.user.id]);
 

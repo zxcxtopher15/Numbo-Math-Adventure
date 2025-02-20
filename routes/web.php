@@ -59,6 +59,7 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::post('/save_ordered_questions', [MathJamController::class, 'saveOrderedQuestions']);
     Route::get('/get_ordered_questions', [MathJamController::class, 'getOrderedQuestions']);
     Route::delete('/ordered-questions/{id}', [MathJamController::class, 'destroy']);
+    Route::post('/math-journey/disconnect_jam', [MathJamController::class, 'disconnect_jam']);
 });
 
 Route::group(['middleware' => 'student'], function () {

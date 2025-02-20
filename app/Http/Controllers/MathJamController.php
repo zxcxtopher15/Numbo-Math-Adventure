@@ -387,4 +387,24 @@ class MathJamController extends Controller
 
         return response()->json(['message' => 'Question not found'], 404);
     }
+
+    public function disconnect_jam(Request $request)
+    {
+        $validated = $request->validate([
+            'math_jam_id' => 'required|exists:math_jams,math_jam_id',
+        ]);
+
+        $mathJam = MathJam::where('math_jam_id', $validated['math_jam_id'])->first();
+
+        if ($mathJam) {
+            $mathJam->status = 'disconnected';
+            $mathJam->save();
+
+            return response()->json([
+                'message' => 'MathJam disconnected successfully',
+            ]);
+        }
+
+        return response()->json(['message' => 'MathJam not found', 'error' => true], 404);
+    }
 }
