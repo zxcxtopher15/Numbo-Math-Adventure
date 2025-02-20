@@ -65,15 +65,15 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
         <>
             <Confetti width={width} height={height} />
 
-            <div className="w-full h-full flex flex-col sm:flex-row items-center justify-between bg-white p-6 rounded-3xl shadow-lg box-border">
-                <div className="w-full sm:h-full h-max md:w-1/2 justify-center items-end sm:px-10 lg:text-start text-center py-5 relative">
-                    <h1 className="sm:text-6xl text-5xl font-bold text-primary relative z-10">GREAT JOB!!!</h1>
+            <div className="w-full h-full flex  items-center justify-between bg-white p-6 rounded-3xl shadow-lg box-border">
+                <div className="w-full h-full justify-center items-end p-10 relative">
+                    <h1 className="text-6xl font-bold text-primary relative z-10">GREAT JOB!!!</h1>
 
-                    <div className="lg:flex hidden justify-center items-center h-full w-full ">
+                    <div className="flex justify-center items-center h-full w-full">
                         <SvgAsset
                             movement="sm"
                             value="/images/assets/background/students_result.svg"
-                            className=" hidden sm:block sm:absolute top-0 -right-20 h-full z-0"
+                            className=" hidden sm:block sm:absolute top-0 right-40 h-full z-0"
                         />
                     </div>
                 </div>

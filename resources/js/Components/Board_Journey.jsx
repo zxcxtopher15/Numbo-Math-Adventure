@@ -22,8 +22,9 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center bg-white p-6 rounded-3xl shadow-lg">
             <h2
-                className={`text-3xl font-bold text-center ${isTimeUp ? 'text-orange-500' : isCorrect ? 'text-green-500' : 'text-red-500'
-                    }`}
+                className={`text-3xl font-bold text-center ${
+                    isTimeUp ? 'text-orange-500' : isCorrect ? 'text-green-500' : 'text-red-500'
+                }`}
             >
                 {isTimeUp ? "Time's Up!" : isCorrect ? 'Correct!' : 'Incorrect'}
             </h2>
@@ -31,8 +32,8 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
                 {isTimeUp
                     ? 'You ran out of time.'
                     : isCorrect
-                        ? 'Great job!'
-                        : `The correct answer is: ${correctAnswer}`}
+                      ? 'Great job!'
+                      : `The correct answer is: ${correctAnswer}`}
             </p>
             <button className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold mt-4" onClick={onNext}>
                 Next
@@ -115,15 +116,15 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
                 <div className="w-full h-full justify-center items-end p-10 relative">
                     <h1 className="text-6xl font-bold text-primary relative z-10">GREAT JOB!!!</h1>
 
-                    <div className="flex justify-center items-center h-full w-full">
+                    <div className="lg:flex hidden justify-center items-center h-full w-full ">
                         <SvgAsset
                             movement="sm"
                             value="/images/assets/background/students_result.svg"
-                            className=" hidden sm:block sm:absolute top-0 right-40 h-full z-0"
+                            className=" hidden sm:block sm:absolute top-0 -right-20 h-full z-0"
                         />
                     </div>
                 </div>
-                <div className="flex flex-col bg-gray-200 h-full rounded-3xl p-6 gap-4 lg:w-1/3">
+                <div className="flex flex-col bg-gray-200 h-full rounded-3xl md:p-6 p-2 gap-4 lg:w-4/12 sm:w-full ">
                     <div className="flex justify-start items-center w-full p-4 bg-white rounded-3xl px-6 gap-8 ">
                         <img className="w-14 h-14" src="/images/assets/stars/glossy_3.svg" alt="" />
                         <h1 className="text-warning font-bold  text-6xl">
@@ -210,10 +211,10 @@ export function Board_Journey({ data }) {
                 // console.log("Math Jam paused successfully.");
                 setExistingJam({ ...existingJam, is_paused: 1 }); // Update the state
             } else {
-                console.error("Failed to pause Math Jam.");
+                console.error('Failed to pause Math Jam.');
             }
         } catch (error) {
-            console.error("Error updating pause status:", error);
+            console.error('Error updating pause status:', error);
         }
     };
 
@@ -245,10 +246,10 @@ export function Board_Journey({ data }) {
                 // console.log("Math Jam paused successfully.");
                 setExistingJam({ ...existingJam, is_paused: 0 });
             } else {
-                console.error("Failed to pause Math Jam.");
+                console.error('Failed to pause Math Jam.');
             }
         } catch (error) {
-            console.error("Error updating pause status:", error);
+            console.error('Error updating pause status:', error);
         }
     };
     useEffect(() => {
@@ -415,7 +416,32 @@ export function Board_Journey({ data }) {
     const isGameFinished = currentQuestion >= data.length;
 
     const totalTimeSpent = timeSpent.reduce((acc, time) => acc + time, 0);
+    const [fontSize, setFontSize] = useState('3rem');
 
+    useEffect(() => {
+        const updateFontSize = () => {
+            const question = data?.[currentQuestion]?.question_data?.question;
+            const questionLength = question ? question.length : 0;
+            const screenWidth = window.innerWidth;
+
+            if (screenWidth < 640) {
+                if (questionLength > 20) {
+                    setFontSize('min(8vw, 1rem)'); // Adjust for mobile screens
+                } else {
+                    setFontSize('min(10vw, 4rem)');
+                }
+            } else if (questionLength > 20) {
+                setFontSize('2.5rem'); // Smaller font for longer questions
+            } else {
+                setFontSize('10rem'); // Default large font
+            }
+        };
+
+        updateFontSize();
+        window.addEventListener('resize', updateFontSize);
+
+        return () => window.removeEventListener('resize', updateFontSize);
+    }, [currentQuestion, data]);
     return isGameFinished ? (
         <TotalResult totalQuestions={data.length} gameState={gameState} totalTimeSpent={totalTimeSpent} />
     ) : (
@@ -453,7 +479,7 @@ export function Board_Journey({ data }) {
                         </Dialog>
                     </div>
 
-                    <div className="w-full p-4 sm:p-0 text-success text-center lg:text-9xl text-5xl font-bold">
+                    <div className="w-full p-4 text-success text-center font-bold" style={{ fontSize }}>
                         {data[currentQuestion].question_data.question}
                     </div>
 
