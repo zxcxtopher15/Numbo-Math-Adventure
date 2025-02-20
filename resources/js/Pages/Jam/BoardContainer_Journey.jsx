@@ -78,9 +78,12 @@ export default function BoardContainer_Journey({ auth }) {
     };
 
     const handleDisconnect = async () => {
-        const existingJam = JSON.parse(localStorage.getItem('existingJam'));
+        const existingJam = localStorage.getItem('existingJam');
 
-        if (!existingJam || !existingJam.math_jam_id) return;
+        if (!existingJam) return;
+
+        const parsedJam = JSON.parse(existingJam);
+        if (!parsedJam || !parsedJam.math_jam_id) return;
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
@@ -95,13 +98,22 @@ export default function BoardContainer_Journey({ auth }) {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
                 },
                 body: JSON.stringify({
-                    math_jam_id: existingJam.math_jam_id,
+                    math_jam_id: parsedJam.math_jam_id,
                 }),
             });
 
-            if (response.ok) {
-                const data = await response.json();
+            if (!response.ok) {
+                console.error('Failed to disconnect:', response.status);
+                return;
+            }
+
+            const data = await response.json();
+
+            if (data?.jam) {
                 localStorage.setItem('existingJam', JSON.stringify(data.jam));
+            } else {
+                console.warn('No valid jam data in response');
+                localStorage.removeItem('existingJam');
             }
         } catch (err) {
             console.error('Error during disconnect:', err);
