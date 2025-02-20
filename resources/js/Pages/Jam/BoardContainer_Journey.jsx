@@ -14,7 +14,9 @@ export default function BoardContainer_Journey({ auth }) {
         if (storedJam) {
             const parsedJam = JSON.parse(storedJam);
             setExistingJam(parsedJam);
+            console.log(parsedJam);
             if (parsedJam.status === "disconnected") {
+                console.log("DISCONNECTED: " + parsedJam);
                 window.location.href = '/math-journey';
             }
         }
