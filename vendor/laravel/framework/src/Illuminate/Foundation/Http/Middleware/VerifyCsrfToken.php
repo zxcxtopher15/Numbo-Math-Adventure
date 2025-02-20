@@ -48,6 +48,7 @@ class VerifyCsrfToken
         '/questions/store',
         '/math-journey/update-status',
         '/save_ordered_questions',
+        '/ordered-questions/*',
     ];
 
     /**
