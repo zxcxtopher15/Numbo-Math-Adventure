@@ -40,7 +40,6 @@ export default function BoardContainer_Journey({ auth }) {
             handleDisconnect();
         };
 
-
         const offlineHandler = () => {
             handleDisconnect();
             Swal.fire({

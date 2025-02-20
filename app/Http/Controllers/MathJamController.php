@@ -223,7 +223,7 @@ class MathJamController extends Controller
         $participant = MathJamParticipant::where('student_id', $validated['student_id'])
             ->whereHas('MathJam', function ($query) use ($mathJamCode) {
                 $query->where('math_jam_code', $mathJamCode);
-                $query->whereNotIn('status', ['cancelled', 'ended']);
+                $query->whereNotIn('status', ['cancelled', 'ended', 'disconnected']);
             })
             ->latest()
             ->first();
