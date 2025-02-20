@@ -188,11 +188,11 @@ export default function Modules({}) {
                                     defaultValue="item-1"
                                 >
                                     <AccordionItem value="item-1">
-                                        <AccordionTrigger className="font-medium text-2xl ">
+                                        <AccordionTrigger className="font-medium text-2xl text-gray-600">
                                             {module.module_name}
                                         </AccordionTrigger>
                                         <AccordionContent>
-                                            <p>{module.module_desc}</p>
+                                            <p className="text-gray-600 ">{module.module_desc}</p>
                                             {userType === 'Teacher' && (
                                                 <div className="flex  gap-2  py-2 w-max text-white font-semibold">
                                                     <span
@@ -209,13 +209,15 @@ export default function Modules({}) {
                                                     </span>
                                                 </div>
                                             )}
-                                            <div className="my-5 py-3 bg-white px-5 rounded-lg">
-                                                <h3 className="font-semibold my-4">{module.module_file_desc}</h3>
+                                            <div className="my-5 pt-2 pb-5 bg-white px-5 rounded-lg">
+                                                <h3 className="font-medium my-4 bg-yellow-100 p-2 rounded-lg text-yellow-600">
+                                                    {module.module_file_desc}
+                                                </h3>
 
                                                 {module.file.map((file, index) => (
                                                     <div
                                                         key={index}
-                                                        className="flex justify-between flex-1 items-center border-b-2 md:flex-row flex-col sm:gap-2 gap-4"
+                                                        className="flex justify-between text-info flex-1 items-center border-b-2 md:flex-row flex-col sm:gap-2 gap-4"
                                                     >
                                                         <div
                                                             className="p-5 flex gap-2 items-center cursor-pointer"

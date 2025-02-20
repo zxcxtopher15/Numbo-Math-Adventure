@@ -197,6 +197,7 @@ export default function Questions({ questions = [] }) {
                             value={data.question}
                             onChange={handleChange}
                             className="border w-full p-2 mb-2"
+                            maxLength={250}
                         />
                         <h1 className="text-lg my-5 font-semibold text-primary">Choices</h1>
 
