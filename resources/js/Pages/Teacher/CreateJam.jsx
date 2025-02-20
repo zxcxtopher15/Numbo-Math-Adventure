@@ -13,6 +13,7 @@ import LoadingScreen from '@/Components/LoadingScreen';
 import { Head } from '@inertiajs/react';
 import Categories from '@/Components/Categories';
 import BoardContainer_Journey from '../Jam/BoardContainer_Journey';
+import { useNavigate } from "react-router-dom";
 
 const CreateJam = () => {
     const { auth } = usePage().props;
@@ -341,12 +342,18 @@ const CreateJam = () => {
     const handleReconnect = async () => {
         if (!existingJam) return;
 
-        let status = hasQuestions ? "started" : "waiting";
+        let status = "";
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) {
             console.error('Base URL not found.');
             return;
+        }
+
+        if (hasQuestions) {
+            status = "started";
+        } else {
+            status = "waiting";
         }
 
         const apiUrl = `${baseUrl}/math-journey/update-status`;
@@ -364,13 +371,15 @@ const CreateJam = () => {
             });
 
             if (response.ok) {
+                // console.log('Math Jam status updated to start');
+
+                if (status == "started") {
+                    navigate("/math-journey/watch");
+                }
+                
                 const updatedJam = { ...existingJam, status };
                 setExistingJam(updatedJam);
                 setShowReconnectModal(false);
-
-                if (status === "started") {
-                    window.history.pushState({}, '', '/math-journey/watch');
-                }
             } else {
                 console.error('Failed to update Math Jam status');
             }
