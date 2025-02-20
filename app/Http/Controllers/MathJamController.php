@@ -342,6 +342,7 @@ class MathJamController extends Controller
 
         foreach ($questions as $question) {
             $exists = OrderedQuestion::where('math_jam_id', $question['math_jam_id'])
+                ->where('question_id', $question['question_id'])
                 ->exists();
 
             if (!$exists) {
