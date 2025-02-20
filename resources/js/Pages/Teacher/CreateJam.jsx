@@ -122,11 +122,11 @@ const CreateJam = () => {
 
         connectSSE();
 
-        const beforeUnloadHandler = (event) => {
-            handleDisconnect();
-        };
+        // const beforeUnloadHandler = (event) => {
+        //     handleDisconnect();
+        // };
 
-        window.addEventListener('beforeunload', beforeUnloadHandler);
+        // window.addEventListener('beforeunload', beforeUnloadHandler);
 
         const offlineHandler = () => {
             handleDisconnect();
