@@ -17,7 +17,6 @@ import { useWindowSize } from 'react-use';
 import { Link } from '@inertiajs/react';
 import { SvgAsset } from './SvgAsset';
 import Categories from './Categories';
-import axios from 'axios';
 
 function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
     return (
@@ -239,10 +238,20 @@ export function Board_Journey({ data }) {
             const currentQuestionId = data[currentQuestion].question_data.id;
 
             try {
-                await axios.delete(`/api/ordered-questions/${currentQuestionId}`);
+                const response = await fetch(`/api/ordered-questions/${currentQuestionId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+
                 console.log(`Question ${currentQuestionId} deleted successfully`);
             } catch (error) {
-                console.error("Error deleting question:", error.response?.data || error.message);
+                console.error("Error deleting question:", error.message);
             }
 
             setIsAnswered(false);
@@ -251,7 +260,6 @@ export function Board_Journey({ data }) {
             setCurrentQuestion((prev) => (prev < data.length - 1 ? prev + 1 : prev + 1));
         }
     };
-
 
     const handleTimeUp = () => {
         if (!isAnswered) {
