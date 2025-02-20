@@ -382,6 +382,7 @@ class MathJamController extends Controller
         }
 
         $questions = OrderedQuestion::where('math_jam_id', $mathJamId)
+            ->where('status', 0)
             ->orderBy('order_number')
             ->with('question')
             ->get();
