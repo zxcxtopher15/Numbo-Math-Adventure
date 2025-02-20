@@ -349,7 +349,7 @@ const CreateJam = () => {
     return (
         <>
             <Head title="Math Journey" />
-            {!showReconnectModal && (
+            {showReconnectModal && (
                 <div className="fixed inset-0 z-50">
                     <div className="flex items-center justify-center p-2 h-full w-full bg-success bg-opacity-30">
                         <div className="bg-white rounded-3xl p-8 text-center">
