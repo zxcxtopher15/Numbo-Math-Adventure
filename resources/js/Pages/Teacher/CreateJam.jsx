@@ -13,7 +13,7 @@ import LoadingScreen from '@/Components/LoadingScreen';
 import { Head } from '@inertiajs/react';
 import Categories from '@/Components/Categories';
 import BoardContainer_Journey from '../Jam/BoardContainer_Journey';
-import { useNavigate } from "react-router-dom";
+import { Inertia } from '@inertiajs/inertia';
 
 const CreateJam = () => {
     const { auth } = usePage().props;
@@ -28,7 +28,6 @@ const CreateJam = () => {
     const hasJoinedParticipants = participants.some((participant) => participant.status === 'joined');
     const [showReconnectModal, setShowReconnectModal] = useState(false);
     const [hasQuestions, setHasQuestions] = useState('');
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchExistingJam = async () => {
@@ -375,7 +374,7 @@ const CreateJam = () => {
                 // console.log('Math Jam status updated to start');
 
                 if (status == "started") {
-                    navigate("/math-journey/watch");
+                    Inertia.redirect('/math-journey/watch');
                 }
                 
                 const updatedJam = { ...existingJam, status };
