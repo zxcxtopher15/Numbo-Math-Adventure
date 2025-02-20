@@ -374,7 +374,7 @@ const CreateJam = () => {
                 // console.log('Math Jam status updated to start');
 
                 if (status == "started") {
-                    Inertia.redirect('/math-journey/watch');
+                    Inertia.visit('/math-journey/watch');
                 }
                 
                 const updatedJam = { ...existingJam, status };
