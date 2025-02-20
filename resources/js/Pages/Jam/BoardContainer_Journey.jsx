@@ -77,12 +77,15 @@ export default function BoardContainer_Journey({ auth }) {
         const existingJam = JSON.parse(localStorage.getItem('existingJam'));
 
         if (!existingJam || !existingJam.math_jam_id) {
-            window.location.href = `${baseUrl}/math-journey`;
+            window.location.href = `/math-journey`;
             return;
         }
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-        if (!baseUrl) return;
+        if (!baseUrl) {
+            window.location.href = `/math-journey`;
+            return;
+        }
 
         const apiUrl = `${baseUrl}/math-journey/disconnect_jam`;
 
@@ -97,10 +100,12 @@ export default function BoardContainer_Journey({ auth }) {
                     math_jam_id: existingJam.math_jam_id,
                 }),
             });
+
+            // Redirect after API call is completed
+            window.location.href = `/math-journey`;
         } catch (err) {
             console.error('Error during disconnect:', err);
-        } finally {
-            window.location.href = `${baseUrl}/math-journey`;
+            window.location.href = `/math-journey`; // Ensure redirection even if the API call fails
         }
     };
 

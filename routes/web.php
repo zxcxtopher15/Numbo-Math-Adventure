@@ -32,7 +32,7 @@ Route::middleware('auth')->group(function () {
 
 Route::group(['middleware' => 'teacher'], function () {
     Route::get('/math-journey', function () {
-        return Inertia::render('Teacher/CreateJam');
+        return Inertia::render('Teacher/CreateJam')->name('math.journey');
     });
 
     Route::post('/math-journey/create', [MathJamController::class, 'create']);
