@@ -369,6 +369,8 @@ const CreateJam = () => {
                 }),
             });
 
+            setShowReconnectModal(false);
+
             if (response.ok) {
                 // console.log('Math Jam status updated to start');
             } else {
