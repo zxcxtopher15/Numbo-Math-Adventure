@@ -389,13 +389,15 @@ class MathJamController extends Controller
         return response()->json($questions);
     }
 
-    public function destroy($id)
+    public function update_question_status($id)
     {
         $orderedQuestion = OrderedQuestion::where('question_id', $id)->first();
 
         if ($orderedQuestion) {
-            $orderedQuestion->delete();
-            return response()->json(['message' => 'Question removed successfully'], 200);
+            $orderedQuestion->status = 1;
+            $orderedQuestion->save();
+
+            return response()->json(['message' => 'Question status updated successfully'], 200);
         }
 
         return response()->json(['message' => 'Question not found'], 404);

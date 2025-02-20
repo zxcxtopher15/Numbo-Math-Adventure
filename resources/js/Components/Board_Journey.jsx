@@ -239,19 +239,22 @@ export function Board_Journey({ data }) {
 
             try {
                 const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
-                    method: 'DELETE',
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    body: JSON.stringify({
+                        status: 1
+                    })
                 });
 
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
                 }
 
-                console.log(`Question ${currentQuestionId} deleted successfully`);
+                console.log(`Question ${currentQuestionId} updated successfully`);
             } catch (error) {
-                console.error("Error deleting question:", error.message);
+                console.error("Error updating question status:", error.message);
             }
 
             setIsAnswered(false);
@@ -286,19 +289,22 @@ export function Board_Journey({ data }) {
 
             try {
                 const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
-                    method: 'DELETE',
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    body: JSON.stringify({
+                        status: 1
+                    })
                 });
 
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
                 }
 
-                console.log(`Question ${currentQuestionId} deleted successfully`);
+                console.log(`Question ${currentQuestionId} updated successfully`);
             } catch (error) {
-                console.error("Error deleting question:", error.message);
+                console.error("Error updating question status:", error.message);
             }
         }
     };
