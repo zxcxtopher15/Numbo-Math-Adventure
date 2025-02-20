@@ -42,11 +42,17 @@ export default function BoardContainer_Journey({ auth }) {
 
         const beforeUnloadHandler = (event) => {
             handleDisconnect();
+            let status = "disconnected";
+            const updatedJam = { ...existingJam, status };
+            setExistingJam(updatedJam);
             window.location.href = `${baseUrl}/math-journey`;
         };
 
         const offlineHandler = () => {
             handleDisconnect();
+            let status = "disconnected";
+            const updatedJam = { ...existingJam, status };
+            setExistingJam(updatedJam);
             Swal.fire({
                 icon: 'error',
                 title: 'Connection Lost',
