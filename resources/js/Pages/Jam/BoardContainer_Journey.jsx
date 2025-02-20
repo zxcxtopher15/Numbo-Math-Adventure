@@ -21,14 +21,6 @@ export default function BoardContainer_Journey({ auth }) {
     }, []);
 
     useEffect(() => {
-        if (existingJam) {
-            if (existingJam.status === "disconnected") {
-                window.location.href = '/math-journey';
-            }
-        }
-    }, []);
-
-    useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
 
         const disableRightClick = (event) => {
@@ -96,7 +88,7 @@ export default function BoardContainer_Journey({ auth }) {
         const apiUrl = `${baseUrl}/math-journey/disconnect_jam`;
 
         try {
-            await fetch(apiUrl, {
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -107,9 +99,9 @@ export default function BoardContainer_Journey({ auth }) {
                 }),
             });
 
-            let status = "disconnected";
-            const updatedJam = { ...existingJam, status };
-            setExistingJam(updatedJam);
+            if (response.ok) {
+                console.log(response);
+            }
         } catch (err) {
             console.error('Error during disconnect:', err);
         }
