@@ -127,7 +127,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
                     <div className="flex justify-start items-center w-full p-4 bg-white rounded-3xl px-6 gap-8 ">
                         <img className="w-14 h-14" src="/images/assets/stars/glossy_3.svg" alt="" />
                         <h1 className="text-warning font-bold  text-6xl">
-                            {gameState.correctQuestions.length} / {totalQuestions}
+                            {gameState.correctQuestions.length} / {existingJam.num_questions}
                         </h1>
                     </div>
 
@@ -239,22 +239,19 @@ export function Board_Journey({ data }) {
 
             try {
                 const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
-                    method: 'PUT',
+                    method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        status: 1
-                    })
+                    }
                 });
 
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
                 }
 
-                console.log(`Question ${currentQuestionId} updated successfully`);
+                console.log(`Question ${currentQuestionId} deleted successfully`);
             } catch (error) {
-                console.error("Error updating question status:", error.message);
+                console.error("Error deleting question:", error.message);
             }
 
             setIsAnswered(false);
@@ -289,22 +286,19 @@ export function Board_Journey({ data }) {
 
             try {
                 const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
-                    method: 'PUT',
+                    method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        status: 1
-                    })
+                    }
                 });
 
                 if (!response.ok) {
                     throw new Error(`Error: ${response.statusText}`);
                 }
 
-                console.log(`Question ${currentQuestionId} updated successfully`);
+                console.log(`Question ${currentQuestionId} deleted successfully`);
             } catch (error) {
-                console.error("Error updating question status:", error.message);
+                console.error("Error deleting question:", error.message);
             }
         }
     };
