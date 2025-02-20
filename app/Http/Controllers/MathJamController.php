@@ -140,6 +140,9 @@ class MathJamController extends Controller
             case 'cancelled':
                 return response()->json(['message' => 'The Math Journey has been cancelled.'], 200);
 
+            case 'disconnected':
+                return response()->json(['message' => 'The Math Journey host has been disconnected.'], 200);
+
             case 'waiting':
                 $existingParticipant = MathJamParticipant::where('math_jam_id', $mathJam->id)
                     ->where('student_id', $validated['student_id'])
