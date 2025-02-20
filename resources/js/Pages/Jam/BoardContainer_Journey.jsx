@@ -28,22 +28,31 @@ export default function BoardContainer_Journey({ auth }) {
         setCategoryTitle(localStorage.getItem('category') || 'Default Title');
 
         if (existingJam?.math_jam_id) {
-            // Check if questions are already saved
-            fetch(`/get_ordered_questions?math_jam_id=${existingJam.math_jam_id}`)
+            fetch(`/get_ordered_questions?mathJamId=${existingJam.math_jam_id}`)
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.length > 0) {
-                        console.log('Loaded saved questions from database:', data);
-                        setQuestions(data);
+                        setQuestions(data.map((item) => ({
+                            title: `${item.question.category} Challenge`,
+                            time: existingJam.time_limit,
+                            question_data: {
+                                id: item.question.id,
+                                type: item.question.question_type || 'addition',
+                                image: null,
+                                title: 'Solve This',
+                                question: item.question.question,
+                            },
+                            answers: item.question.choices.map((choice, index) => ({
+                                id: index + 1,
+                                answer: choice,
+                                is_correct: choice === item.question.correct_answer,
+                            })),
+                        })));
                     } else {
-                        // Fetch new questions if no saved data exists
-                        fetchNewQuestions();
+                        fetchNewQuestions(); // Fallback if no saved questions exist
                     }
                 })
-                .catch((error) => {
-                    console.error('Error fetching ordered questions:', error);
-                    fetchNewQuestions();
-                });
+                .catch((error) => console.error('Error fetching ordered questions:', error));
         }
     }, [existingJam]);
 
