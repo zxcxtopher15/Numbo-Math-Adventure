@@ -48,55 +48,6 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
     const [existingJam, setExistingJam] = useState(null);
 
     useEffect(() => {
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-
-        const disableRightClick = (event) => {
-            event.preventDefault();
-        };
-
-        const disableReload = (event) => {
-            if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.ctrlKey && event.key === 'R')) {
-                event.preventDefault();
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Action Blocked',
-                    text: 'Page reload is disabled on this section.',
-                });
-            }
-        };
-
-        const beforeUnloadHandler = (event) => {
-            handleDisconnect();
-            window.location.href = `${baseUrl}/math-journey`;
-        };
-
-        const offlineHandler = () => {
-            handleDisconnect();
-            Swal.fire({
-                icon: 'error',
-                title: 'Connection Lost',
-                text: 'You have been disconnected due to a lost internet connection.',
-                confirmButtonColor: '#d33',
-                allowOutsideClick: false,
-            }).then(() => {
-                window.location.href = `${baseUrl}/math-journey`;
-            });
-        };
-
-        window.addEventListener('offline', offlineHandler);
-        window.addEventListener('beforeunload', beforeUnloadHandler);
-        document.addEventListener('contextmenu', disableRightClick);
-        window.addEventListener('keydown', disableReload);
-
-        return () => {
-            window.removeEventListener('beforeunload', beforeUnloadHandler);
-            window.removeEventListener('offline', offlineHandler);
-            document.removeEventListener('contextmenu', disableRightClick);
-            window.removeEventListener('keydown', disableReload);
-        };
-    }, []);
-
-    useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
             setExistingJam(JSON.parse(storedJam));
@@ -121,32 +72,6 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
 
     const totalTimeInMinutes = Math.floor(totalTimeSpent / 60000);
     const totalTimeInSeconds = Math.floor((totalTimeSpent % 60000) / 1000);
-
-    const handleDisconnect = async () => {
-        const existingJam = JSON.parse(localStorage.getItem('existingJam'));
-
-        if (!existingJam || !existingJam.math_jam_id) return;
-
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-        if (!baseUrl) return;
-
-        const apiUrl = `${baseUrl}/math-journey/disconnect_jam`;
-
-        try {
-            await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                },
-                body: JSON.stringify({
-                    math_jam_id: existingJam.math_jam_id,
-                }),
-            });
-        } catch (err) {
-            console.error('Error during disconnect:', err);
-        }
-    };
 
     const handleMainMenuClick = async (e) => {
         if (!existingJam) return;
@@ -243,10 +168,8 @@ export function Board_Journey({ data }) {
     });
     const [timeSpent, setTimeSpent] = useState([]);
     const { auth } = usePage().props;
-
+    
     useEffect(() => {
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-
         const disableRightClick = (event) => {
             event.preventDefault();
         };
@@ -262,32 +185,10 @@ export function Board_Journey({ data }) {
             }
         };
 
-        const beforeUnloadHandler = (event) => {
-            handleDisconnect();
-            window.location.href = `${baseUrl}/math-journey`;
-        };
-
-        const offlineHandler = () => {
-            handleDisconnect();
-            Swal.fire({
-                icon: 'error',
-                title: 'Connection Lost',
-                text: 'You have been disconnected due to a lost internet connection.',
-                confirmButtonColor: '#d33',
-                allowOutsideClick: false,
-            }).then(() => {
-                window.location.href = `${baseUrl}/math-journey`;
-            });
-        };
-
-        window.addEventListener('offline', offlineHandler);
-        window.addEventListener('beforeunload', beforeUnloadHandler);
         document.addEventListener('contextmenu', disableRightClick);
         window.addEventListener('keydown', disableReload);
 
         return () => {
-            window.removeEventListener('beforeunload', beforeUnloadHandler);
-            window.removeEventListener('offline', offlineHandler);
             document.removeEventListener('contextmenu', disableRightClick);
             window.removeEventListener('keydown', disableReload);
         };
@@ -319,32 +220,6 @@ export function Board_Journey({ data }) {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
     }, []);
-
-    const handleDisconnect = async () => {
-        const existingJam = JSON.parse(localStorage.getItem('existingJam'));
-
-        if (!existingJam || !existingJam.math_jam_id) return;
-
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-        if (!baseUrl) return;
-
-        const apiUrl = `${baseUrl}/math-journey/disconnect_jam`;
-
-        try {
-            await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                },
-                body: JSON.stringify({
-                    math_jam_id: existingJam.math_jam_id,
-                }),
-            });
-        } catch (err) {
-            console.error('Error during disconnect:', err);
-        }
-    };
 
     const handleAnswer = (answer) => {
         setIsCorrect(false); // Reset the isCorrect state
