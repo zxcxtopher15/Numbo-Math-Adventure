@@ -71,9 +71,11 @@ class MathJamController extends Controller
                 }
                 $existingJam->save();
 
+                return response()->json(['jam' => $existingJam]);
+
                 return response()->json([
-                    'redirect' => url('/math-journey/watch')
-                ]);
+                    'redirect' => route('journey.start')
+                ]);                
             } else {
                 $existingJam->status = 'waiting';
             }
