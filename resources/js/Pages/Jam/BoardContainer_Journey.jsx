@@ -22,7 +22,7 @@ export default function BoardContainer_Journey({ auth }) {
 
     useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-        
+
         const disableRightClick = (event) => {
             event.preventDefault();
         };
@@ -163,6 +163,36 @@ export default function BoardContainer_Journey({ auth }) {
             .catch((error) => {
                 console.error('Error fetching questions:', error);
             });
+    };
+
+    const saveOrderedQuestions = async (questions) => {
+        const orderedQuestions = questions.map((question, index) => ({
+            math_jam_id: existingJam?.math_jam_id,
+            question_id: question.question_data.id,
+            order_number: index + 1,
+        }));
+
+        try {
+            const response = await fetch('/save_ordered_questions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ questions: orderedQuestions }),
+            });
+
+            const data = await response.json();
+            console.log('Response:', data);
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to save ordered questions');
+            }
+
+            console.log('Ordered questions saved successfully');
+        } catch (error) {
+            console.error('Error saving ordered questions:', error);
+        }
     };
 
     const handleCountdownComplete = () => {
