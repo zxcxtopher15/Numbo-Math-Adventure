@@ -9,6 +9,8 @@ export default function BoardContainer_Journey({ auth }) {
     const [questions, setQuestions] = useState([]);
     const [existingJam, setExistingJam] = useState(null);
 
+    console.log(existingJam);
+
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
@@ -100,7 +102,7 @@ export default function BoardContainer_Journey({ auth }) {
             });
 
             if (response.ok) {
-                console.log(response);
+                setExistingJam(response.jam);
             }
         } catch (err) {
             console.error('Error during disconnect:', err);
