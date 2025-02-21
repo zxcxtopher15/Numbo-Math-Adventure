@@ -571,7 +571,7 @@ export function Board_Journey({ data }) {
         return () => window.removeEventListener('resize', updateFontSize);
     }, [currentQuestion, data]);
     return isGameFinished ? (
-        <TotalResult participants={participants}/>
+        <TotalResult participants={participants} numQuestion={data.length} />
     ) : (
         <>
             <div className="w-full h-full bg-white rounded-3xl p-6">
