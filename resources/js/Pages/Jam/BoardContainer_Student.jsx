@@ -40,16 +40,10 @@ export default function BoardContainer_Student({ }) {
 
         const beforeUnloadHandler = (event) => {
             handleDisconnect();
-            let status = "disconnected";
-            const updatedJam = { ...existingJam, status };
-            setExistingJam(updatedJam);
         };
 
         const offlineHandler = () => {
             handleDisconnect();
-            let status = "disconnected";
-            const updatedJam = { ...existingJam, status };
-            setExistingJam(updatedJam);
         };
 
         window.addEventListener('offline', offlineHandler);
@@ -85,6 +79,10 @@ export default function BoardContainer_Student({ }) {
                     math_jam_code: existingJam.math_jam_code,
                 }),
             });
+
+            let status = "disconnected";
+            const updatedJam = { ...existingJam, status };
+            setExistingJam(updatedJam);
         } catch (err) {
             console.error('Error during disconnect:', err);
         }
