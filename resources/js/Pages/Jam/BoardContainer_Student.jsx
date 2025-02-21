@@ -20,7 +20,9 @@ export default function BoardContainer_Student({ }) {
                 window.location.href = '/math-journey-join';
             }
         }
+    }, []);
 
+    useEffect(() => {
         const beforeUnloadHandler = (event) => {
             handleDisconnect();
         };
@@ -36,7 +38,7 @@ export default function BoardContainer_Student({ }) {
             window.removeEventListener('beforeunload', beforeUnloadHandler);
             window.removeEventListener('offline', offlineHandler);
         };
-    }, []);
+    }, [existingJam, studentId]);
 
     useEffect(() => {
         const disableRightClick = (event) => {
@@ -63,30 +65,20 @@ export default function BoardContainer_Student({ }) {
         };
     }, []);
 
-    const handleDisconnect = async () => {
+    const handleDisconnect = () => {
         if (!studentId || !existingJam) return;
-        console.log(existingJam);
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
 
         const apiUrl = `${baseUrl}/math-journey/disconnect`;
 
-        try {
-            await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                },
-                body: JSON.stringify({
-                    student_id: studentId,
-                    math_jam_code: existingJam.math_jam_code,
-                }),
-            });
-        } catch (err) {
-            console.error('Error during disconnect:', err);
-        }
+        const data = JSON.stringify({
+            student_id: studentId,
+            math_jam_code: existingJam.math_jam_code,
+        });
+
+        navigator.sendBeacon(apiUrl, data);
     };
 
     useEffect(() => {
