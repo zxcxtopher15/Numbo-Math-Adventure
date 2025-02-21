@@ -462,8 +462,11 @@ export function Board_Student({ data }) {
                                 </button>
                             </div>
                         )}
-
-                        <Dialog open={isPaused} onOpenChange={(open) => (open ? handleDialogOpen() : handleDialogClose())}>
+                        <Dialog
+                            open={isPaused}
+                            onOpenChange={(open) => (open ? handleDialogOpen() : handleDialogClose())}
+                            modal
+                        >
                             <DialogTrigger asChild>
                                 <button
                                     className="rounded-full w-max bg-gray-200 p-3 text-success hover:bg-success hover:text-white"
@@ -475,7 +478,7 @@ export function Board_Student({ data }) {
                             <DialogContent className="sm:max-w-[425px]">
                                 <DialogHeader>
                                     <DialogTitle>Pause</DialogTitle>
-                                    <DialogDescription>Game is paused. Resume when you're ready.</DialogDescription>
+                                    <DialogDescription>Game is paused. Wait for the host to resume it.</DialogDescription>
                                 </DialogHeader>
                                 <DialogFooter></DialogFooter>
                             </DialogContent>
