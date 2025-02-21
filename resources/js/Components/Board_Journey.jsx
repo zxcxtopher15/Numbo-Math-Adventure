@@ -20,7 +20,7 @@ import Categories from './Categories';
 import Swal from 'sweetalert2';
 import Avatar from './Avatar';
 
-function RoundResult({ isTimeUp, isCorrect, participants, onNext }) {
+function RoundResult({ isTimeUp, numQuestion, participants, onNext }) {
     return (
         <div className="w-full h-full flex flex-col lg:flex-row bg-white sm:px-6  px-2 py-5 rounded-3xl shadow-lg">
             <div className="flex flex-col w-full lg:w-[35rem] relative z-10">
@@ -41,7 +41,7 @@ function RoundResult({ isTimeUp, isCorrect, participants, onNext }) {
                                     </div>
                                     <div className="flex flex-col items-center">
                                         <p className="text-xs font-medium">Score</p>
-                                        <h3 className="font-semibold text-warning">{participant.score} / {num_questions}</h3>
+                                        <h3 className="font-semibold text-warning">{participant.score} / {numQuestion}</h3>
                                     </div>
                                 </div>
                             ))}
@@ -657,7 +657,7 @@ export function Board_Journey({ data }) {
                     <div className="absolute inset-0 flex justify-center items-center z-50 bg-opacity-50 p-3">
                         <RoundResult
                             isTimeUp={isTimeUp}
-                            isCorrect={isCorrect}
+                            numQuestion={10}
                             participants={participants}
                             onNext={handleNext}
                         />
