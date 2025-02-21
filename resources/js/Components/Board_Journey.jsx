@@ -182,6 +182,7 @@ export function Board_Journey({ data }) {
     useEffect(() => {
         const timeout = setTimeout(() => {
             if (participants.length > 0) {
+                console.log(participants);
                 const joinedParticipants = participants.filter(participant => participant.status === 'joined');
 
                 if (joinedParticipants.length === 0) {
@@ -193,6 +194,12 @@ export function Board_Journey({ data }) {
                     }).then(() => {
                         window.location.href = '/math-journey';
                     });
+                }
+
+                const allAnswered = joinedParticipants.every(participant => participant.has_answer === 1);
+
+                if (allAnswered) {
+                    setIsAnswered(true);
                 }
             }
         }, 5000);
