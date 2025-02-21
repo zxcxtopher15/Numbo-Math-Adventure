@@ -133,12 +133,6 @@ export default function BoardContainer_Student({ auth }) {
                         }));
 
                         setQuestions(formattedQuestions);
-
-                        if (formattedQuestions.length > 0) {
-                            updateCurrentQuestionId(formattedQuestions[0].question_data.id);
-                        }
-                    } else {
-                        fetchNewQuestions();
                     }
                 })
                 .catch((error) => console.error('Error fetching ordered questions:', error));
