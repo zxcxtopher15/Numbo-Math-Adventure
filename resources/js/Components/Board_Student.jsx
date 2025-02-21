@@ -414,7 +414,7 @@ export function Board_Student({ data }) {
                             </div>
                         )}
 
-                        <Dialog onOpenChange={(open) => (open ? handleDialogOpen() : handleDialogClose())}>
+                        <Dialog open={isPaused} onOpenChange={(open) => (open ? handleDialogOpen() : handleDialogClose())}>
                             <DialogTrigger asChild>
                                 <button
                                     className="rounded-full w-max bg-gray-200 p-3 text-success hover:bg-success hover:text-white"
