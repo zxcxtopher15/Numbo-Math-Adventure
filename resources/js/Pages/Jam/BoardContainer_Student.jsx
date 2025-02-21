@@ -13,10 +13,10 @@ export default function BoardContainer_Student({}) {
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
-        handleReconnect();
         if (storedJam) {
             const parsedJam = JSON.parse(storedJam);
             setExistingJam(parsedJam);
+            handleReconnect();
             if (parsedJam.status === "disconnected") {
                 window.location.href = '/math-journey';
             }
