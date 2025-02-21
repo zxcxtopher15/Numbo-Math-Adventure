@@ -196,31 +196,27 @@ export function Board_Student({ data }) {
                 );
                 setExistingJam(data);
 
-                if (data && (data.status === 'started')) {
-                    window.location.href = '/math-journey/play';
-                } else {
-                    if (data.status === 'cancelled' || data.status === 'ended') {
-                        eventSource.close();
+                if (data.status === 'cancelled' || data.status === 'ended') {
+                    eventSource.close();
 
-                        Swal.fire({
-                            icon: data.status === 'cancelled' ? 'error' : 'info',
-                            title: data.status === 'cancelled' ? 'Math Journey Cancelled' : 'Math Journey Ended',
-                            text:
-                                data.status === 'cancelled'
-                                    ? 'The Math Journey session has been cancelled.'
-                                    : 'The Math Journey session has ended. Thank you for participating!',
-                            confirmButtonColor: '#d33',
-                            allowOutsideClick: false,
-                        }).then(() => {
-                            if (!hasReloaded.current) {
-                                hasReloaded.current = true;
-                                handleDisconnect();
-                                window.location.reload();
-                            }
-                        });
+                    Swal.fire({
+                        icon: data.status === 'cancelled' ? 'error' : 'info',
+                        title: data.status === 'cancelled' ? 'Math Journey Cancelled' : 'Math Journey Ended',
+                        text:
+                            data.status === 'cancelled'
+                                ? 'The Math Journey session has been cancelled.'
+                                : 'The Math Journey session has ended. Thank you for participating!',
+                        confirmButtonColor: '#d33',
+                        allowOutsideClick: false,
+                    }).then(() => {
+                        if (!hasReloaded.current) {
+                            hasReloaded.current = true;
+                            handleDisconnect();
+                            window.location.reload();
+                        }
+                    });
 
-                        return;
-                    }
+                    return;
                 }
             };
 
