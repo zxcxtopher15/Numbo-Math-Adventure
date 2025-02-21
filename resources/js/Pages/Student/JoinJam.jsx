@@ -30,6 +30,7 @@ const JoinJam = () => {
             const parsedJam = JSON.parse(storedJam);
             setExistingJam(parsedJam);
             if (parsedJam.status === "disconnected" && status == "joined") {
+                localStorage.setItem('existingJam', Json.stringify(existingJam));
                 showDisconnectedSwal();
             }
         }
@@ -225,6 +226,8 @@ const JoinJam = () => {
             if (response.ok) {
                 setStatus(data.status);
                 setScore(data.score);
+                localStorage.setItem('existingJam', JSON.stringify(data.jam));
+                setExistingJam(JSON.parse(data.jam));
                 Swal.fire({
                     icon: 'success',
                     title: 'Reconnected!',

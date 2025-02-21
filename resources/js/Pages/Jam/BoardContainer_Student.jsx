@@ -147,7 +147,6 @@ export default function BoardContainer_Student({ }) {
             });
 
             const data = await response.json();
-            setExistingJam(JSON.parse(data.jam));
 
             if (data) {
                 console.log("success");
