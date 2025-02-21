@@ -171,6 +171,86 @@ export function Board_Student({ data }) {
     const [existingJam, setExistingJam] = useState(null);
 
     useEffect(() => {
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+
+        if (!existingJam) return;
+
+        const sseUrl = `${baseUrl}/math-journey/jam-stream-updates?math_jam_code=${existingJam.math_jam_code}`;
+        let eventSource;
+
+        const connectSSE = () => {
+            eventSource = new EventSource(sseUrl);
+
+            eventSource.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+
+                if (data && (data.status === 'started')) {
+                    window.location.href = '/math-journey/play';
+                } else {
+                    if (data.status === 'cancelled' || data.status === 'ended') {
+                        eventSource.close();
+
+                        Swal.fire({
+                            icon: data.status === 'cancelled' ? 'error' : 'info',
+                            title: data.status === 'cancelled' ? 'Math Journey Cancelled' : 'Math Journey Ended',
+                            text:
+                                data.status === 'cancelled'
+                                    ? 'The Math Journey session has been cancelled.'
+                                    : 'The Math Journey session has ended. Thank you for participating!',
+                            confirmButtonColor: '#d33',
+                            allowOutsideClick: false,
+                        }).then(() => {
+                            if (!hasReloaded.current) {
+                                hasReloaded.current = true;
+                                handleDisconnect();
+                                window.location.reload();
+                            }
+                        });
+
+                        return;
+                    }
+                }
+            };
+
+            eventSource.onerror = () => {
+                eventSource.close();
+                setTimeout(() => {
+                    connectSSE();
+                }, 1000);
+            };
+        };
+
+        connectSSE();
+
+        const beforeUnloadHandler = (event) => {
+            handleDisconnect();
+        };
+
+        window.addEventListener('beforeunload', beforeUnloadHandler);
+
+        const offlineHandler = () => {
+            handleDisconnect();
+            Swal.fire({
+                icon: 'error',
+                title: 'Connection Lost',
+                text: 'You have been disconnected due to a lost internet connection.',
+                confirmButtonColor: '#d33',
+                allowOutsideClick: false,
+            }).then(() => {
+                window.location.reload();
+            });
+        };
+
+        window.addEventListener('offline', offlineHandler);
+
+        return () => {
+            eventSource?.close();
+            window.removeEventListener('beforeunload', beforeUnloadHandler);
+            window.removeEventListener('offline', offlineHandler);
+        };
+    }, [existingJam]);
+
+    useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
             setExistingJam(JSON.parse(storedJam));

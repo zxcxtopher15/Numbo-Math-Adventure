@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { Board_Journey } from '@/Components/Board_Journey';
+import { Board_Student } from '@/Components/Board_Student';
 import { PageCountDown } from '@/Components/PageCountDown';
 
 export default function BoardContainer_Student({ auth }) {
@@ -115,87 +115,6 @@ export default function BoardContainer_Student({ auth }) {
             console.error('Error during disconnect:', err);
         }
     };
-
-    useEffect(() => {
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-
-        if (!existingJam) return;
-        console.log(existingJam);
-
-        const sseUrl = `${baseUrl}/math-journey/jam-stream-updates?math_jam_code=${existingJam.math_jam_code}`;
-        let eventSource;
-
-        const connectSSE = () => {
-            eventSource = new EventSource(sseUrl);
-
-            eventSource.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-
-                if (data && (data.status === 'started')) {
-                    window.location.href = '/math-journey/play';
-                } else {
-                    if (data.status === 'cancelled' || data.status === 'ended') {
-                        eventSource.close();
-
-                        Swal.fire({
-                            icon: data.status === 'cancelled' ? 'error' : 'info',
-                            title: data.status === 'cancelled' ? 'Math Journey Cancelled' : 'Math Journey Ended',
-                            text:
-                                data.status === 'cancelled'
-                                    ? 'The Math Journey session has been cancelled.'
-                                    : 'The Math Journey session has ended. Thank you for participating!',
-                            confirmButtonColor: '#d33',
-                            allowOutsideClick: false,
-                        }).then(() => {
-                            if (!hasReloaded.current) {
-                                hasReloaded.current = true;
-                                handleDisconnect();
-                                window.location.reload();
-                            }
-                        });
-
-                        return;
-                    }
-                }
-            };
-
-            eventSource.onerror = () => {
-                eventSource.close();
-                setTimeout(() => {
-                    connectSSE();
-                }, 1000);
-            };
-        };
-
-        connectSSE();
-
-        const beforeUnloadHandler = (event) => {
-            handleDisconnect();
-        };
-
-        window.addEventListener('beforeunload', beforeUnloadHandler);
-
-        const offlineHandler = () => {
-            handleDisconnect();
-            Swal.fire({
-                icon: 'error',
-                title: 'Connection Lost',
-                text: 'You have been disconnected due to a lost internet connection.',
-                confirmButtonColor: '#d33',
-                allowOutsideClick: false,
-            }).then(() => {
-                window.location.reload();
-            });
-        };
-
-        window.addEventListener('offline', offlineHandler);
-
-        return () => {
-            eventSource?.close();
-            window.removeEventListener('beforeunload', beforeUnloadHandler);
-            window.removeEventListener('offline', offlineHandler);
-        };
-    }, [existingJam]);
 
     useEffect(() => {
         setCategoryTitle(localStorage.getItem('category') || 'Default Title');
@@ -331,7 +250,7 @@ export default function BoardContainer_Student({ auth }) {
 
     return (
         <div className="overflow-hidden h-dvh lg:p-3 p-2 bg-gradient-to-br from-teal-400 to-yellow-200 box-border">
-            {showCountdown ? <PageCountDown onComplete={handleCountdownComplete} /> : <Board_Journey data={questions} />}
+            {showCountdown ? <PageCountDown onComplete={handleCountdownComplete} /> : <Board_Student data={questions} />}
         </div>
     );
 }
