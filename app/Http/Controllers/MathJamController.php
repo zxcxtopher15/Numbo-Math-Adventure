@@ -298,6 +298,7 @@ class MathJamController extends Controller
 
         $participant->update([
             'status' => 'joined',
+            'updated_at' => now(),
             'disconnected_at' => null,
         ]);
 
