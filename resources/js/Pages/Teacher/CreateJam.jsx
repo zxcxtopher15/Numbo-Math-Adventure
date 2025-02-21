@@ -340,20 +340,25 @@ const CreateJam = () => {
 
     const handleReconnect = async () => {
         if (!existingJam) return;
-        if (!participants.length > 0) return;
 
-        let status = "";
+        const joinedParticipants = participants.filter(participant => participant.status === 'joined');
+
+        if (joinedParticipants.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'No Participants',
+                text: 'There are no participants in the session.',
+                confirmButtonColor: '#d33',
+            });
+            return;
+        }
+
+        let status = hasQuestions ? "started" : "waiting";
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) {
             console.error('Base URL not found.');
             return;
-        }
-
-        if (hasQuestions) {
-            status = "started";
-        } else {
-            status = "waiting";
         }
 
         const apiUrl = `${baseUrl}/math-journey/update-status`;
@@ -371,12 +376,10 @@ const CreateJam = () => {
             });
 
             if (response.ok) {
-                // console.log('Math Jam status updated to start');
-
-                if (status == "started") {
-                    window.location.href = '/math-journey/watch'
+                if (status === "started") {
+                    window.location.href = '/math-journey/watch';
                 }
-                
+
                 const updatedJam = { ...existingJam, status };
                 setExistingJam(updatedJam);
                 setShowReconnectModal(false);
