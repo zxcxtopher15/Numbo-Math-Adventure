@@ -37,11 +37,15 @@ export default function BoardContainer_Student({ auth }) {
         };
 
         const beforeUnloadHandler = (event) => {
-            window.location.href = "/math-journey-join";
+            setTimeout(() => {
+                window.location.href = "/math-journey-join";
+            }, 0);
         };
 
         const offlineHandler = () => {
-            window.location.href = "/math-journey-join";
+            setTimeout(() => {
+                window.location.href = "/math-journey-join";
+            }, 0);
         };
 
         window.addEventListener('offline', offlineHandler);
@@ -56,49 +60,6 @@ export default function BoardContainer_Student({ auth }) {
             window.removeEventListener('keydown', disableReload);
         };
     }, []);
-
-    // const handleDisconnect = async () => {
-    //     const existingJam = localStorage.getItem('existingJam');
-
-    //     if (!existingJam) return;
-
-    //     const parsedJam = JSON.parse(existingJam);
-    //     if (!parsedJam || !parsedJam.math_jam_id) return;
-
-    //     const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-    //     if (!baseUrl) return;
-
-    //     const apiUrl = `${baseUrl}/math-journey/disconnect_jam`;
-
-    //     try {
-    //         const response = await fetch(apiUrl, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-    //             },
-    //             body: JSON.stringify({
-    //                 math_jam_id: parsedJam.math_jam_id,
-    //             }),
-    //         });
-
-    //         if (!response.ok) {
-    //             console.error('Failed to disconnect:', response.status);
-    //             return;
-    //         }
-
-    //         const data = await response.json();
-
-    //         if (data?.jam) {
-    //             localStorage.setItem('existingJam', JSON.stringify(data.jam));
-    //         } else {
-    //             console.warn('No valid jam data in response');
-    //             localStorage.removeItem('existingJam');
-    //         }
-    //     } catch (err) {
-    //         console.error('Error during disconnect:', err);
-    //     }
-    // };
 
     useEffect(() => {
         setCategoryTitle(localStorage.getItem('category') || 'Default Title');
