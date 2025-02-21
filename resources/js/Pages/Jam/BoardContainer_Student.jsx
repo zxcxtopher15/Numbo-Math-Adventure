@@ -10,6 +10,7 @@ export default function BoardContainer_Student({ }) {
     const [existingJam, setExistingJam] = useState(null);
     const { auth } = usePage().props;
     const studentId = auth?.user.id;
+    const [participant, setParticipant] = useState([]);
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
@@ -82,11 +83,8 @@ export default function BoardContainer_Student({ }) {
                 const blob = new Blob([payload], { type: 'application/json' });
                 navigator.sendBeacon(apiUrl, blob);
 
-                setTimeout(() => {
-                    window.location.href = '/math-journey-join';
-                }, 500);
             } else {
-                const response = await fetch(apiUrl, {
+                await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -97,7 +95,9 @@ export default function BoardContainer_Student({ }) {
                 });
 
                 if (response.ok) {
-                    window.location.href = '/math-journey-join';
+                    const responseData = await response.json();
+                    console.log(responseData);
+                    localStorage.setItem('existingJam', JSON.stringify(updatedJam));
                 } else {
                     console.error('Failed to disconnect:', response.statusText);
                 }

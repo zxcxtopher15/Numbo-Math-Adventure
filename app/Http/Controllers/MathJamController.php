@@ -265,6 +265,7 @@ class MathJamController extends Controller
         $participant->save();
 
         return response()->json([
+            'participant' => $participant,
             'message' => 'Disconnected successfully',
         ]);
     }
