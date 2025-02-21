@@ -287,7 +287,7 @@ export default function Dashboard() {
     const [studentsData, setStudentsData] = useState([]);
 
     useEffect(() => {
-        axios.get("/api/student-results")
+        axios.get("/student-results")
             .then(response => {
                 setStudentsData(response.data.results);
             })
