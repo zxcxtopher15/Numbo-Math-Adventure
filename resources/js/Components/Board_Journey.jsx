@@ -17,6 +17,7 @@ import { useWindowSize } from 'react-use';
 import { Link } from '@inertiajs/react';
 import { SvgAsset } from './SvgAsset';
 import Categories from './Categories';
+import Swal from 'sweetalert2';
 
 function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
     return (
@@ -173,8 +174,15 @@ export function Board_Journey({ data }) {
 
     useEffect(() => {
         const joinedParticipants = participants.filter(participant => participant.status === 'joined');
-        if (joinedParticipants.length == 0) {
-            window.location.href = 'math-journey';
+        if (joinedParticipants.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'No Participants',
+                text: 'There are no participants in the session.',
+                confirmButtonColor: '#d33',
+            }).then(() => {
+                window.location.href = 'math-journey';
+            });
         }
 
         const storedJam = localStorage.getItem('existingJam');
