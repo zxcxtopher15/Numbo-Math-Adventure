@@ -19,26 +19,50 @@ import { SvgAsset } from './SvgAsset';
 import Categories from './Categories';
 import Swal from 'sweetalert2';
 
-function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
+function RoundResult({ isTimeUp, isCorrect, participants, onNext }) {
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center bg-white p-6 rounded-3xl shadow-lg">
-            <h2
-                className={`text-3xl font-bold text-center ${isTimeUp ? 'text-orange-500' : isCorrect ? 'text-green-500' : 'text-red-500'
-                    }`}
-            >
-                {isTimeUp ? "Time's Up!" : isCorrect ? 'Correct!' : 'Incorrect'}
-            </h2>
-            <p className="text-xl mt-4">
-                {isTimeUp
-                    ? 'You ran out of time.'
-                    : isCorrect
-                        ? 'Great job!'
-                        : `The correct answer is: ${correctAnswer}`}
-            </p>
-            <button className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold mt-4" onClick={onNext}>
-                Next
-            </button>
+        <div className="w-full h-full flex flex-col lg:flex-row bg-white sm:px-6  px-2 py-5 rounded-3xl shadow-lg">
+            <div className="flex flex-col w-full lg:w-[35rem] relative z-10">
+                <h1 className="text-3xl font-bold text-primary mb-5">Student Scores</h1>
+                
+                {/* Scrollable List Container */}
+                <div className="p-4 rounded-3xl bg-gray-200 flex-grow overflow-auto max-h-[calc(100vh-230px)]">
+                    <div className="grid grid-cols-1 gap-4">
+                        {[...new Map(participants.map(p => [p.id, p])).values()] // Remove duplicates
+                            .slice()
+                            .sort((a, b) => b.score - a.score) // Sort in descending order
+                            .map((participant, index) => (
+                                <div key={participant.id} className="flex items-center justify-between gap-3 text-gray-600 bg-white px-4 py-3 rounded-2xl">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-sm font-medium">{index + 1}.</span>
+                                        <Avatar name={participant.image || participant.name} />
+                                        <h3 className="font-semibold">{participant.name}</h3>
+                                    </div>
+                                    <div className="flex flex-col items-center">
+                                        <p className="text-xs font-medium">Score</p>
+                                        <h3 className="font-semibold text-warning">{participant.score} / {num_questions}</h3>
+                                    </div>
+                                </div>
+                            ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Button Section - Prevents Overlap */}
+            <div className="p-4 rounded-3xl  w-full flex items-end justify-end mt-4 lg:mt-0 relative z-0">
+                <div className="lg:flex hidden justify-center items-center h-0rem w-full ">
+                    <SvgAsset
+                        movement="sm"
+                        value="/images/assets/background/students_result.svg"
+                        className=" hidden lg:block lg:absolute top-10 right-30 "
+                    />
+                </div>
+                <button className="bg-primary relative z-2 text-white text-lg px-6 py-2 rounded-2xl font-semibold" onClick={onNext}>
+                    Next
+                </button>
+            </div>
         </div>
+        
     );
 }
 
@@ -633,7 +657,7 @@ export function Board_Journey({ data }) {
                         <RoundResult
                             isTimeUp={isTimeUp}
                             isCorrect={isCorrect}
-                            correctAnswer={correctAnswer}
+                            participants={participants}
                             onNext={handleNext}
                         />
                     </div>
