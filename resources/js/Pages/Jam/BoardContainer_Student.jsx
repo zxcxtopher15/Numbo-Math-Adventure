@@ -40,7 +40,6 @@ export default function BoardContainer_Student({ auth }) {
             handleDisconnect();
         };
 
-
         const offlineHandler = () => {
             handleDisconnect();
             Swal.fire({
@@ -72,90 +71,6 @@ export default function BoardContainer_Student({ auth }) {
         }
         return array;
     };
-
-    useEffect(() => {
-            const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-    
-            if (!existingJam) return;
-    
-            const sseUrl = `${baseUrl}/math-journey/jam-stream-updates?math_jam_code=${existingJam.math_jam_code}`;
-            let eventSource;
-    
-            const connectSSE = () => {
-                eventSource = new EventSource(sseUrl);
-    
-                eventSource.onmessage = (event) => {
-                    const data = JSON.parse(event.data);
-                    localStorage.setItem(
-                        'existingJam',
-                        JSON.stringify(data),
-                    );
-    
-                    if (data && (data.status === 'started')) {
-                        window.location.href = '/math-journey/play';
-                    } else {
-                        if (data.status === 'cancelled' || data.status === 'ended') {
-                            eventSource.close();
-    
-                            Swal.fire({
-                                icon: data.status === 'cancelled' ? 'error' : 'info',
-                                title: data.status === 'cancelled' ? 'Math Journey Cancelled' : 'Math Journey Ended',
-                                text:
-                                    data.status === 'cancelled'
-                                        ? 'The Math Journey session has been cancelled.'
-                                        : 'The Math Journey session has ended. Thank you for participating!',
-                                confirmButtonColor: '#d33',
-                                allowOutsideClick: false,
-                            }).then(() => {
-                                if (!hasReloaded.current) {
-                                    hasReloaded.current = true;
-                                    handleDisconnect();
-                                    window.location.reload();
-                                }
-                            });
-    
-                            return;
-                        }
-                    }
-                };
-    
-                eventSource.onerror = () => {
-                    eventSource.close();
-                    setTimeout(() => {
-                        connectSSE();
-                    }, 1000);
-                };
-            };
-    
-            connectSSE();
-    
-            const beforeUnloadHandler = (event) => {
-                handleDisconnect();
-            };
-    
-            window.addEventListener('beforeunload', beforeUnloadHandler);
-    
-            const offlineHandler = () => {
-                handleDisconnect();
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Connection Lost',
-                    text: 'You have been disconnected due to a lost internet connection.',
-                    confirmButtonColor: '#d33',
-                    allowOutsideClick: false,
-                }).then(() => {
-                    window.location.reload();
-                });
-            };
-    
-            window.addEventListener('offline', offlineHandler);
-    
-            return () => {
-                eventSource?.close();
-                window.removeEventListener('beforeunload', beforeUnloadHandler);
-                window.removeEventListener('offline', offlineHandler);
-            };
-        }, [existingJam]);
 
     // const handleDisconnect = async () => {
     //     const existingJam = localStorage.getItem('existingJam');
@@ -200,43 +115,43 @@ export default function BoardContainer_Student({ auth }) {
     //     }
     // };
 
-    // useEffect(() => {
-    //     setCategoryTitle(localStorage.getItem('category') || 'Default Title');
+    useEffect(() => {
+        setCategoryTitle(localStorage.getItem('category') || 'Default Title');
 
-    //     if (existingJam?.math_jam_id) {
-    //         fetch(`/get_ordered_questions?math_jam_id=${existingJam.math_jam_id}`)
-    //             .then((response) => response.json())
-    //             .then((data) => {
-    //                 if (data.length > 0) {
-    //                     const formattedQuestions = data.map((item) => ({
-    //                         title: `${item.question.category} Challenge`,
-    //                         time: existingJam.time_limit,
-    //                         question_data: {
-    //                             id: item.question.id,
-    //                             type: item.question.question_type || 'addition',
-    //                             image: null,
-    //                             title: 'Solve This',
-    //                             question: item.question.question,
-    //                         },
-    //                         answers: item.question.choices.map((choice, index) => ({
-    //                             id: index + 1,
-    //                             answer: choice,
-    //                             is_correct: choice === item.question.correct_answer,
-    //                         })),
-    //                     }));
+        if (existingJam?.math_jam_id) {
+            fetch(`/get_ordered_questions?math_jam_id=${existingJam.math_jam_id}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.length > 0) {
+                        const formattedQuestions = data.map((item) => ({
+                            title: `${item.question.category} Challenge`,
+                            time: existingJam.time_limit,
+                            question_data: {
+                                id: item.question.id,
+                                type: item.question.question_type || 'addition',
+                                image: null,
+                                title: 'Solve This',
+                                question: item.question.question,
+                            },
+                            answers: item.question.choices.map((choice, index) => ({
+                                id: index + 1,
+                                answer: choice,
+                                is_correct: choice === item.question.correct_answer,
+                            })),
+                        }));
 
-    //                     setQuestions(formattedQuestions);
+                        setQuestions(formattedQuestions);
 
-    //                     if (formattedQuestions.length > 0) {
-    //                         updateCurrentQuestionId(formattedQuestions[0].question_data.id);
-    //                     }
-    //                 } else {
-    //                     fetchNewQuestions();
-    //                 }
-    //             })
-    //             .catch((error) => console.error('Error fetching ordered questions:', error));
-    //     }
-    // }, [existingJam]);
+                        if (formattedQuestions.length > 0) {
+                            updateCurrentQuestionId(formattedQuestions[0].question_data.id);
+                        }
+                    } else {
+                        fetchNewQuestions();
+                    }
+                })
+                .catch((error) => console.error('Error fetching ordered questions:', error));
+        }
+    }, [existingJam]);
 
     // const fetchNewQuestions = () => {
     //     fetch(`/questions_list_teacher?categoryTitle=${categoryTitle}&num_questions=${existingJam.num_questions}`)
@@ -334,7 +249,7 @@ export default function BoardContainer_Student({ auth }) {
 
     return (
         <div className="overflow-hidden h-dvh lg:p-3 p-2 bg-gradient-to-br from-teal-400 to-yellow-200 box-border">
-            {/* {showCountdown ? <PageCountDown onComplete={handleCountdownComplete} /> : <Board_Student data={questions} />} */}
+            {showCountdown ? <PageCountDown onComplete={handleCountdownComplete} /> : <Board_Student data={questions} />}
         </div>
     );
 }
