@@ -226,6 +226,8 @@ export function Board_Student({ data }) {
 
                 if (mathjam.current_question_id) {
                     if (data.length > 0) {
+                        setIsAnswered(false);
+                        setIsTimeUp(false);
                         const questionIds = data.map(item => item.question_data.id);
                         const existingIndex = questionIds.indexOf(mathjam.current_question_id);
                         setCurrentQuestion(existingIndex !== -1 ? existingIndex : 0);
@@ -533,13 +535,11 @@ export function Board_Student({ data }) {
                 </div>
 
                 {(isAnswered || isTimeUp) && (
-                    <div className="absolute inset-0 flex justify-center items-center z-50 bg-opacity-50 p-3">
-                        <RoundResult
-                            isTimeUp={isTimeUp}
-                            isCorrect={isCorrect}
-                            correctAnswer={correctAnswer}
-                            onNext={handleNext}
-                        />
+                    <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-50 pointer-events-auto">
+                        <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+                            <span className="text-lg font-semibold mb-3">Waiting for other students...</span>
+                            <div className="w-8 h-8 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+                        </div>
                     </div>
                 )}
             </div>
