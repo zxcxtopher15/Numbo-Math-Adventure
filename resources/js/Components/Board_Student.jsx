@@ -169,6 +169,7 @@ export function Board_Student({ data }) {
     const [timeSpent, setTimeSpent] = useState([]);
     const { auth } = usePage().props;
     const [existingJam, setExistingJam] = useState(null);
+    const [endGame, setEndGame] = useState(false);
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
@@ -218,8 +219,11 @@ export function Board_Student({ data }) {
                 }
 
                 if (mathjam.current_question_id) {
-                    console.log(data.length);
                     if (data.length > 0) {
+                        if (mathjam.current_question_id == 0) {
+                           setEndGame(true);
+                        }
+
                         const questionIds = data.map(item => item.question_data.id);
                         const existingIndex = questionIds.indexOf(mathjam.current_question_id);
                         setCurrentQuestion(existingIndex !== -1 ? existingIndex : 0);
@@ -406,7 +410,7 @@ export function Board_Student({ data }) {
 
     const totalTimeSpent = timeSpent.reduce((acc, time) => acc + time, 0);
 
-    return isGameFinished ? (
+    return endGame ? (
         <TotalResult totalQuestions={data.length} gameState={gameState} totalTimeSpent={totalTimeSpent} />
     ) : (
         <>
