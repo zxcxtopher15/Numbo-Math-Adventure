@@ -191,8 +191,6 @@ export function Board_Student({ data }) {
 
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
-                setExistingJam(JSON.parse(data));
-                localStorage.setItem('existingJam', JSON.parse(data));
 
                 if (data.status === 'cancelled' || data.status === 'ended') {
                     eventSource.close();
