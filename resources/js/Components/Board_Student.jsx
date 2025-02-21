@@ -194,6 +194,12 @@ export function Board_Student({ data }) {
                 setExistingJam(JSON.parse(data));
                 localStorage.setItem('existingJam', JSON.parse(data));
 
+                if (data.is_paused) {
+                    handleDialogOpen();
+                } else {
+                    handleDialogClose();
+                }
+
                 if (data.status === 'cancelled' || data.status === 'ended') {
                     eventSource.close();
 
@@ -426,10 +432,13 @@ export function Board_Student({ data }) {
                                     <FaPause className="text-4xl" />
                                 </button>
                             </DialogTrigger>
-                            <DialogContent className="sm:max-w-[425px]">
+                            <DialogContent className="sm:max-w-[425px]"
+                                onInteractOutside={(e) => e.preventDefault()}
+                                onEscapeKeyDown={(e) => e.preventDefault()}
+                            >
                                 <DialogHeader>
                                     <DialogTitle>Pause</DialogTitle>
-                                    <DialogDescription>Game is paused. Resume when you're ready.</DialogDescription>
+                                    <DialogDescription>Game is paused. Wait until the host resumes it.</DialogDescription>
                                 </DialogHeader>
                                 <DialogFooter></DialogFooter>
                             </DialogContent>
