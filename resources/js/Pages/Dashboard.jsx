@@ -19,6 +19,7 @@ import Avatar from '@/Components/Avatar';
 
 import { StudentDashboard } from '@/Components/Dashboard/StudentDashboard';
 import { TeacherDashboard } from '@/Components/Dashboard/TeacherDashboard';
+import { ParentDashboard } from '@/Components/Dashboard/ParentDashboard';
 
 const data = [
     {
@@ -312,7 +313,7 @@ export default function Dashboard() {
             ) : userType === 'Teacher' ? (
                 <TeacherDashboard data={students_data} />
             ) : (
-                'Parent Dashboard'
+                <ParentDashboard data={students_data} />
             )}
         </AuthenticatedLayout>
     );
