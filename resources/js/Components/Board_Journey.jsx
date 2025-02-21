@@ -176,9 +176,12 @@ export function Board_Journey({ data }) {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
             setExistingJam(JSON.parse(storedJam));
+        }
 
+        setTimeout(() => {
             const joinedParticipants = participants.filter(participant => participant.status === 'joined');
-            if (!joinedParticipants.length > 0) {
+
+            if (joinedParticipants.length === 0) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'No Participants',
@@ -188,7 +191,7 @@ export function Board_Journey({ data }) {
                     window.location.href = 'math-journey';
                 });
             }
-        }
+        }, 5000);
     }, [participants]);
 
     useEffect(() => {
