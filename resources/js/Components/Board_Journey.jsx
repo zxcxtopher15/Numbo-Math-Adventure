@@ -67,7 +67,7 @@ function RoundResult({ numQuestion, participants, onNext }) {
     );
 }
 
-function TotalResult({ participants }) {
+function TotalResult({ participants, numQuestion }) {
     const { width, height } = useWindowSize();
     const [jamCategory, setJamCategory] = useState('');
     const [gameTitle, setGameTitle] = useState('');
