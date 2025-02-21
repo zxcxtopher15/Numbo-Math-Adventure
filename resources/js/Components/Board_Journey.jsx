@@ -173,21 +173,21 @@ export function Board_Journey({ data }) {
     const [participants, setParticipants] = useState([]);
 
     useEffect(() => {
-        const joinedParticipants = participants.filter(participant => participant.status === 'joined');
-        if (!joinedParticipants.length > 0) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'No Participants',
-                text: 'There are no participants in the session.',
-                confirmButtonColor: '#d33',
-            }).then(() => {
-                window.location.href = 'math-journey';
-            });
-        }
-
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
             setExistingJam(JSON.parse(storedJam));
+
+            const joinedParticipants = participants.filter(participant => participant.status === 'joined');
+            if (!joinedParticipants.length > 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Participants',
+                    text: 'There are no participants in the session.',
+                    confirmButtonColor: '#d33',
+                }).then(() => {
+                    window.location.href = 'math-journey';
+                });
+            }
         }
     }, [participants]);
 
