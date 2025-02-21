@@ -343,16 +343,6 @@ const CreateJam = () => {
 
         const joinedParticipants = participants.filter(participant => participant.status === 'joined');
 
-        if (joinedParticipants.length === 0) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'No Participants',
-                text: 'There are no participants in the session.',
-                confirmButtonColor: '#d33',
-            });
-            return;
-        }
-
         let status = hasQuestions ? "started" : "waiting";
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
@@ -376,13 +366,23 @@ const CreateJam = () => {
             });
 
             if (response.ok) {
-                if (status === "started") {
-                    window.location.href = '/math-journey/watch';
-                }
-
                 const updatedJam = { ...existingJam, status };
                 setExistingJam(updatedJam);
                 setShowReconnectModal(false);
+                
+                if (joinedParticipants.length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No Participants',
+                        text: 'There are no participants in the session.',
+                        confirmButtonColor: '#d33',
+                    });
+                    return;
+                }
+
+                if (status === "started") {
+                    window.location.href = '/math-journey/watch';
+                }
             } else {
                 console.error('Failed to update Math Jam status');
             }
