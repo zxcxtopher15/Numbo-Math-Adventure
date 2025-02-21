@@ -1,7 +1,6 @@
 <?php
 
 use Inertia\Inertia;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\MathJamController;
@@ -22,26 +21,10 @@ Route::get('/', [AuthenticatedSessionController::class, 'create'])
 // });
 
 Route::get('/dashboard', function () {
-    $student_data = DB::table('users')
-        ->join('math_jam_participants', 'users.id', '=', 'math_jam_participants.student_id')
-        ->join('math_jams', 'math_jam_participants.math_jam_id', '=', 'math_jams.id')
-        ->select(
-            'users.name',
-            'math_jams.math_journey_for',
-            'math_jams.category',
-            'math_jam_participants.score',
-            'math_jams.num_questions',
-            'math_jam_participants.created_at'
-        )
-        ->get();
-
-        echo '<pre>'; print_r($student_data); exit;
-
-    return Inertia::render('Dashboard', [
-        'results' => $student_data,
-    ]);
+    return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/student-results', [MathJamController::class, 'getStudentResults']);
 
 Route::get('/modules', function () {
     return Inertia::render('Modules/Modules', request()->all());

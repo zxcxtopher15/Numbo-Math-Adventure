@@ -16,6 +16,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import Checkbox from '@/Components/Checkbox';
 import { SvgAsset } from '@/Components/SvgAsset';
 import Avatar from '@/Components/Avatar';
+import axios from "axios";
 
 import { StudentDashboard } from '@/Components/Dashboard/StudentDashboard';
 import { TeacherDashboard } from '@/Components/Dashboard/TeacherDashboard';
@@ -282,6 +283,17 @@ const students_data = [
 export default function Dashboard() {
     const { auth } = usePage().props;
     const userType = auth?.user?.user_type;
+    const [studentsData, setStudentsData] = useState([]);
+
+    useEffect(() => {
+        axios.get("/api/student-results")
+            .then(response => {
+                setStudentsData(response.data.results);
+            })
+            .catch(error => {
+                console.error("Error fetching student results:", error);
+            });
+    }, []);
 
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Dashboard</h2>}>
@@ -311,9 +323,9 @@ export default function Dashboard() {
             {userType === 'Student' ? (
                 <StudentDashboard data={data} />
             ) : userType === 'Teacher' ? (
-                <TeacherDashboard data={students_data} />
+                <TeacherDashboard data={studentsData} />
             ) : (
-                <ParentDashboard data={students_data} />
+                <ParentDashboard data={studentsData} />
             )}
         </AuthenticatedLayout>
     );
