@@ -20,6 +20,22 @@ export default function BoardContainer_Student({ }) {
                 window.location.href = '/math-journey-join';
             }
         }
+
+        const beforeUnloadHandler = (event) => {
+            handleDisconnect();
+        };
+
+        const offlineHandler = () => {
+            handleDisconnect();
+        };
+
+        window.addEventListener('offline', offlineHandler);
+        window.addEventListener('beforeunload', beforeUnloadHandler);
+
+        return () => {
+            window.removeEventListener('beforeunload', beforeUnloadHandler);
+            window.removeEventListener('offline', offlineHandler);
+        };
     }, []);
 
     useEffect(() => {
@@ -38,22 +54,10 @@ export default function BoardContainer_Student({ }) {
             }
         };
 
-        const beforeUnloadHandler = (event) => {
-            handleDisconnect();
-        };
-
-        const offlineHandler = () => {
-            handleDisconnect();
-        };
-
-        window.addEventListener('offline', offlineHandler);
-        window.addEventListener('beforeunload', beforeUnloadHandler);
         document.addEventListener('contextmenu', disableRightClick);
         window.addEventListener('keydown', disableReload);
 
         return () => {
-            window.removeEventListener('beforeunload', beforeUnloadHandler);
-            window.removeEventListener('offline', offlineHandler);
             document.removeEventListener('contextmenu', disableRightClick);
             window.removeEventListener('keydown', disableReload);
         };
