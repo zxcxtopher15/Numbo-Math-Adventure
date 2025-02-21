@@ -33,7 +33,7 @@ const JoinJam = () => {
                 showDisconnectedSwal();
             }
         }
-    }, []);
+    }, [status]);
 
     useEffect(() => {
         sessionStorage.setItem('jamCode', jamCode);
