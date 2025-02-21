@@ -72,13 +72,20 @@ export default function BoardContainer_Student({ }) {
         if (!baseUrl) return;
 
         const apiUrl = `${baseUrl}/math-journey/disconnect`;
-
         const data = JSON.stringify({
             student_id: studentId,
             math_jam_code: existingJam.math_jam_code,
         });
 
-        navigator.sendBeacon(apiUrl, data);
+        try {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', apiUrl, false);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'));
+            xhr.send(data);
+        } catch (err) {
+            console.error('Error during disconnect:', err);
+        }
     };
 
     useEffect(() => {
