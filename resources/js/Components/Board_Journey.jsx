@@ -195,15 +195,8 @@ export function Board_Journey({ data }) {
                         window.location.href = '/math-journey';
                     });
                 }
-
-                const allAnswered = joinedParticipants.every(participant => participant.has_answer === 1);
-
-                console.log(allAnswered);
-                if (allAnswered) {
-                    setIsAnswered(true);
-                }
             }
-        }, 5000);
+        }, 3000);
 
         return () => clearTimeout(timeout);
     }, [participants]);
@@ -224,6 +217,12 @@ export function Board_Journey({ data }) {
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 setParticipants(data);
+
+                const allAnswered = joinedParticipants.every(participant => participant.has_answer === 1);
+
+                if (allAnswered) {
+                    setIsAnswered(true);
+                }
             };
 
             eventSource.onerror = (error) => {
