@@ -20,7 +20,7 @@ import Categories from './Categories';
 import Swal from 'sweetalert2';
 import Avatar from './Avatar';
 
-function RoundResult({ isTimeUp, numQuestion, participants, onNext }) {
+function RoundResult({ numQuestion, participants, onNext }) {
     return (
         <div className="w-full h-full flex flex-col lg:flex-row bg-white sm:px-6  px-2 py-5 rounded-3xl shadow-lg">
             <div className="flex flex-col w-full lg:w-[35rem] relative z-10">
@@ -67,7 +67,7 @@ function RoundResult({ isTimeUp, numQuestion, participants, onNext }) {
     );
 }
 
-function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
+function TotalResult({ participants }) {
     const { width, height } = useWindowSize();
     const [jamCategory, setJamCategory] = useState('');
     const [gameTitle, setGameTitle] = useState('');
@@ -98,8 +98,8 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
         setGameTitle(localStorage.getItem('category') || 'Default Title');
     }, []);
 
-    const totalTimeInMinutes = Math.floor(totalTimeSpent / 60000);
-    const totalTimeInSeconds = Math.floor((totalTimeSpent % 60000) / 1000);
+    // const totalTimeInMinutes = Math.floor(totalTimeSpent / 60000);
+    // const totalTimeInSeconds = Math.floor((totalTimeSpent % 60000) / 1000);
 
     const handleMainMenuClick = async (e) => {
         if (!existingJam) return;
@@ -141,7 +141,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
 
             <div className="w-full h-full flex flex-col lg:flex-row items-center justify-between bg-white p-6 rounded-3xl shadow-lg box-border">
                 <div className="w-full lg:h-full h-max lg:w-1/2 justify-center items-end lg:px-10 lg:text-start text-center py-5 relative">
-                    <h1 className="lg:text-6xl text-5xl font-bold text-primary relative z-10">GREAT JOB!!!</h1>
+                    <h1 className="lg:text-6xl text-5xl font-bold text-primary relative z-10">Math Journey Completed!</h1>
 
                     <div className="lg:flex hidden justify-center items-center h-full w-full ">
                         <SvgAsset
@@ -152,22 +152,34 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
                     </div>
                 </div>
                 <div className="flex flex-col bg-gray-200 h-full rounded-3xl md:p-6 p-2 gap-4 lg:w-4/12 sm:w-full w-full ">
-                    <div className="flex justify-start items-center w-full p-4 bg-white rounded-3xl px-6 gap-8 ">
-                        <img className="w-14 h-14" src="/images/assets/stars/glossy_3.svg" alt="" />
-                        <h1 className="text-warning font-bold  text-6xl">
-                            {gameState.correctQuestions.length} / {totalQuestions}
-                        </h1>
-                    </div>
+              
 
                     <div className="bg-white h-full rounded-3xl  p-4 space-y-4  mt-4">
-                        <div className="bg-primary text-white p-4 rounded-3xl font-semibold text-2xl">
-                            {' '}
-                            Time: {totalTimeInMinutes} min {totalTimeInSeconds} sec
-                        </div>
                         <div className="bg-success text-white rounded-3xl p-4 flex flex-col full justify-center items-center">
-                            {' '}
+                    
                             <h3 className="text-xl font-semibold">{jamCategory}</h3>
                             <h1 className="text-4xl font-bold">{gameTitle}</h1>
+                        </div>
+                            <h1 className="text-2xl font-bold">Final Scores</h1>
+                        <div className="p-4 rounded-3xl bg-gray-200 flex-grow overflow-auto max-h-[calc(100vh-300px)]">
+                            <div className="grid grid-cols-1 gap-4">
+                                {[...new Map(participants.map(p => [p.id, p])).values()] // Remove duplicates
+                                    .slice()
+                                    .sort((a, b) => b.score - a.score) // Sort in descending order
+                                    .map((participant, index) => (
+                                        <div key={participant.id} className="flex items-center justify-between gap-3 text-gray-600 bg-white px-4 py-3 rounded-2xl">
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-sm font-medium">{index + 1}.</span>
+                                                <Avatar name={participant.image || participant.name} />
+                                                <h3 className="font-semibold">{participant.name}</h3>
+                                            </div>
+                                            <div className="flex flex-col items-center">
+                                                <p className="text-xs font-medium">Score</p>
+                                                <h3 className="font-semibold text-warning">{participant.score} / {numQuestion}</h3>
+                                            </div>
+                                        </div>
+                                    ))}
+                            </div>
                         </div>
                     </div>
                     <div className="flex py-4 w-full justify-between text-xl font-semibold text-white">
@@ -559,7 +571,7 @@ export function Board_Journey({ data }) {
         return () => window.removeEventListener('resize', updateFontSize);
     }, [currentQuestion, data]);
     return isGameFinished ? (
-        <TotalResult totalQuestions={data.length} gameState={gameState} totalTimeSpent={totalTimeSpent} />
+        <TotalResult participants={participants}/>
     ) : (
         <>
             <div className="w-full h-full bg-white rounded-3xl p-6">
@@ -656,8 +668,7 @@ export function Board_Journey({ data }) {
                 {(isAnswered || isTimeUp) && (
                     <div className="absolute inset-0 flex justify-center items-center z-50 bg-opacity-50 p-3">
                         <RoundResult
-                            isTimeUp={isTimeUp}
-                            numQuestion={10}
+                            numQuestion={10} // di ko alam kung saan kukunin par hahaha
                             participants={participants}
                             onNext={handleNext}
                         />
