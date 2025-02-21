@@ -101,22 +101,12 @@ export default function BoardContainer_Student({}) {
 
     const handleReconnect = async () => {
         if (!studentId || !existingJam) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Reconnect Failed',
-                text: 'Student ID or Jam Code is missing.',
-            });
             return;
         }
 
         setLoading(true);
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Base URL Error',
-                text: 'Base URL not found.',
-            });
             return;
         }
 
@@ -138,11 +128,6 @@ export default function BoardContainer_Student({}) {
             const data = await response.json();
         } catch (err) {
             console.error('Error reconnecting:', err);
-            Swal.fire({
-                icon: 'error',
-                title: 'An error occurred',
-                text: 'Please try again later.',
-            });
         } finally {
             setLoading(false);
         }
