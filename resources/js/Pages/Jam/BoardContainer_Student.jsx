@@ -86,49 +86,27 @@ export default function BoardContainer_Student({ }) {
 
         const apiUrl = `${baseUrl}/math-journey/disconnect`;
 
-        const requestBody = JSON.stringify({
-            student_id: studentId,
-            math_jam_code: existingJam.math_jam_code,
-        });
-
         try {
-            let attempts = 0;
-            let success = false;
-            let result;
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    math_jam_code: existingJam.math_jam_code,
+                }),
+            });
 
-            while (attempts < 3 && !success) {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    },
-                    body: requestBody,
-                });
+            const result = await response.json();
 
-                if (response.ok) {
-                    result = await response.json();
-
-                    if (result.participant) {
-                        await new Promise((resolve) => {
-                            localStorage.setItem('disconnectedParticipant', JSON.stringify(result.participant));
-                            resolve();
-                        });
-
-                        console.log('Participant data saved to localStorage:', result.participant);
-                    }
-
-                    console.log(result.message);
-                    success = true;
-                } else {
-                    console.warn(`Attempt ${attempts + 1} failed. Retrying...`);
-                    attempts++;
-                }
+            if (result.participant) {
+                localStorage.setItem('disconnectedParticipant', JSON.stringify(result.participant));
+                console.log('Participant data saved to localStorage:', result.participant);
             }
 
-            if (!success) {
-                console.error('Failed to disconnect after multiple attempts.');
-            }
+            console.log(result.message);
         } catch (err) {
             console.error('Error during disconnect:', err);
         }
