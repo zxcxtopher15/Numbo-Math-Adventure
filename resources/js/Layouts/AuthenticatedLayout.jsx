@@ -77,6 +77,38 @@ export default function AuthenticatedLayout({ header, children }) {
               </Dropdown>
             </div>
           </div>
+          {/* mobile */}
+          <div className="sm:hidden">
+            <div className="relative ms-3">
+              <Dropdown>
+                <Dropdown.Trigger>
+                  <button
+                    type="button"
+                    className="inline-flex items-center rounded-full border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                  >
+                    <img
+                      src={`https://ui-avatars.com/api/?name=${user.name}&font-family=Fredoka&bold=true&color=F68C8C&background=F1EFEF`}
+                      className="mr-2 h-6 w-6 rounded-full"
+                      alt={user.name}
+                    />
+                  </button>
+                </Dropdown.Trigger>
+
+                <Dropdown.Content>
+                  <Dropdown.Link href={route('profile.edit')}>
+                    Profile
+                  </Dropdown.Link>
+                  <Dropdown.Link
+                    href={route('logout')}
+                    method="post"
+                    as="button"
+                  >
+                    Log Out
+                  </Dropdown.Link>
+                </Dropdown.Content>
+              </Dropdown>
+            </div>
+          </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           {/* <div className="grid auto-rows-min gap-4 md:grid-cols-3">
