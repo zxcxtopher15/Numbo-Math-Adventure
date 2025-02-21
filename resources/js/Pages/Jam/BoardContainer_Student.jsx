@@ -3,13 +3,13 @@ import { usePage } from '@inertiajs/react';
 import { Board_Student } from '@/Components/Board_Student';
 import { PageCountDown } from '@/Components/PageCountDown';
 
-export default function BoardContainer_Student() {
+export default function BoardContainer_Student({ }) {
     const [showCountdown, setShowCountdown] = useState(true);
     const [categoryTitle, setCategoryTitle] = useState('');
     const [questions, setQuestions] = useState([]);
     const [existingJam, setExistingJam] = useState(null);
     const { auth } = usePage().props;
-    const studentId = auth?.user?.id;
+    const studentId = auth?.user.id;
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
@@ -23,9 +23,12 @@ export default function BoardContainer_Student() {
     }, []);
 
     useEffect(() => {
-        const disableRightClick = (event) => event.preventDefault();
+        const disableRightClick = (event) => {
+            event.preventDefault();
+        };
+
         const disableReload = (event) => {
-            if (event.key === 'F5' || (event.ctrlKey && event.key.toLowerCase() === 'r')) {
+            if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.ctrlKey && event.key === 'R')) {
                 event.preventDefault();
                 Swal.fire({
                     icon: 'warning',
@@ -35,7 +38,10 @@ export default function BoardContainer_Student() {
             }
         };
 
-        const beforeUnloadHandler = () => handleDisconnect();
+        const beforeUnloadHandler = (event) => {
+            handleDisconnect();
+        };
+
         const offlineHandler = () => {
             handleDisconnect();
             Swal.fire({
@@ -66,12 +72,14 @@ export default function BoardContainer_Student() {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
 
+        const apiUrl = `${baseUrl}/math-journey/disconnect`;
+
         try {
-            await fetch(`${baseUrl}/math-journey/disconnect`, {
+            await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 },
                 body: JSON.stringify({
                     student_id: studentId,
@@ -84,62 +92,52 @@ export default function BoardContainer_Student() {
     };
 
     useEffect(() => {
-        setCategoryTitle(localStorage.getItem('category') || 'Default Title');
-
-        if (existingJam?.math_jam_id) {
-            fetch(`/get_ordered_questions?math_jam_id=${existingJam.math_jam_id}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    if (!Array.isArray(data) || data.length === 0) {
-                        console.error('Invalid question data received:', data);
-                        return;
-                    }
-
-                    const formattedQuestions = data.map((item) => {
-                        if (!item?.question) {
-                            console.error('Invalid question structure:', item);
-                            return null;
-                        }
-
-                        return {
-                            title: `${item.question.category || 'Unknown'} Challenge`,
-                            time: existingJam.time_limit,
-                            question_data: {
-                                id: item.question.id || '',
-                                type: item.question.question_type || 'addition',
-                                image: null,
-                                title: 'Solve This',
-                                question: item.question.question || 'No question available',
-                            },
-                            answers: Array.isArray(item.question.choices)
-                                ? item.question.choices.map((choice, index) => ({
-                                      id: index + 1,
-                                      answer: choice,
-                                      is_correct: choice === item.question.correct_answer,
-                                  }))
-                                : [],
-                        };
-                    }).filter(Boolean); // Remove null values
+        fetch(`/get_ordered_questions?math_jam_id=${existingJam.math_jam_id}`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.length > 0) {
+                    const formattedQuestions = data.map((item) => ({
+                        title: `${item.question.category} Challenge`,
+                        time: existingJam.time_limit,
+                        question_data: {
+                            id: item.question.id,
+                            type: item.question.question_type || 'addition',
+                            image: null,
+                            title: 'Solve This',
+                            question: item.question.question,
+                        },
+                        answers: item.question.choices.map((choice, index) => ({
+                            id: index + 1,
+                            answer: choice,
+                            is_correct: choice === item.question.correct_answer,
+                        })),
+                    }));
 
                     setQuestions(formattedQuestions);
                     handleReconnect();
-                })
-                .catch((error) => console.error('Error fetching ordered questions:', error));
-        }
+                }
+            })
+            .catch((error) => console.error('Error fetching ordered questions:', error));
     }, [existingJam]);
 
     const handleReconnect = async () => {
-        if (!studentId || !existingJam) return;
+        if (!studentId || !existingJam) {
+            return;
+        }
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-        if (!baseUrl) return;
+        if (!baseUrl) {
+            return;
+        }
+
+        const apiUrl = `${baseUrl}/math-journey/reconnect`;
 
         try {
-            const response = await fetch(`${baseUrl}/math-journey/reconnect`, {
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 },
                 body: JSON.stringify({
                     student_id: studentId,
@@ -148,21 +146,23 @@ export default function BoardContainer_Student() {
             });
 
             const data = await response.json();
-            if (data) console.log("Reconnection successful");
+
+            if (data) {
+                console.log("success");
+            }
         } catch (err) {
             console.error('Error reconnecting:', err);
+        } finally {
         }
     };
 
-    const handleCountdownComplete = () => setShowCountdown(false);
+    const handleCountdownComplete = () => {
+        setShowCountdown(false);
+    };
 
     return (
         <div className="overflow-hidden h-dvh lg:p-3 p-2 bg-gradient-to-br from-teal-400 to-yellow-200 box-border">
-            {showCountdown ? (
-                <PageCountDown onComplete={handleCountdownComplete} />
-            ) : (
-                questions.length > 0 ? <Board_Student data={questions} /> : <div>Loading questions...</div>
-            )}
+            {showCountdown ? <PageCountDown onComplete={handleCountdownComplete} /> : <Board_Student data={questions} />}
         </div>
     );
 }
