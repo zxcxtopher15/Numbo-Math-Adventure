@@ -21,6 +21,7 @@ import axios from "axios";
 import { StudentDashboard } from '@/Components/Dashboard/StudentDashboard';
 import { TeacherDashboard } from '@/Components/Dashboard/TeacherDashboard';
 import { ParentDashboard } from '@/Components/Dashboard/ParentDashboard';
+import { useState, useEffect } from 'react';
 
 const data = [
     {
