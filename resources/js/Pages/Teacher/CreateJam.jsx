@@ -343,7 +343,14 @@ const CreateJam = () => {
 
         const joinedParticipants = participants.filter(participant => participant.status === 'joined');
 
-        let status = hasQuestions ? "started" : "waiting";
+        let status = "waiting";
+        if (hasQuestions) {
+            if (joinedParticipants.length > 0) {
+                status = "started";
+            } else {
+                status = "waiting";
+            }
+        }
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) {
@@ -369,7 +376,7 @@ const CreateJam = () => {
                 const updatedJam = { ...existingJam, status };
                 setExistingJam(updatedJam);
                 setShowReconnectModal(false);
-                
+
                 if (joinedParticipants.length === 0) {
                     Swal.fire({
                         icon: 'warning',
