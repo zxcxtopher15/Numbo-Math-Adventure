@@ -20,6 +20,15 @@ export default function BoardContainer_Student({ }) {
         }
     }, []);
 
+    useEffect(() => {
+        const storedJam = localStorage.getItem('disconnectedParticipant');
+        if (storedJam) {
+            const parsedJam = JSON.parse(storedJam);
+            setParticipant(parsedJam);
+        }
+    }, []);
+
+    console.log(participant);
 
     useEffect(() => {
         const beforeUnloadHandler = (event) => {
@@ -85,7 +94,15 @@ export default function BoardContainer_Student({ }) {
                 }),
             });
 
-            console.log(response);
+            const result = await response.json();
+
+            if (result.participant) {
+                // Save the participant data in localStorage
+                localStorage.setItem('disconnectedParticipant', JSON.stringify(result.participant));
+                console.log('Participant data saved to localStorage:', result.participant);
+            }
+
+            console.log(result.message);
         } catch (err) {
             console.error('Error during disconnect:', err);
         }
