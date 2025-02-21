@@ -11,13 +11,14 @@ export default function BoardContainer_Student({ }) {
     const { auth } = usePage().props;
     const studentId = auth?.user.id;
 
-    console.log(existingJam);
-
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
             const parsedJam = JSON.parse(storedJam);
             setExistingJam(parsedJam);
+        }
+        if (existingJam.status == 'disconnected') {
+            window.location.href = '/math-journey-join';
         }
     }, []);
 
@@ -39,12 +40,16 @@ export default function BoardContainer_Student({ }) {
 
         const beforeUnloadHandler = (event) => {
             handleDisconnect();
-            window.location.href = "/math-journey-join";
+            let status = "disconnected";
+            const updatedJam = { ...existingJam, status };
+            setExistingJam(updatedJam);
         };
 
         const offlineHandler = () => {
             handleDisconnect();
-            window.location.href = "/math-journey-join";
+            let status = "disconnected";
+            const updatedJam = { ...existingJam, status };
+            setExistingJam(updatedJam);
         };
 
         window.addEventListener('offline', offlineHandler);
