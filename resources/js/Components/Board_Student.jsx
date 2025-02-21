@@ -178,6 +178,7 @@ export function Board_Student({ data }) {
     }, []);
 
     useEffect(() => {
+        console.log(data);
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
 
         if (!existingJam) return;
@@ -322,7 +323,6 @@ export function Board_Student({ data }) {
     };
 
     const handleNext = async () => {
-        console.log(data);
         if (currentQuestion < data.length) {
             const currentQuestionId = data[currentQuestion].question_data.id;
 
