@@ -120,6 +120,7 @@ export default function BoardContainer_Student({ auth }) {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
 
         if (!existingJam) return;
+        console.log(existingJam);
 
         const sseUrl = `${baseUrl}/math-journey/jam-stream-updates?math_jam_code=${existingJam.math_jam_code}`;
         let eventSource;
