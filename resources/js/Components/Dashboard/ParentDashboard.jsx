@@ -14,6 +14,7 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
+import getCategoryType from '../ui/getCategoryType';
 
 ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -202,7 +203,7 @@ export function ParentDashboard(result) {
                                                                             </p>
                                                                             <div className="flex flex-col">
                                                                                 <p className="font-medium">
-                                                                                    {score.type +
+                                                                                    {getCategoryType(score.category) +
                                                                                         ' -  ' +
                                                                                         score.category}
                                                                                 </p>
@@ -248,7 +249,7 @@ export function ParentDashboard(result) {
                                                             <p className="font-semibold">{index + 1}.</p>
                                                             <div className="flex flex-col">
                                                                 <p className="font-medium">
-                                                                    {score.type + ' -  ' + score.category}
+                                                                    {getCategoryType(score.category) + ' -  ' + score.category}
                                                                 </p>
                                                                 <p className="text-white text-xs bg-primary rounded-2xl px-2 w-max">
                                                                     {score.math_journey_for}

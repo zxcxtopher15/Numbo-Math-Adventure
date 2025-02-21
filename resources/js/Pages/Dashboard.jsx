@@ -175,8 +175,6 @@ export default function Dashboard() {
     const userType = auth?.user?.user_type;
     const [studentsData, setStudentsData] = useState([]);
 
-    console.log(studentsData);
-
     useEffect(() => {
         axios.get("/student-results")
             .then(response => {
