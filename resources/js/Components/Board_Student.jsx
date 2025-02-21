@@ -322,6 +322,7 @@ export function Board_Student({ data }) {
     };
 
     const handleNext = async () => {
+        console.log(data);
         if (currentQuestion < data.length) {
             const currentQuestionId = data[currentQuestion].question_data.id;
 

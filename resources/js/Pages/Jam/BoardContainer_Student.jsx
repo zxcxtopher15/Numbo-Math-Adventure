@@ -125,8 +125,6 @@ export default function BoardContainer_Student({ }) {
     }, [existingJam]);
 
     const handleReconnect = async () => {
-        console.log(studentId);
-        console.log(existingJam);
         if (!studentId || !existingJam) {
             return;
         }
