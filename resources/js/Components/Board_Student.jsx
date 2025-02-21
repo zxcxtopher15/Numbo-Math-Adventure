@@ -199,9 +199,9 @@ export function Board_Student({ data }) {
                 }
 
                 if (mathjam.is_paused == 1) {
-                    handleDialogOpen();
+                    setIsPaused(true);
                 } else {
-                    handleDialogClose();
+                    setIsPaused(false);
                 }
 
                 if (mathjam.status === 'cancelled' || mathjam.status === 'ended') {
@@ -283,11 +283,11 @@ export function Board_Student({ data }) {
         setStartTime(Date.now());
     }, [currentQuestion]);
 
-    const handleDialogOpen = () => setIsPaused(true);
-    const handleDialogClose = () => {
-        setIsPaused(false);
-        setStartTime(Date.now());
-    };
+    // const handleDialogOpen = () => setIsPaused(true);
+    // const handleDialogClose = () => {
+    //     setIsPaused(false);
+    //     setStartTime(Date.now());
+    // };
 
     useEffect(() => {
         const handleVisibilityChange = () => {
