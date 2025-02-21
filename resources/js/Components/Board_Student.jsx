@@ -190,11 +190,6 @@ export function Board_Student({ data }) {
 
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
-                localStorage.setItem(
-                    'existingJam',
-                    JSON.stringify(data),
-                );
-                setExistingJam(data);
 
                 if (data.status === 'cancelled' || data.status === 'ended') {
                     eventSource.close();
@@ -218,7 +213,7 @@ export function Board_Student({ data }) {
 
                     return;
                 } else if (data.status === 'disconnected') {
-                    setIsPaused(true);
+                    handleDialogOpen();
                 }
             };
 
