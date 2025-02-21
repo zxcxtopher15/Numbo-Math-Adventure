@@ -11,6 +11,8 @@ export default function BoardContainer_Student({ }) {
     const { auth } = usePage().props;
     const studentId = auth?.user.id;
 
+    console.log(existingJam);
+
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
