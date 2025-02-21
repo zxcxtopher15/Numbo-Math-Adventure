@@ -10,7 +10,6 @@ export default function BoardContainer_Student({ }) {
     const [existingJam, setExistingJam] = useState(null);
     const { auth } = usePage().props;
     const studentId = auth?.user.id;
-    const [participant, setParticipant] = useState([]);
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
@@ -67,41 +66,25 @@ export default function BoardContainer_Student({ }) {
     const handleDisconnect = async () => {
         if (!studentId || !existingJam) return;
 
+        console.log(existingJam);
+
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
 
         const apiUrl = `${baseUrl}/math-journey/disconnect`;
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-        const payload = JSON.stringify({
-            student_id: studentId,
-            math_jam_code: existingJam.math_jam_code,
-        });
 
         try {
-            if (navigator.sendBeacon) {
-                const blob = new Blob([payload], { type: 'application/json' });
-                navigator.sendBeacon(apiUrl, blob);
-
-            } else {
-                await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                    },
-                    body: payload,
-                    credentials: 'include',
-                });
-
-                if (response.ok) {
-                    const responseData = await response.json();
-                    console.log(responseData);
-                    localStorage.setItem('existingJam', JSON.stringify(updatedJam));
-                } else {
-                    console.error('Failed to disconnect:', response.statusText);
-                }
-            }
+            await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    math_jam_code: existingJam.math_jam_code,
+                }),
+            });
         } catch (err) {
             console.error('Error during disconnect:', err);
         }
