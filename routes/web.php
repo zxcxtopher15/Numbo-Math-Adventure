@@ -35,7 +35,7 @@ Route::get('/dashboard', function () {
         )
         ->get();
 
-        dd($student_data);
+        echo '<pre>'; print_r($student_data); exit;
 
     return Inertia::render('Dashboard', [
         'results' => $student_data,
