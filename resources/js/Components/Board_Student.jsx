@@ -178,7 +178,6 @@ export function Board_Student({ data }) {
     }, []);
 
     useEffect(() => {
-        console.log(data);
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
 
         if (!existingJam) return;
@@ -216,6 +215,10 @@ export function Board_Student({ data }) {
                 } else if (data.status === 'disconnected') {
                     localStorage.setItem('existingJam', JSON.stringify(data));
                     window.location.href = "/math-journey-join";
+                }
+
+                if (data.current_question_id) {
+                    setCurrentQuestion(data.current_question_id);
                 }
             };
 
