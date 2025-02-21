@@ -170,6 +170,7 @@ export function Board_Student({ data }) {
     const { auth } = usePage().props;
     const [existingJam, setExistingJam] = useState(null);
     const [isGameFinished, setIsGameFinished] = useState(false);
+    const [isShowScore, setShowScore] = useState(false);
     const studentId = auth?.user.id;
 
     useEffect(() => {
@@ -202,6 +203,12 @@ export function Board_Student({ data }) {
                     setIsPaused(true);
                 } else {
                     setIsPaused(false);
+                }
+
+                if (mathjam.show_scores == 1) {
+                    setShowScore(true);
+                } else {
+                    setShowScore(false);
                 }
 
                 if (mathjam.status === 'cancelled' || mathjam.status === 'ended') {
@@ -479,9 +486,11 @@ export function Board_Student({ data }) {
                     </div>
 
                     <div className="relative">
-                        <div className="mt-4 text-start text-xl font-bold text-primary absolute bottom-2 left-2">
-                            Score: {gameState.score}
-                        </div>
+                        {isShowScore && (
+                            <div className="mt-4 text-start text-xl font-bold text-primary absolute bottom-2 left-2">
+                                Score: {gameState.score}
+                            </div>
+                        )}
                         <div className="flex flex-col-reverse sm:flex-row justify-center w-full">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 rounded-3xl bg-gray-200">
                                 {data[currentQuestion].answers.map((answer, index) => (
