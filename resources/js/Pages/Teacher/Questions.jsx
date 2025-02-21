@@ -52,6 +52,7 @@ export default function Questions({ questions = [] }) {
     };
 
     const handleDelete = (id) => {
+        console.log(id);
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -62,11 +63,20 @@ export default function Questions({ questions = [] }) {
             confirmButtonText: 'Yes, delete it!',
         }).then((result) => {
             if (result.isConfirmed) {
-                post(route('questions.destroy', id), {
+                axios.delete(route('questions.destroy', id), {
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     },
-                });
+                })
+                    .then(() => {
+                        Swal.fire('Deleted!', 'Your question has been deleted.', 'success').then(() => {
+                            window.location.reload();
+                        });
+                    })
+                    .catch((error) => {
+                        console.error('Error deleting question:', error);
+                        Swal.fire('Error', 'Something went wrong.', 'error');
+                    });
             }
         });
     };
@@ -92,22 +102,22 @@ export default function Questions({ questions = [] }) {
                                 category === 'Addition'
                                     ? 'to-[#CDDA1E] from-[#50DE65]'
                                     : category === 'Subtraction'
-                                      ? 'to-[#EC4899] from-[#8B5CF6]'
-                                      : category === 'Subtraction'
-                                        ? 'to-[#7A00E6] from-[#8C6FFF]'
-                                        : category === 'Division'
-                                          ? 'to-[#34D399] from-[#50DE65]'
-                                          : 'to-[#FBBF24] from-[#EC4899]';
+                                        ? 'to-[#EC4899] from-[#8B5CF6]'
+                                        : category === 'Subtraction'
+                                            ? 'to-[#7A00E6] from-[#8C6FFF]'
+                                            : category === 'Division'
+                                                ? 'to-[#34D399] from-[#50DE65]'
+                                                : 'to-[#FBBF24] from-[#EC4899]';
                             const correctColor =
                                 category === 'Addition'
                                     ? 'bg-success'
                                     : category === 'Subtraction'
-                                      ? 'bg-info'
-                                      : category === 'Multiplication'
-                                        ? 'bg-[#7A00E6]'
-                                        : category === 'Division'
-                                          ? 'bg-[#34D399]'
-                                          : 'bg-[#FBBF24]';
+                                        ? 'bg-info'
+                                        : category === 'Multiplication'
+                                            ? 'bg-[#7A00E6]'
+                                            : category === 'Division'
+                                                ? 'bg-[#34D399]'
+                                                : 'bg-[#FBBF24]';
 
                             return (
                                 <div

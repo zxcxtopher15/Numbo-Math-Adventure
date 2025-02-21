@@ -53,7 +53,11 @@ class VerifyCsrfToken
         '/math-journey/update-pause-status',
         '/math-journey/update_current_question',
         '/math-journey/update_score',
-        '/math-journey/update_has_answer'
+        '/math-journey/update_has_answer',
+        '/questions/*',
+        '/modules/store',
+        '/modules/update',
+        '/modules/*'
     ];
 
     /**

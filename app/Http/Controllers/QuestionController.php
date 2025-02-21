@@ -90,4 +90,12 @@ class QuestionController extends Controller
 
         return response()->json($questions);
     }
+
+    public function destroy($id)
+    {
+        $question = Question::findOrFail($id);
+        $question->delete();
+
+        return response()->json(['message' => 'Question deleted successfully.']);
+    }
 }

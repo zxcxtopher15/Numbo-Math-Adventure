@@ -3,6 +3,7 @@ import { Head, useForm, usePage } from '@inertiajs/react';
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 import TextInput from '@/Components/TextInput';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -12,8 +13,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { FaFile } from 'react-icons/fa6';
 import { FaCloudDownloadAlt, FaTrashAlt } from 'react-icons/fa';
+import { useEffect } from 'react';
 
-export default function Modules({}) {
+export default function Modules({ }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editModuleData, setEditModuleData] = useState(null);
@@ -23,44 +25,34 @@ export default function Modules({}) {
         module_desc: '',
         file: [],
     });
-
+    const [modulesData, setModuleData] = useState([]);
     const { auth } = usePage().props;
     const userType = auth?.user?.user_type;
 
-    const sampleModulesData = [
-        {
-            module_id: 1,
-            module_name: 'Module 1 (Week 1)',
-            module_desc: 'Description of Module 1 Lorem Description of Module 1 Lorem ',
-            module_file_desc: 'Lesson 1: Lorem Description of Module 1 Lorem ',
-            file: [
-                {
-                    file_name: 'Sample File 1',
-                    file_path: 'path',
-                },
-                {
-                    file_name: 'Sample File 2',
-                    file_path: 'path',
-                },
-            ],
-        },
-        {
-            module_id: 2,
-            module_name: 'Module 2  (Week 2 - 3)',
-            module_desc: 'Description of Module 2',
-            module_file_desc: 'Lesson 1: Lorem Description of Module 1 Lorem ',
-            file: [
-                {
-                    file_name: 'Sample File 1',
-                    file_path: 'path',
-                },
-                {
-                    file_name: 'Sample File 2',
-                    file_path: 'path',
-                },
-            ],
-        },
-    ];
+    useEffect(() => {
+        axios.get('/get_all_modules')
+            .then(response => {
+                const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+
+                const formattedModules = response.data.map(module => ({
+                    module_id: module.id,
+                    module_name: module.module_name,
+                    module_desc: module.module_desc,
+                    module_file_desc: module.module_file_desc,
+                    file: module.file_name.split(',').map((file, index) => ({
+                        file_name: file.trim(),
+                        file_path: `${baseUrl}/modules/${module.file_path.split(',')[index].trim()}`,
+                    }))
+                }));
+
+                setModuleData(formattedModules);
+            })
+            .catch(error => {
+                console.error("There was an error fetching the modules:", error);
+            });
+    }, []);
+
+
 
     const toggleModal = () => setIsModalOpen(!isModalOpen);
     const toggleEditModal = () => setIsEditModalOpen(!isEditModalOpen);
@@ -69,17 +61,72 @@ export default function Modules({}) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route('modules.store'), {
-            onSuccess: () => {
+
+        const formData = new FormData();
+        formData.append('module_name', data.module_name);
+        formData.append('module_desc', data.module_desc);
+        formData.append('module_file_desc', data.module_file_desc);
+
+        files.forEach((file) => {
+            formData.append('module_file[]', file);
+        });
+
+        axios.post(route('modules.store'), formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+            .then(response => {
                 reset();
                 toggleModal();
-            },
-        });
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error("There was an error submitting the form:", error);
+            });
     };
 
-    const handleEdit = (module) => {
-        setEditModuleData(module);
-        toggleEditModal();
+    const handleEdit = (moduleId) => {
+        axios.get(`/modules/${moduleId}`)
+            .then(response => {
+                const moduleData = response.data.module;
+
+                const files = [];
+
+                setEditModuleData(moduleData);
+                setEditFiles(files);
+                toggleEditModal();
+            })
+            .catch(error => {
+                console.error("There was an error fetching the module data:", error);
+            });
+    };
+
+    const handleUpdate = (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('module_name', editModuleData.module_name);
+        formData.append('module_desc', editModuleData.module_desc);
+        formData.append('module_file_desc', editModuleData.module_file_desc);
+
+        editFiles.forEach((file) => {
+            formData.append('module_file[]', file);
+        });
+
+        axios.post(route('modules.update', { id: editModuleData.id }), formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+            .then(response => {
+                reset();
+                toggleEditModal();
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error("There was an error updating the module:", error);
+            });
     };
 
     const handleDeleteModule = (module) => {
@@ -93,10 +140,21 @@ export default function Modules({}) {
             confirmButtonText: 'Yes, delete it!',
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire('Removed!', 'The Module has been removed.', 'success');
+                axios.delete(`/modules/${module}`)
+                    .then((response) => {
+                        Swal.fire('Removed!', 'The Module has been removed.', 'success')
+                            .then(() => {
+                                window.location.reload();
+                            });
+                    })
+                    .catch((error) => {
+                        Swal.fire('Error!', 'There was an issue deleting the module. Please try again.', 'error');
+                        console.error("There was an error deleting the module:", error);
+                    });
             }
         });
     };
+
 
     const [files, setFiles] = useState([]);
     const [editFiles, setEditFiles] = useState([]);
@@ -128,7 +186,7 @@ export default function Modules({}) {
         multiple: true,
     });
 
-    const handleRemoveFile = (index) => {
+    const handleRemoveFile = (id, index) => {
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -139,7 +197,17 @@ export default function Modules({}) {
             confirmButtonText: 'Yes, remove it!',
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire('Removed!', 'The file has been removed.', 'success');
+                axios.delete(`/modules/single/${id}/${index}`)
+                    .then((response) => {
+                        Swal.fire('Removed!', 'The Module has been removed.', 'success')
+                            .then(() => {
+                                window.location.reload();
+                            });
+                    })
+                    .catch((error) => {
+                        Swal.fire('Error!', 'There was an issue deleting the module. Please try again.', 'error');
+                        console.error("There was an error deleting the module:", error);
+                    });
             }
         });
     };
@@ -178,7 +246,7 @@ export default function Modules({}) {
                         )}
 
                         <div className="grid grid-cols-1 gap-4">
-                            {sampleModulesData.map((module, index) => (
+                            {modulesData.map((module, index) => (
                                 <Accordion
                                     key={index}
                                     type="single"
@@ -221,20 +289,29 @@ export default function Modules({}) {
                                                     >
                                                         <div
                                                             className="p-5 flex gap-2 items-center cursor-pointer"
-                                                            onClick={() => (window.location.href = module.path)}
+                                                            onClick={() => {
+                                                                window.open(file.file_path, '_blank');
+                                                            }}
                                                         >
                                                             <FaFile /> {file.file_name}
                                                         </div>
                                                         <div className="flex gap-2 my-4">
                                                             <div
-                                                                onClick={() => (window.location.href = module.path)}
+                                                                onClick={() => {
+                                                                    const link = document.createElement('a');
+                                                                    link.href = file.file_path;
+                                                                    link.download = file.file_name;
+                                                                    link.click();
+                                                                }}
                                                                 className="cursor-pointer bg-primary p-1 px-4 rounded-lg text-white font-semibold"
                                                             >
                                                                 <FaCloudDownloadAlt />
                                                             </div>
                                                             {userType === 'Teacher' && (
                                                                 <div
-                                                                    onClick={() => handleRemoveFile(index)}
+                                                                    onClick={() => {
+                                                                        handleRemoveFile(module.module_id, index);
+                                                                    }}
                                                                     className="cursor-pointer bg-danger p-1 px-4 rounded-lg text-white font-semibold"
                                                                 >
                                                                     <FaTrashAlt />
@@ -279,11 +356,11 @@ export default function Modules({}) {
                             onChange={handleChange}
                             className="border w-full p-2 mb-2"
                         />
-                        <InputLabel htmlFor="modile_file_desc" value="File Description" />
+                        <InputLabel htmlFor="module_file_desc" value="File Description" />
                         <TextInput
                             type="text"
-                            name="modile_file_desc"
-                            value={data.modile_file_desc}
+                            name="module_file_desc"
+                            value={data.module_file_desc}
                             onChange={handleChange}
                             className="border w-full p-2 mb-2"
                         />
@@ -333,7 +410,7 @@ export default function Modules({}) {
 
             <Dialog open={isEditModalOpen} onOpenChange={toggleEditModal}>
                 <DialogContent className="overflow-y-auto max-h-[80vh] max-w-lg">
-                    <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-4">
+                    <form onSubmit={handleUpdate} className="bg-white rounded-3xl p-4">
                         <DialogHeader>
                             <DialogTitle className="text-2xl text-primary font-semibold mb-5">Edit Module</DialogTitle>
                         </DialogHeader>
@@ -354,11 +431,11 @@ export default function Modules({}) {
                             onChange={handleChange}
                             className="border w-full p-2 mb-2"
                         />
-                        <InputLabel htmlFor="modile_file_desc" value="File Description" />
+                        <InputLabel htmlFor="module_file_desc" value="File Description" />
                         <TextInput
                             type="text"
-                            name="modile_file_desc"
-                            value={editModuleData ? editModuleData.modile_file_desc : ''}
+                            name="module_file_desc"
+                            value={editModuleData ? editModuleData.module_file_desc : ''}
                             onChange={handleChange}
                             className="border w-full p-2 mb-2"
                         />
@@ -387,7 +464,7 @@ export default function Modules({}) {
                             </ul>
                         )}
 
-                        <div className="bg-white sticky bottom-0 p-2  flex justify-end space-x-4">
+                        <div className="bg-white sticky bottom-0 p-2 flex justify-end space-x-4">
                             <DangerButton
                                 type="button"
                                 onClick={toggleEditModal}
