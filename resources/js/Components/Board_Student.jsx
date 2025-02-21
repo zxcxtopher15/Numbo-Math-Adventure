@@ -227,7 +227,7 @@ export function Board_Student({ data }) {
                         if (!hasReloaded.current) {
                             hasReloaded.current = true;
                             handleDisconnect();
-                            window.location.reload();
+                            window.location.href = "/math-journey-join";
                         }
                     });
 
@@ -260,6 +260,7 @@ export function Board_Student({ data }) {
 
         const beforeUnloadHandler = (event) => {
             handleDisconnect();
+            window.location.href = "/math-journey-join";
         };
 
         window.addEventListener('beforeunload', beforeUnloadHandler);
@@ -273,7 +274,7 @@ export function Board_Student({ data }) {
                 confirmButtonColor: '#d33',
                 allowOutsideClick: false,
             }).then(() => {
-                window.location.reload();
+                window.location.href = "/math-journey-join";
             });
         };
 
@@ -313,6 +314,31 @@ export function Board_Student({ data }) {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
     }, []);
+
+    const handleDisconnect = async () => {
+        if (!studentId || !existingJam) return;
+
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        if (!baseUrl) return;
+
+        const apiUrl = `${baseUrl}/math-journey/disconnect`;
+
+        try {
+            await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    math_jam_code: existingJam.math_jam_code,
+                }),
+            });
+        } catch (err) {
+            console.error('Error during disconnect:', err);
+        }
+    };
 
     const handleAnswer = async (answer) => {
         setIsCorrect(false);
