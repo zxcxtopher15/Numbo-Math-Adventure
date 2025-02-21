@@ -218,9 +218,7 @@ export function Board_Student({ data }) {
                 }
 
                 if (mathjam.current_question_id) {
-                    console.log(mathjam.current_question_id);
                     if (data.length > 0) {
-                        console.log(data);
                         const questionIds = data.map(item => item.question_data.id);
                         const existingIndex = questionIds.indexOf(mathjam.current_question_id);
                         setCurrentQuestion(existingIndex !== -1 ? existingIndex : 0);
@@ -403,7 +401,7 @@ export function Board_Student({ data }) {
 
     const colors = ['bg-blue-400', 'bg-purple-400', 'bg-pink-400', 'bg-green-400', 'bg-yellow-400', 'bg-red-400'];
 
-    const isGameFinished = currentQuestion >= data.length;
+    const isGameFinished = currentQuestion === 0 || currentQuestion >= data.length;
 
     const totalTimeSpent = timeSpent.reduce((acc, time) => acc + time, 0);
 
