@@ -65,24 +65,35 @@ export default function BoardContainer_Student({ }) {
         };
     }, []);
 
-    const handleDisconnect = () => {
+    const handleDisconnect = async () => {
         if (!studentId || !existingJam) return;
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
 
         const apiUrl = `${baseUrl}/math-journey/disconnect`;
-        const data = JSON.stringify({
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+        const payload = JSON.stringify({
             student_id: studentId,
             math_jam_code: existingJam.math_jam_code,
         });
 
         try {
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', apiUrl, false);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'));
-            xhr.send(data);
+            if (navigator.sendBeacon) {
+                const blob = new Blob([payload], { type: 'application/json' });
+                navigator.sendBeacon(apiUrl, blob);
+            } else {
+                await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: payload,
+                    credentials: 'include',
+                });
+            }
         } catch (err) {
             console.error('Error during disconnect:', err);
         }
