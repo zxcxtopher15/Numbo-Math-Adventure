@@ -298,9 +298,8 @@ export function Board_Student({ data }) {
         };
     }, []);
 
-    const handleAnswer = (answer) => {
+    const handleAnswer = async (answer) => {
         setIsCorrect(false);
-
         setIsAnswered(true);
 
         const endTime = Date.now();
@@ -333,6 +332,34 @@ export function Board_Student({ data }) {
                 correctQuestions: newCorrectQuestions,
             };
         });
+
+        if (!correct || !studentId || !jamCode) return;
+
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        if (!baseUrl) return;
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+        const apiUrl = `${baseUrl}/math-journey/update_score`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    math_jam_code: jamCode,
+                }),
+            });
+
+            const result = await response.json();
+            console.log('Score updated:', result);
+        } catch (err) {
+            console.error('Error during update:', err);
+        }
     };
 
     const handleNext = async () => {

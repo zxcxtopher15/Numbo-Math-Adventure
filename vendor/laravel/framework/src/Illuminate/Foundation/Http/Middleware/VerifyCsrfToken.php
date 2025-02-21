@@ -51,7 +51,8 @@ class VerifyCsrfToken
         '/ordered-questions/*',
         '/math-journey/disconnect_jam',
         '/math-journey/update-pause-status',
-        '/math-journey/update_current_question'
+        '/math-journey/update_current_question',
+        '/math-journey/update_score'
     ];
 
     /**

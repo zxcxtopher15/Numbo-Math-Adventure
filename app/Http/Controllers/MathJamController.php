@@ -466,4 +466,33 @@ class MathJamController extends Controller
 
         return response()->json(['message' => 'Math Jam current question updated successfully'], 200);
     }
+
+    public function update_score(Request $request)
+    {
+        $validated = $request->validate([
+            'math_jam_code' => 'required|exists:math_jams,math_jam_code',
+            'student_id' => 'required|exists:users,id',
+        ]);
+
+        $participant = MathJamParticipant::where('student_id', $validated['student_id'])
+            ->whereHas('MathJam', function ($query) use ($validated) {
+                $query->where('math_jam_code', $validated['math_jam_code']);
+                $query->whereNotIn('status', ['cancelled', 'ended', 'disconnected']);
+            })
+            ->whereNotNull('math_jam_id')
+            ->latest()
+            ->first();
+
+        if (!$participant) {
+            return response()->json(['message' => 'No active participation found', 'error' => true], 200);
+        }
+
+        $participant->score += 1;
+        $participant->save();
+
+        return response()->json([
+            'message' => 'Updated successfully',
+            'new_score' => $participant->score
+        ]);
+    }
 }
