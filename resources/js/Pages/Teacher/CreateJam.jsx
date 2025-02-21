@@ -340,6 +340,7 @@ const CreateJam = () => {
 
     const handleReconnect = async () => {
         if (!existingJam) return;
+        if (!participants.length > 0) return;
 
         let status = "";
 
