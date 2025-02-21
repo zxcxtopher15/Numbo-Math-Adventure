@@ -27,6 +27,7 @@ export default function BoardContainer_Student({ }) {
             setParticipant(parsedJam);
 
             if (parsedJam.status == 'disconnected') {
+                localStorage.removeItem('disconnectedParticipant');
                 window.location.href = "/math-journey-join";
             }
         }
