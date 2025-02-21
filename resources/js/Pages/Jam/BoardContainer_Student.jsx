@@ -16,9 +16,7 @@ export default function BoardContainer_Student({ }) {
         if (storedJam) {
             const parsedJam = JSON.parse(storedJam);
             setExistingJam(parsedJam);
-            if (parsedJam.status === "disconnected") {
-                window.location.href = '/math-journey';
-            }
+            handleReconnect();
         }
     }, []);
 
@@ -117,7 +115,6 @@ export default function BoardContainer_Student({ }) {
                         }));
 
                         setQuestions(formattedQuestions);
-                        handleReconnect();
                     }
                 })
                 .catch((error) => console.error('Error fetching ordered questions:', error));
