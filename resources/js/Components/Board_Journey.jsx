@@ -226,6 +226,8 @@ export function Board_Journey({ data }) {
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 setParticipants(data);
+                console.log(participants);
+                
             };
 
             eventSource.onerror = (error) => {
