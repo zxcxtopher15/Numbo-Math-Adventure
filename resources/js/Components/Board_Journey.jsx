@@ -191,7 +191,7 @@ export function Board_Journey({ data }) {
                         text: 'There are no participants in the session.',
                         confirmButtonColor: '#d33',
                     }).then(() => {
-                        window.location.href = 'math-journey';
+                        window.location.href = '/math-journey';
                     });
                 }
             }
