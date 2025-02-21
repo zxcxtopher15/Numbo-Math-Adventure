@@ -22,9 +22,8 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center bg-white p-6 rounded-3xl shadow-lg">
             <h2
-                className={`text-3xl font-bold text-center ${
-                    isTimeUp ? 'text-orange-500' : isCorrect ? 'text-green-500' : 'text-red-500'
-                }`}
+                className={`text-3xl font-bold text-center ${isTimeUp ? 'text-orange-500' : isCorrect ? 'text-green-500' : 'text-red-500'
+                    }`}
             >
                 {isTimeUp ? "Time's Up!" : isCorrect ? 'Correct!' : 'Incorrect'}
             </h2>
@@ -32,8 +31,8 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
                 {isTimeUp
                     ? 'You ran out of time.'
                     : isCorrect
-                      ? 'Great job!'
-                      : `The correct answer is: ${correctAnswer}`}
+                        ? 'Great job!'
+                        : `The correct answer is: ${correctAnswer}`}
             </p>
             <button className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold mt-4" onClick={onNext}>
                 Next
@@ -170,17 +169,77 @@ export function Board_Journey({ data }) {
     const [timeSpent, setTimeSpent] = useState([]);
     const { auth } = usePage().props;
     const [existingJam, setExistingJam] = useState(null);
+    const [participants, setParticipants] = useState([]);
 
     useEffect(() => {
+        const joinedParticipants = participants.filter(participant => participant.status === 'joined');
+        if (joinedParticipants.length == 0) {
+            window.location.href = 'math-journey';
+        }
+
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
             setExistingJam(JSON.parse(storedJam));
         }
-    }, []);
+    }, [participants]);
 
     useEffect(() => {
         setStartTime(Date.now());
     }, [currentQuestion]);
+
+    useEffect(() => {
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        const sseUrl = `${baseUrl}/math-journey/stream-participants?teacher_id=${auth.user.id}`;
+
+        let eventSource;
+
+        const connectSSE = () => {
+            eventSource = new EventSource(sseUrl);
+
+            eventSource.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                setParticipants(data);
+            };
+
+            eventSource.onerror = (error) => {
+                // console.error("SSE Error:", error);
+                eventSource.close();
+                setTimeout(() => {
+                    // console.log("Reconnecting SSE...");
+                    connectSSE();
+                }, 1000);
+            };
+        };
+
+        connectSSE();
+
+        // const beforeUnloadHandler = (event) => {
+        //     handleDisconnect();
+        // };
+
+        // window.addEventListener('beforeunload', beforeUnloadHandler);
+
+        // const offlineHandler = () => {
+        //     handleDisconnect();
+        //     Swal.fire({
+        //         icon: 'error',
+        //         title: 'Connection Lost',
+        //         text: 'You have been disconnected due to a lost internet connection.',
+        //         confirmButtonColor: '#d33',
+        //         allowOutsideClick: false,
+        //     }).then(() => {
+        //         window.location.reload();
+        //     });
+        // };
+
+        // window.addEventListener('offline', offlineHandler);
+
+        return () => {
+            eventSource?.close();
+            // window.removeEventListener('beforeunload', beforeUnloadHandler);
+            // window.removeEventListener('offline', offlineHandler);
+        };
+    }, [auth.user.id]);
 
     const handleDialogOpen = async () => {
         if (!existingJam) return;
