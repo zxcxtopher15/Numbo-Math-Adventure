@@ -39,17 +39,12 @@ export default function BoardContainer_Student({ }) {
 
         const beforeUnloadHandler = (event) => {
             handleDisconnect();
+            window.location.href = "/math-journey-join";
         };
 
         const offlineHandler = () => {
             handleDisconnect();
-            Swal.fire({
-                icon: 'error',
-                title: 'Connection Lost',
-                text: 'You have been disconnected due to a lost internet connection.',
-                confirmButtonColor: '#d33',
-                allowOutsideClick: false,
-            });
+            window.location.href = "/math-journey-join";
         };
 
         window.addEventListener('offline', offlineHandler);
