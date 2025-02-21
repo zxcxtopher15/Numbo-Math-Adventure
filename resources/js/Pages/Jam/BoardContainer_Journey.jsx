@@ -74,7 +74,6 @@ export default function BoardContainer_Journey({ auth }) {
 
     const handleDisconnect = async () => {
         const existingJam = localStorage.getItem('existingJam');
-
         if (!existingJam) return;
 
         const parsedJam = JSON.parse(existingJam);
@@ -85,33 +84,48 @@ export default function BoardContainer_Journey({ auth }) {
 
         const apiUrl = `${baseUrl}/math-journey/disconnect_jam`;
 
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-                },
-                body: JSON.stringify({
-                    math_jam_id: parsedJam.math_jam_id,
-                }),
-            });
+        let attempts = 0;
+        let success = false;
 
-            if (!response.ok) {
-                console.error('Failed to disconnect:', response.status);
-                return;
+        while (attempts < 3 && !success) {
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                    },
+                    body: JSON.stringify({ math_jam_id: parsedJam.math_jam_id }),
+                });
+
+                if (!response.ok) {
+                    console.warn(`Attempt ${attempts + 1} failed with status: ${response.status}`);
+                    attempts++;
+                    continue;
+                }
+
+                const data = await response.json();
+
+                if (data?.jam) {
+                    await new Promise((resolve) => {
+                        localStorage.setItem('existingJam', JSON.stringify(data.jam));
+                        resolve();
+                    });
+                    console.log('Updated existingJam in localStorage:', data.jam);
+                } else {
+                    console.warn('No valid jam data in response');
+                    localStorage.removeItem('existingJam');
+                }
+
+                success = true;
+            } catch (err) {
+                console.error(`Error during disconnect (attempt ${attempts + 1}):`, err);
+                attempts++;
             }
+        }
 
-            const data = await response.json();
-
-            if (data?.jam) {
-                localStorage.setItem('existingJam', JSON.stringify(data.jam));
-            } else {
-                console.warn('No valid jam data in response');
-                localStorage.removeItem('existingJam');
-            }
-        } catch (err) {
-            console.error('Error during disconnect:', err);
+        if (!success) {
+            console.error('Failed to disconnect after multiple attempts.');
         }
     };
 
