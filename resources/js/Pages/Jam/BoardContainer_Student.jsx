@@ -11,8 +11,6 @@ export default function BoardContainer_Student({ }) {
     const { auth } = usePage().props;
     const studentId = auth?.user.id;
 
-    console.log(existingJam);
-
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
@@ -102,11 +100,12 @@ export default function BoardContainer_Student({ }) {
     }, [existingJam]);
 
     const handleReconnect = async () => {
+        console.log(studentId);
+        console.log(existingJam);
         if (!studentId || !existingJam) {
             return;
         }
 
-        setLoading(true);
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) {
             return;
@@ -131,7 +130,6 @@ export default function BoardContainer_Student({ }) {
         } catch (err) {
             console.error('Error reconnecting:', err);
         } finally {
-            setLoading(false);
         }
     };
 
