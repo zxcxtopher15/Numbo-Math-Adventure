@@ -11,8 +11,6 @@ export default function BoardContainer_Student({ }) {
     const { auth } = usePage().props;
     const studentId = auth?.user.id;
 
-    console.log(existingJam);
-
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
@@ -94,32 +92,36 @@ export default function BoardContainer_Student({ }) {
     };
 
     useEffect(() => {
-        fetch(`/get_ordered_questions?math_jam_id=${existingJam.math_jam_id}`)
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.length > 0) {
-                    const formattedQuestions = data.map((item) => ({
-                        title: `${item.question.category} Challenge`,
-                        time: existingJam.time_limit,
-                        question_data: {
-                            id: item.question.id,
-                            type: item.question.question_type || 'addition',
-                            image: null,
-                            title: 'Solve This',
-                            question: item.question.question,
-                        },
-                        answers: item.question.choices.map((choice, index) => ({
-                            id: index + 1,
-                            answer: choice,
-                            is_correct: choice === item.question.correct_answer,
-                        })),
-                    }));
+        setCategoryTitle(localStorage.getItem('category') || 'Default Title');
 
-                    setQuestions(formattedQuestions);
-                    handleReconnect();
-                }
-            })
-            .catch((error) => console.error('Error fetching ordered questions:', error));
+        if (existingJam?.math_jam_id) {
+            fetch(`/get_ordered_questions?math_jam_id=${existingJam.math_jam_id}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.length > 0) {
+                        const formattedQuestions = data.map((item) => ({
+                            title: `${item.question.category} Challenge`,
+                            time: existingJam.time_limit,
+                            question_data: {
+                                id: item.question.id,
+                                type: item.question.question_type || 'addition',
+                                image: null,
+                                title: 'Solve This',
+                                question: item.question.question,
+                            },
+                            answers: item.question.choices.map((choice, index) => ({
+                                id: index + 1,
+                                answer: choice,
+                                is_correct: choice === item.question.correct_answer,
+                            })),
+                        }));
+
+                        setQuestions(formattedQuestions);
+                        handleReconnect();
+                    }
+                })
+                .catch((error) => console.error('Error fetching ordered questions:', error));
+        }
     }, [existingJam]);
 
     const handleReconnect = async () => {
@@ -148,6 +150,7 @@ export default function BoardContainer_Student({ }) {
             });
 
             const data = await response.json();
+            setExistingJam(JSON.parse(data.jam));
 
             if (data) {
                 console.log("success");

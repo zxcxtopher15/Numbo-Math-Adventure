@@ -303,6 +303,7 @@ class MathJamController extends Controller
         ]);
 
         return response()->json([
+            'jam' => $mathJam,
             'message' => 'Reconnected successfully',
             'score' => $participant->score,
             'status' => 'joined',
