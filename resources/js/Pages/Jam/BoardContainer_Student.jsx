@@ -17,7 +17,7 @@ export default function BoardContainer_Student({ }) {
             const parsedJam = JSON.parse(storedJam);
             setExistingJam(parsedJam);
             console.log(existingJam);
-            console.log("Parsed Jam: " + parsedJam);
+            console.log("Parsed Jam: " + storedJam);
             if (parsedJam.status == 'disconnected') {
                 window.location.href = '/math-journey-join';
             }
