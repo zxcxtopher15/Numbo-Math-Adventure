@@ -18,6 +18,7 @@ import { Link } from '@inertiajs/react';
 import { SvgAsset } from './SvgAsset';
 import Categories from './Categories';
 import Swal from 'sweetalert2';
+import Avatar from './Avatar';
 
 function RoundResult({ isTimeUp, isCorrect, participants, onNext }) {
     return (
