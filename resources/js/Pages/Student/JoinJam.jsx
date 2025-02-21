@@ -23,14 +23,12 @@ const JoinJam = () => {
     const [loading, setLoading] = useState(false);
     const hasReloaded = useRef(false);
     const [existingJam, setExistingJam] = useState(null);
-
-    console.log(existingJam);
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
             const parsedJam = JSON.parse(storedJam);
             setExistingJam(parsedJam);
-            if (parsedJam.status === "disconnected") {
+            if (parsedJam.status === "disconnected" && !status == 'disconnected') {
                 showDisconnectedSwal();
             }
         }
