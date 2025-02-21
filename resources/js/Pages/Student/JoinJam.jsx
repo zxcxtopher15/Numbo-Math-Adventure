@@ -23,6 +23,7 @@ const JoinJam = () => {
     const [loading, setLoading] = useState(false);
     const hasReloaded = useRef(false);
     const [existingJam, setExistingJam] = useState(null);
+
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
