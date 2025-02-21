@@ -258,32 +258,8 @@ export function Board_Student({ data }) {
 
         connectSSE();
 
-        const beforeUnloadHandler = (event) => {
-            handleDisconnect();
-            window.location.href = "/math-journey-join";
-        };
-
-        window.addEventListener('beforeunload', beforeUnloadHandler);
-
-        const offlineHandler = () => {
-            handleDisconnect();
-            Swal.fire({
-                icon: 'error',
-                title: 'Connection Lost',
-                text: 'You have been disconnected due to a lost internet connection.',
-                confirmButtonColor: '#d33',
-                allowOutsideClick: false,
-            }).then(() => {
-                window.location.href = "/math-journey-join";
-            });
-        };
-
-        window.addEventListener('offline', offlineHandler);
-
         return () => {
             eventSource?.close();
-            window.removeEventListener('beforeunload', beforeUnloadHandler);
-            window.removeEventListener('offline', offlineHandler);
         };
     }, [existingJam]);
 
@@ -314,35 +290,6 @@ export function Board_Student({ data }) {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
     }, []);
-
-    const handleDisconnect = async () => {
-        if (!studentId || !existingJam) return;
-
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-        if (!baseUrl) return;
-
-        const apiUrl = `${baseUrl}/math-journey/disconnect`;
-
-        try {
-            await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                },
-                body: JSON.stringify({
-                    student_id: studentId,
-                    math_jam_code: existingJam.math_jam_code,
-                }),
-            });
-
-            let status = "disconnected";
-            const updatedJam = { ...existingJam, status };
-            setExistingJam(updatedJam);
-        } catch (err) {
-            console.error('Error during disconnect:', err);
-        }
-    };
 
     const handleAnswer = async (answer) => {
         setIsCorrect(false);

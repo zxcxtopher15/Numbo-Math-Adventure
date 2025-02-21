@@ -61,6 +61,7 @@ export default function BoardContainer_Student({ }) {
 
     const handleDisconnect = async () => {
         if (!studentId || !existingJam) return;
+        console.log(existingJam);
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
@@ -79,10 +80,6 @@ export default function BoardContainer_Student({ }) {
                     math_jam_code: existingJam.math_jam_code,
                 }),
             });
-
-            let status = "disconnected";
-            const updatedJam = { ...existingJam, status };
-            setExistingJam(updatedJam);
         } catch (err) {
             console.error('Error during disconnect:', err);
         }
