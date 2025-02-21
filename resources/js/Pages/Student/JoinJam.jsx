@@ -28,7 +28,7 @@ const JoinJam = () => {
         if (storedJam) {
             const parsedJam = JSON.parse(storedJam);
             setExistingJam(parsedJam);
-            if (parsedJam.status === "disconnected" && !status == 'disconnected') {
+            if (parsedJam.status === "disconnected") {
                 showDisconnectedSwal();
             }
         }
