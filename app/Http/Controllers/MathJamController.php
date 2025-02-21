@@ -520,6 +520,7 @@ class MathJamController extends Controller
         }
 
         $participant->has_answer = $request->has_answer;
+        $participant->updated_at = now();
         $participant->save();
 
         return response()->json([
