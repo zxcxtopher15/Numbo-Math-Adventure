@@ -170,121 +170,12 @@ const data = [
     },
 ];
 
-const students_data = [
-    {
-        name: 'Cardo Aguilar',
-        image: '',
-        scores: [
-            {
-                math_journey_for: 'Pre-Assessment',
-                type: 'Addition',
-                category: 'Add Tens',
-                score: 10,
-                num_questions: 25,
-                date: '2023-10-01 10:00:00',
-            },
-            {
-                math_journey_for: 'Post-Assessment',
-                type: 'Subtraction',
-                category: 'Add two number',
-                score: 22,
-                num_questions: 25,
-                date: '2023-10-02 11:00:00',
-            },
-            {
-                math_journey_for: 'Quiz',
-                type: 'Multiplication',
-                category: 'Multiplication',
-                score: 10,
-                num_questions: 10,
-                date: '2023-10-03 12:00:00',
-            },
-            {
-                math_journey_for: 'Quiz',
-                type: 'Division',
-                category: 'Division',
-                score: 2,
-                num_questions: 10,
-                date: '2023-10-04 13:00:00',
-            },
-            {
-                math_journey_for: 'Pre-Assessment',
-                type: 'Addition',
-                category: 'Addition',
-                score: 10,
-                num_questions: 25,
-                date: '2023-10-01 10:30:00',
-            },
-            {
-                math_journey_for: 'Post-Assessment',
-                type: 'Subtraction',
-                category: 'Subtraction',
-                score: 22,
-                num_questions: 25,
-                date: '2023-10-02 11:30:00',
-            },
-            {
-                math_journey_for: 'Quiz',
-                type: 'Multiplication',
-                category: 'Multiplication',
-                score: 10,
-                num_questions: 10,
-                date: '2023-10-03 12:30:00',
-            },
-            {
-                math_journey_for: 'Quiz',
-                type: 'Division',
-                category: 'Division',
-                score: 2,
-                num_questions: 10,
-                date: '2023-10-04 13:30:00',
-            },
-        ],
-    },
-    {
-        name: 'Mya Calyfa',
-        image: '',
-        scores: [
-            {
-                math_journey_for: 'Pre-Assessment',
-                type: 'Addition',
-                category: 'Addition',
-                score: 10,
-                num_questions: 25,
-                date: '2023-10-01 10:30:00',
-            },
-            {
-                math_journey_for: 'Post-Assessment',
-                type: 'Subtraction',
-                category: 'Subtraction',
-                score: 22,
-                num_questions: 25,
-                date: '2023-10-02 11:30:00',
-            },
-            {
-                math_journey_for: 'Quiz',
-                type: 'Multiplication',
-                category: 'Multiplication',
-                score: 10,
-                num_questions: 10,
-                date: '2023-10-03 12:30:00',
-            },
-            {
-                math_journey_for: 'Quiz',
-                type: 'Division',
-                category: 'Division',
-                score: 2,
-                num_questions: 10,
-                date: '2023-10-04 13:30:00',
-            },
-        ],
-    },
-];
-
 export default function Dashboard() {
     const { auth } = usePage().props;
     const userType = auth?.user?.user_type;
     const [studentsData, setStudentsData] = useState([]);
+
+    console.log(studentsData);
 
     useEffect(() => {
         axios.get("/student-results")
