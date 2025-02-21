@@ -217,6 +217,8 @@ export function Board_Student({ data }) {
                     });
 
                     return;
+                } else if (data.status === 'disconnected') {
+                    setIsPaused(true);
                 }
             };
 
