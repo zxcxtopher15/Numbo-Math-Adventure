@@ -218,6 +218,7 @@ export function Board_Student({ data }) {
                 }
 
                 if (mathjam.current_question_id) {
+                    console.log(data.length);
                     if (data.length > 0) {
                         const questionIds = data.map(item => item.question_data.id);
                         const existingIndex = questionIds.indexOf(mathjam.current_question_id);
