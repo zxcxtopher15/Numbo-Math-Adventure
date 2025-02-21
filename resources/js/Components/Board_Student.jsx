@@ -401,7 +401,7 @@ export function Board_Student({ data }) {
 
     const colors = ['bg-blue-400', 'bg-purple-400', 'bg-pink-400', 'bg-green-400', 'bg-yellow-400', 'bg-red-400'];
 
-    const isGameFinished = currentQuestion === 0 || currentQuestion >= data.length;
+    const isGameFinished = data.length == 0;
 
     const totalTimeSpent = timeSpent.reduce((acc, time) => acc + time, 0);
 
