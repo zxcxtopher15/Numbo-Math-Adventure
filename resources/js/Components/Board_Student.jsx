@@ -194,7 +194,7 @@ export function Board_Student({ data }) {
                 setExistingJam(JSON.parse(data));
                 localStorage.setItem('existingJam', JSON.parse(data));
 
-                if (data.is_paused) {
+                if (data.is_paused == 1) {
                     handleDialogOpen();
                 } else {
                     handleDialogClose();
