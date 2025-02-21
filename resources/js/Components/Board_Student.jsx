@@ -218,7 +218,12 @@ export function Board_Student({ data }) {
                 }
 
                 if (data.current_question_id) {
-                    setCurrentQuestion(data.current_question_id);
+                    console.log(data.current_question_id);
+                    if (data.length > 0) {
+                        const questionIds = data.map(item => item.question_data.id);
+                        const existingIndex = questionIds.indexOf(data.current_question_id);
+                        setCurrentQuestion(existingIndex !== -1 ? existingIndex : 0);
+                    }
                 }
             };
 
