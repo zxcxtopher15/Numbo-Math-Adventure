@@ -39,11 +39,11 @@ export default function BoardContainer_Student({ }) {
         };
 
         const beforeUnloadHandler = (event) => {
-            // handleDisconnect();
+            handleDisconnect();
         };
 
         const offlineHandler = () => {
-            // handleDisconnect();
+            handleDisconnect();
             Swal.fire({
                 icon: 'error',
                 title: 'Connection Lost',
@@ -65,6 +65,31 @@ export default function BoardContainer_Student({ }) {
             window.removeEventListener('keydown', disableReload);
         };
     }, []);
+
+    const handleDisconnect = async () => {
+        if (!studentId || !existingJam) return;
+
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        if (!baseUrl) return;
+
+        const apiUrl = `${baseUrl}/math-journey/disconnect`;
+
+        try {
+            await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    math_jam_code: existingJam.math_jam_code,
+                }),
+            });
+        } catch (err) {
+            console.error('Error during disconnect:', err);
+        }
+    };
 
     useEffect(() => {
         setCategoryTitle(localStorage.getItem('category') || 'Default Title');
