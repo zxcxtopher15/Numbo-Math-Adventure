@@ -366,7 +366,7 @@ export function Board_Student({ data }) {
                 body: JSON.stringify({
                     student_id: studentId,
                     math_jam_code: existingJam.math_jam_code,
-                    has_answer: 0,
+                    has_answer: 1,
                 }),
             });
 
