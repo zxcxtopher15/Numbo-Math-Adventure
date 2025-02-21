@@ -127,6 +127,10 @@ export default function BoardContainer_Student({ }) {
             });
 
             const data = await response.json();
+
+            if (data) {
+                console.log("success");
+            }
         } catch (err) {
             console.error('Error reconnecting:', err);
         } finally {
