@@ -77,14 +77,16 @@ export default function BoardContainer_Student({ }) {
             math_jam_code: existingJam.math_jam_code,
         });
 
-        window.location.href = "/math-journey-join";
-
         try {
             if (navigator.sendBeacon) {
                 const blob = new Blob([payload], { type: 'application/json' });
                 navigator.sendBeacon(apiUrl, blob);
+
+                setTimeout(() => {
+                    window.location.href = '/math-journey-join';
+                }, 500);
             } else {
-                await fetch(apiUrl, {
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -93,6 +95,12 @@ export default function BoardContainer_Student({ }) {
                     body: payload,
                     credentials: 'include',
                 });
+
+                if (response.ok) {
+                    window.location.href = '/math-journey-join';
+                } else {
+                    console.error('Failed to disconnect:', response.statusText);
+                }
             }
         } catch (err) {
             console.error('Error during disconnect:', err);
