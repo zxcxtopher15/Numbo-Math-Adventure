@@ -213,6 +213,7 @@ export function Board_Student({ data }) {
 
                     return;
                 } else if (data.status === 'disconnected') {
+                    localStorage.setItem('existingJam', JSON.parse(data));
                     window.location.href = "/math-journey-join";
                 }
             };

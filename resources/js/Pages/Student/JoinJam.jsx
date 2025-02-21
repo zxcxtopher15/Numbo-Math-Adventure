@@ -22,6 +22,18 @@ const JoinJam = () => {
     const [score, setScore] = useState(0);
     const [loading, setLoading] = useState(false);
     const hasReloaded = useRef(false);
+    const [existingJam, setExistingJam] = useState(null);
+
+    useEffect(() => {
+        const storedJam = localStorage.getItem('existingJam');
+        if (storedJam) {
+            const parsedJam = JSON.parse(storedJam);
+            setExistingJam(parsedJam);
+            if (parsedJam.status === "disconnected") {
+                showDisconnectedSwal();
+            }
+        }
+    }, []);
 
     useEffect(() => {
         sessionStorage.setItem('jamCode', jamCode);
@@ -278,8 +290,6 @@ const JoinJam = () => {
                     });
 
                     return;
-                } else if (data.status === 'disconnected') {
-                    showDisconnectedSwal(); // Show waiting screen
                 }
             };
 
@@ -289,25 +299,6 @@ const JoinJam = () => {
                     connectSSE();
                 }, 1000);
             };
-        };
-
-        const showDisconnectedSwal = () => {
-            Swal.fire({
-                title: 'Waiting for Host to Reconnect...',
-                text: 'Please wait while we attempt to reconnect.',
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                showConfirmButton: true,
-                confirmButtonText: 'Exit Game',
-                confirmButtonColor: '#d33',
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '/math-journey-join';
-                }
-            });
         };
 
         connectSSE();
@@ -339,6 +330,25 @@ const JoinJam = () => {
             window.removeEventListener('offline', offlineHandler);
         };
     }, [jamCode, studentId]);
+
+    const showDisconnectedSwal = () => {
+        Swal.fire({
+            title: 'Waiting for Host to Reconnect...',
+            text: 'Please wait while we attempt to reconnect.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: true,
+            confirmButtonText: 'Exit Game',
+            confirmButtonColor: '#d33',
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/math-journey-join';
+            }
+        });
+    };
 
     return (
         <>
