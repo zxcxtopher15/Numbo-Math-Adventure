@@ -52,6 +52,8 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
             setExistingJam(JSON.parse(storedJam));
+            console.log('existingJam:' , existingJam);
+            
         }
     }, []);
 
@@ -213,10 +215,12 @@ export function Board_Journey({ data }) {
     useEffect(() => {
         setStartTime(Date.now());
     }, [currentQuestion]);
-
+    console.log("participalnmts", + participants);
+    console.log("participalnmts", + participants);
     useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         const sseUrl = `${baseUrl}/math-journey/stream-participants?teacher_id=${auth.user.id}`;
+    
 
         let eventSource;
 
@@ -226,7 +230,6 @@ export function Board_Journey({ data }) {
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 setParticipants(data);
-                console.log(participants);
                 
             };
 
