@@ -292,8 +292,6 @@ class MathJamController extends Controller
             ->latest()
             ->first();
 
-        echo '<pre>'; print_r($participant); exit;
-
         if (!$participant) {
             return response()->json(['message' => 'No disconnected participation found'], 404);
         }

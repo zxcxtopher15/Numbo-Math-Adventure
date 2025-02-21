@@ -40,11 +40,11 @@ export default function BoardContainer_Student({ }) {
         };
 
         const beforeUnloadHandler = (event) => {
-            handleDisconnect();
+            // handleDisconnect();
         };
 
         const offlineHandler = () => {
-            handleDisconnect();
+            // handleDisconnect();
             Swal.fire({
                 icon: 'error',
                 title: 'Connection Lost',
@@ -100,6 +100,8 @@ export default function BoardContainer_Student({ }) {
     }, [existingJam]);
 
     const handleReconnect = async () => {
+        console.log(studentId);
+        console.log(existingJam);
         if (!studentId || !existingJam) {
             return;
         }
