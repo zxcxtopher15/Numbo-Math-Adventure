@@ -25,14 +25,23 @@ Route::get('/dashboard', function () {
     $student_data = DB::table('users')
         ->join('math_jam_participants', 'users.id', '=', 'math_jam_participants.student_id')
         ->join('math_jams', 'math_jam_participants.math_jam_id', '=', 'math_jams.id')
-        ->select('users.*', 'math_jams.*', 'math_jam_participants.*')
+        ->select(
+            'users.name',
+            'math_jams.math_journey_for',
+            'math_jams.category',
+            'math_jam_participants.score',
+            'math_jams.num_questions',
+            'math_jam_participants.created_at'
+        )
         ->get();
 
-    echo '<pre>'; print_r($student_data); exit;
+        dd($student_data);
+
     return Inertia::render('Dashboard', [
         'results' => $student_data,
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::get('/modules', function () {
     return Inertia::render('Modules/Modules', request()->all());
