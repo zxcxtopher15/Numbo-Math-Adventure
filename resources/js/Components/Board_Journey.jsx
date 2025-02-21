@@ -180,6 +180,15 @@ export function Board_Journey({ data }) {
     }, []);
 
     useEffect(() => {
+        if (participants.length > 0) {
+            const joinedParticipants = participants.filter(participant => participant.status === 'joined');
+            const allAnswered = joinedParticipants.every(participant => participant.has_answer === 1);
+
+            if (allAnswered) {
+                setIsAnswered(true);
+            }
+        }
+
         const timeout = setTimeout(() => {
             if (participants.length > 0) {
                 console.log(participants);
@@ -196,7 +205,7 @@ export function Board_Journey({ data }) {
                     });
                 }
             }
-        }, 3000);
+        }, 5000);
 
         return () => clearTimeout(timeout);
     }, [participants]);
@@ -217,12 +226,6 @@ export function Board_Journey({ data }) {
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 setParticipants(data);
-
-                const allAnswered = joinedParticipants.every(participant => participant.has_answer === 1);
-
-                if (allAnswered) {
-                    setIsAnswered(true);
-                }
             };
 
             eventSource.onerror = (error) => {
