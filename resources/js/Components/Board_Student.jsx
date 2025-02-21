@@ -335,6 +335,10 @@ export function Board_Student({ data }) {
                     math_jam_code: existingJam.math_jam_code,
                 }),
             });
+
+            let status = "disconnected";
+            const updatedJam = { ...existingJam, status };
+            setExistingJam(updatedJam);
         } catch (err) {
             console.error('Error during disconnect:', err);
         }
