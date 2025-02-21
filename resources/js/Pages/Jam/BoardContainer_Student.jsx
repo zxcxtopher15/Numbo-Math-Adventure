@@ -77,6 +77,8 @@ export default function BoardContainer_Student({ }) {
             math_jam_code: existingJam.math_jam_code,
         });
 
+        window.location.href = "/math-journey-join";
+
         try {
             if (navigator.sendBeacon) {
                 const blob = new Blob([payload], { type: 'application/json' });
@@ -92,8 +94,6 @@ export default function BoardContainer_Student({ }) {
                     credentials: 'include',
                 });
             }
-
-            window.location.href = "/math-journey-join";
         } catch (err) {
             console.error('Error during disconnect:', err);
         }
