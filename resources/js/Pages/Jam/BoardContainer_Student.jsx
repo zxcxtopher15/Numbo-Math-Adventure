@@ -117,48 +117,11 @@ export default function BoardContainer_Student({ }) {
                         }));
 
                         setQuestions(formattedQuestions);
-                        handleReconnect();
                     }
                 })
                 .catch((error) => console.error('Error fetching ordered questions:', error));
         }
     }, [existingJam]);
-
-    const handleReconnect = async () => {
-        if (!studentId || !existingJam) {
-            return;
-        }
-
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-        if (!baseUrl) {
-            return;
-        }
-
-        const apiUrl = `${baseUrl}/math-journey/reconnect`;
-
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                },
-                body: JSON.stringify({
-                    student_id: studentId,
-                    math_jam_code: existingJam.math_jam_code,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (data) {
-                console.log("success");
-            }
-        } catch (err) {
-            console.error('Error reconnecting:', err);
-        } finally {
-        }
-    };
 
     const handleCountdownComplete = () => {
         setShowCountdown(false);
