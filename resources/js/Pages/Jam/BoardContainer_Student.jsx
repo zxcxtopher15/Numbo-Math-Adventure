@@ -8,15 +8,12 @@ export default function BoardContainer_Student({}) {
     const [categoryTitle, setCategoryTitle] = useState('');
     const [questions, setQuestions] = useState([]);
     const [existingJam, setExistingJam] = useState(null);
-    const { auth } = usePage().props;
-    const studentId = auth?.user.id;
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
             const parsedJam = JSON.parse(storedJam);
             setExistingJam(parsedJam);
-            handleReconnect();
             if (parsedJam.status === "disconnected") {
                 window.location.href = '/math-journey';
             }
@@ -98,40 +95,6 @@ export default function BoardContainer_Student({}) {
                 .catch((error) => console.error('Error fetching ordered questions:', error));
         }
     }, [existingJam]);
-
-    const handleReconnect = async () => {
-        if (!studentId || !existingJam) {
-            return;
-        }
-
-        setLoading(true);
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-        if (!baseUrl) {
-            return;
-        }
-
-        const apiUrl = `${baseUrl}/math-journey/reconnect`;
-
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                },
-                body: JSON.stringify({
-                    student_id: studentId,
-                    math_jam_code: existingJam.math_jam_code,
-                }),
-            });
-
-            const data = await response.json();
-        } catch (err) {
-            console.error('Error reconnecting:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleCountdownComplete = () => {
         setShowCountdown(false);
