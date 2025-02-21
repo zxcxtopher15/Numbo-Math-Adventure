@@ -221,9 +221,8 @@ export function Board_Student({ data }) {
                 if (mathjam.current_question_id) {
                     if (data.length > 0) {
                         if (mathjam.current_question_id == 0) {
-                           setEndGame(true);
+                            setExistingJam(JSON.parse(mathjam));
                         }
-
                         const questionIds = data.map(item => item.question_data.id);
                         const existingIndex = questionIds.indexOf(mathjam.current_question_id);
                         setCurrentQuestion(existingIndex !== -1 ? existingIndex : 0);
@@ -406,11 +405,11 @@ export function Board_Student({ data }) {
 
     const colors = ['bg-blue-400', 'bg-purple-400', 'bg-pink-400', 'bg-green-400', 'bg-yellow-400', 'bg-red-400'];
 
-    const isGameFinished = data.length == 0;
+    const isGameFinished = data.length === 0 || (existingJam?.current_question_id === 0);
 
     const totalTimeSpent = timeSpent.reduce((acc, time) => acc + time, 0);
 
-    return endGame ? (
+    return isGameFinished ? (
         <TotalResult totalQuestions={data.length} gameState={gameState} totalTimeSpent={totalTimeSpent} />
     ) : (
         <>
