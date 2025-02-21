@@ -9,8 +9,6 @@ export default function BoardContainer_Journey({ auth }) {
     const [questions, setQuestions] = useState([]);
     const [existingJam, setExistingJam] = useState(null);
 
-    console.log(existingJam);
-
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
@@ -251,7 +249,7 @@ export default function BoardContainer_Journey({ auth }) {
 
     return (
         <div className="overflow-hidden h-dvh lg:p-3 p-2 bg-gradient-to-br from-teal-400 to-yellow-200 box-border">
-            {/* {showCountdown ? <PageCountDown onComplete={handleCountdownComplete} /> : <Board_Journey data={questions} />} */}
+            {showCountdown ? <PageCountDown onComplete={handleCountdownComplete} /> : <Board_Journey data={questions} />}
         </div>
     );
 }
