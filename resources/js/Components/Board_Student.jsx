@@ -198,6 +198,12 @@ export function Board_Student({ data }) {
                     return;
                 }
 
+                if (mathjam.is_paused == 1) {
+                    handleDialogOpen();
+                } else {
+                    handleDialogClose();
+                }
+
                 if (mathjam.status === 'cancelled' || mathjam.status === 'ended') {
                     eventSource.close();
 
