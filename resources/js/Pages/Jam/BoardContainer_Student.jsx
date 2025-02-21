@@ -11,14 +11,13 @@ export default function BoardContainer_Student({ }) {
     const { auth } = usePage().props;
     const studentId = auth?.user.id;
 
+    console.log(existingJam);
+
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
             const parsedJam = JSON.parse(storedJam);
             setExistingJam(parsedJam);
-            if (parsedJam) {
-                handleReconnect();
-            }
             if (parsedJam.status === "disconnected") {
                 window.location.href = '/math-journey';
             }
@@ -95,6 +94,7 @@ export default function BoardContainer_Student({ }) {
                         }));
 
                         setQuestions(formattedQuestions);
+                        handleReconnect();
                     }
                 })
                 .catch((error) => console.error('Error fetching ordered questions:', error));
@@ -102,8 +102,6 @@ export default function BoardContainer_Student({ }) {
     }, [existingJam]);
 
     const handleReconnect = async () => {
-        console.log(studentId);
-        console.log(existingJam);
         if (!studentId || !existingJam) {
             return;
         }
