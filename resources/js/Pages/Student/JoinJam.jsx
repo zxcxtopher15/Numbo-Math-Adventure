@@ -254,6 +254,10 @@ const JoinJam = () => {
 
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
+                localStorage.setItem(
+                    'existingJam',
+                    JSON.stringify(data),
+                );
 
                 if (data && (data.status === 'started')) {
                     window.location.href = '/math-journey/play';
