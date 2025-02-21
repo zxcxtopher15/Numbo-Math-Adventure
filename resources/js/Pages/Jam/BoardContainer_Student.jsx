@@ -16,13 +16,9 @@ export default function BoardContainer_Student({ }) {
         if (storedJam) {
             const parsedJam = JSON.parse(storedJam);
             setExistingJam(parsedJam);
-            console.log(existingJam);
-            console.log("Parsed Jam: " + storedJam);
-            if (parsedJam.status == 'disconnected') {
-                window.location.href = '/math-journey-join';
-            }
         }
     }, []);
+
 
     useEffect(() => {
         const beforeUnloadHandler = (event) => {
@@ -97,9 +93,7 @@ export default function BoardContainer_Student({ }) {
                 });
             }
 
-            let status = "disconnected";
-            const updatedJam = { ...existingJam, status };
-            setExistingJam(updatedJam);
+            window.location.href = "/math-journey-join";
         } catch (err) {
             console.error('Error during disconnect:', err);
         }
