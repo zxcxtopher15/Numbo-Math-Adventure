@@ -189,16 +189,16 @@ export function Board_Student({ data }) {
             eventSource = new EventSource(sseUrl);
 
             eventSource.onmessage = (event) => {
-                const data = JSON.parse(event.data);
+                const mathjam = JSON.parse(event.data);
 
-                if (data.status === 'cancelled' || data.status === 'ended') {
+                if (mathjam.status === 'cancelled' || mathjam.status === 'ended') {
                     eventSource.close();
 
                     Swal.fire({
-                        icon: data.status === 'cancelled' ? 'error' : 'info',
-                        title: data.status === 'cancelled' ? 'Math Journey Cancelled' : 'Math Journey Ended',
+                        icon: mathjam.status === 'cancelled' ? 'error' : 'info',
+                        title: mathjam.status === 'cancelled' ? 'Math Journey Cancelled' : 'Math Journey Ended',
                         text:
-                            data.status === 'cancelled'
+                            mathjam.status === 'cancelled'
                                 ? 'The Math Journey session has been cancelled.'
                                 : 'The Math Journey session has ended. Thank you for participating!',
                         confirmButtonColor: '#d33',
@@ -212,16 +212,17 @@ export function Board_Student({ data }) {
                     });
 
                     return;
-                } else if (data.status === 'disconnected') {
-                    localStorage.setItem('existingJam', JSON.stringify(data));
+                } else if (mathjam.status === 'disconnected') {
+                    localStorage.setItem('existingJam', JSON.stringify(mathjam));
                     window.location.href = "/math-journey-join";
                 }
 
-                if (data.current_question_id) {
-                    console.log(data.current_question_id);
+                if (mathjam.current_question_id) {
+                    console.log(mathjam.current_question_id);
                     if (data.length > 0) {
+                        console.log(data);
                         const questionIds = data.map(item => item.question_data.id);
-                        const existingIndex = questionIds.indexOf(data.current_question_id);
+                        const existingIndex = questionIds.indexOf(mathjam.current_question_id);
                         setCurrentQuestion(existingIndex !== -1 ? existingIndex : 0);
                     }
                 }
