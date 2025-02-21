@@ -86,6 +86,7 @@ Route::group(['middleware' => 'student'], function () {
         return Inertia::render('Jam/BoardContainer_Student', request()->all());
     })->name('journey.play');
     Route::post('/math-journey/update_score', [MathJamController::class, 'update_score']);
+    Route::post('/math-journey/update_has_answer', [MathJamController::class, 'update_has_answer']);
 });
 
 Route::group(['middleware' => 'parent'], function () {});

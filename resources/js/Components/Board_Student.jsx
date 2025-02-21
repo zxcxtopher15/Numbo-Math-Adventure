@@ -353,6 +353,28 @@ export function Board_Student({ data }) {
         } catch (err) {
             console.error('Error during update:', err);
         }
+
+        const apiUrl1 = `${baseUrl}/math-journey/update_has_answer`;
+
+        try {
+            const response = await fetch(apiUrl1, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    math_jam_code: existingJam.math_jam_code,
+                    has_answer: 0,
+                }),
+            });
+
+            const result = await response.json();
+            console.log('Has Answer updated:', result);
+        } catch (err) {
+            console.error('Error during update:', err);
+        }
     };
 
     const handleNext = async () => {
@@ -377,6 +399,27 @@ export function Board_Student({ data }) {
             }
 
             setIsAnswered(false);
+
+            try {
+                const response = await fetch(apiUrl1, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        student_id: studentId,
+                        math_jam_code: existingJam.math_jam_code,
+                        has_answer: 0,
+                    }),
+                });
+    
+                const result = await response.json();
+                console.log('Has Answer updated:', result);
+            } catch (err) {
+                console.error('Error during update:', err);
+            }
+
             setIsTimeUp(false);
             setCorrectAnswer('');
             setCurrentQuestion((prev) => (prev < data.length - 1 ? prev + 1 : prev + 1));

@@ -18,6 +18,7 @@ class MathJam extends Model
         'math_journey_for',
         'category',
         'show_scores',
+        'has_answer',
         'is_paused',
         'current_question_id',
         'status',
