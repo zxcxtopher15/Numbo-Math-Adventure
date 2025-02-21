@@ -3,6 +3,7 @@
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\MathJamController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
@@ -19,6 +20,13 @@ Route::get('/', [AuthenticatedSessionController::class, 'create'])
 //         'phpVersion' => PHP_VERSION,
 //     ]);
 // });
+
+Route::post('/modules/store', [ModuleController::class, 'store'])->name('modules.store');
+Route::get('/modules/{id}', [ModuleController::class, 'get_module'])->name('modules.get');
+Route::post('/modules/update/{id}', [ModuleController::class, 'update'])->name('modules.update');
+Route::delete('/modules/{id}', [ModuleController::class, 'destroy'])->name('modules.destroy');
+Route::get('/get_all_modules', [ModuleController::class, 'get_modules']);
+Route::delete('/modules/single/{id}/{index}', [ModuleController::class, 'destroy_single'])->name('modules.delete');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -65,6 +73,7 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::post('/math-journey/disconnect_jam', [MathJamController::class, 'disconnect_jam']);
     Route::post('/math-journey/update-pause-status', [MathJamController::class, 'updatePauseStatus']);
     Route::post('/math-journey/update_current_question', [MathJamController::class, 'update_current_question']);
+    Route::delete('/questions/{id}', [QuestionController::class, 'destroy'])->name('questions.destroy');
 });
 
 Route::group(['middleware' => 'student'], function () {
