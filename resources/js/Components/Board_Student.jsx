@@ -462,19 +462,8 @@ export function Board_Student({ data }) {
                                 </button>
                             </div>
                         )}
-                        <Dialog
-                            open={isPaused}
-                            onOpenChange={(open) => (open ? handleDialogOpen() : handleDialogClose())}
-                            modal
-                        >
-                            <DialogTrigger asChild>
-                                <button
-                                    className="rounded-full w-max bg-gray-200 p-3 text-success hover:bg-success hover:text-white"
-                                    onClick={() => setIsPaused((prev) => !prev)}
-                                >
-                                    <FaPause className="text-4xl" />
-                                </button>
-                            </DialogTrigger>
+
+                        <Dialog open={isPaused}>
                             <DialogContent className="sm:max-w-[425px]">
                                 <DialogHeader>
                                     <DialogTitle>Pause</DialogTitle>
