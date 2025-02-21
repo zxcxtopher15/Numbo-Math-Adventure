@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react';
-
+import { usePage } from '@inertiajs/react';
 import { Board_Student } from '@/Components/Board_Student';
 import { PageCountDown } from '@/Components/PageCountDown';
 
-export default function BoardContainer_Student({ auth }) {
+export default function BoardContainer_Student({}) {
     const [showCountdown, setShowCountdown] = useState(true);
     const [categoryTitle, setCategoryTitle] = useState('');
     const [questions, setQuestions] = useState([]);
     const [existingJam, setExistingJam] = useState(null);
+    const { auth } = usePage().props;
+    const studentId = auth?.user.id;
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
+        handleReconnect();
         if (storedJam) {
             const parsedJam = JSON.parse(storedJam);
             setExistingJam(parsedJam);
@@ -64,49 +67,6 @@ export default function BoardContainer_Student({ auth }) {
         };
     }, []);
 
-    // const handleDisconnect = async () => {
-    //     const existingJam = localStorage.getItem('existingJam');
-
-    //     if (!existingJam) return;
-
-    //     const parsedJam = JSON.parse(existingJam);
-    //     if (!parsedJam || !parsedJam.math_jam_id) return;
-
-    //     const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-    //     if (!baseUrl) return;
-
-    //     const apiUrl = `${baseUrl}/math-journey/disconnect_jam`;
-
-    //     try {
-    //         const response = await fetch(apiUrl, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-    //             },
-    //             body: JSON.stringify({
-    //                 math_jam_id: parsedJam.math_jam_id,
-    //             }),
-    //         });
-
-    //         if (!response.ok) {
-    //             console.error('Failed to disconnect:', response.status);
-    //             return;
-    //         }
-
-    //         const data = await response.json();
-
-    //         if (data?.jam) {
-    //             localStorage.setItem('existingJam', JSON.stringify(data.jam));
-    //         } else {
-    //             console.warn('No valid jam data in response');
-    //             localStorage.removeItem('existingJam');
-    //         }
-    //     } catch (err) {
-    //         console.error('Error during disconnect:', err);
-    //     }
-    // };
-
     useEffect(() => {
         setCategoryTitle(localStorage.getItem('category') || 'Default Title');
 
@@ -138,6 +98,55 @@ export default function BoardContainer_Student({ auth }) {
                 .catch((error) => console.error('Error fetching ordered questions:', error));
         }
     }, [existingJam]);
+
+    const handleReconnect = async () => {
+        if (!studentId || !existingJam) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Reconnect Failed',
+                text: 'Student ID or Jam Code is missing.',
+            });
+            return;
+        }
+
+        setLoading(true);
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        if (!baseUrl) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Base URL Error',
+                text: 'Base URL not found.',
+            });
+            return;
+        }
+
+        const apiUrl = `${baseUrl}/math-journey/reconnect`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    math_jam_code: existingJam.math_jam_code,
+                }),
+            });
+
+            const data = await response.json();
+        } catch (err) {
+            console.error('Error reconnecting:', err);
+            Swal.fire({
+                icon: 'error',
+                title: 'An error occurred',
+                text: 'Please try again later.',
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleCountdownComplete = () => {
         setShowCountdown(false);
