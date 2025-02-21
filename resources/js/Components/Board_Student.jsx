@@ -156,7 +156,6 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
 export function Board_Student({ data }) {
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
-    const [isDisconnected, setIsDisconnected] = useState(false);
     const [startTime, setStartTime] = useState(Date.now());
     const [isAnswered, setIsAnswered] = useState(false);
     const [isTimeUp, setIsTimeUp] = useState(false);
@@ -214,7 +213,7 @@ export function Board_Student({ data }) {
 
                     return;
                 } else if (data.status === 'disconnected') {
-                    setIsDisconnected(true);
+                    window.location.href = "/math-journey-join";
                 }
             };
 
@@ -285,7 +284,7 @@ export function Board_Student({ data }) {
     }, []);
 
     const handleAnswer = (answer) => {
-        setIsCorrect(false); // Reset the isCorrect state
+        setIsCorrect(false);
 
         setIsAnswered(true);
 
@@ -430,29 +429,6 @@ export function Board_Student({ data }) {
                                     <DialogDescription>Game is paused. Resume when you're ready.</DialogDescription>
                                 </DialogHeader>
                                 <DialogFooter></DialogFooter>
-                            </DialogContent>
-                        </Dialog>
-
-                        <Dialog open={isDisconnected}>
-                            <DialogContent
-                                className="sm:max-w-[425px]"
-                                onInteractOutside={(e) => e.preventDefault()}
-                                onEscapeKeyDown={(e) => e.preventDefault()}
-                            >
-                                <DialogHeader>
-                                    <DialogTitle>Host Disconnected</DialogTitle>
-                                    <DialogDescription>
-                                        Game is paused. It will automatically continue when the host reconnects.
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <DialogFooter>
-                                    <button
-                                        className="bg-success text-white px-4 py-2 rounded"
-                                        onClick={handleDialogClose}
-                                    >
-                                        Exit Game
-                                    </button>
-                                </DialogFooter>
                             </DialogContent>
                         </Dialog>
                     </div>

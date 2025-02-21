@@ -254,36 +254,32 @@ const JoinJam = () => {
 
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
-                localStorage.setItem(
-                    'existingJam',
-                    JSON.stringify(data),
-                );
+                localStorage.setItem('existingJam', JSON.stringify(data));
 
-                if (data && (data.status === 'started')) {
+                if (data && data.status === 'started') {
                     window.location.href = '/math-journey/play';
-                } else {
-                    if (data.status === 'cancelled' || data.status === 'ended') {
-                        eventSource.close();
+                } else if (data.status === 'cancelled' || data.status === 'ended') {
+                    eventSource.close();
 
-                        Swal.fire({
-                            icon: data.status === 'cancelled' ? 'error' : 'info',
-                            title: data.status === 'cancelled' ? 'Math Journey Cancelled' : 'Math Journey Ended',
-                            text:
-                                data.status === 'cancelled'
-                                    ? 'The Math Journey session has been cancelled.'
-                                    : 'The Math Journey session has ended. Thank you for participating!',
-                            confirmButtonColor: '#d33',
-                            allowOutsideClick: false,
-                        }).then(() => {
-                            if (!hasReloaded.current) {
-                                hasReloaded.current = true;
-                                handleDisconnect();
-                                window.location.reload();
-                            }
-                        });
+                    Swal.fire({
+                        icon: data.status === 'cancelled' ? 'error' : 'info',
+                        title: data.status === 'cancelled' ? 'Math Journey Cancelled' : 'Math Journey Ended',
+                        text: data.status === 'cancelled'
+                            ? 'The Math Journey session has been cancelled.'
+                            : 'The Math Journey session has ended. Thank you for participating!',
+                        confirmButtonColor: '#d33',
+                        allowOutsideClick: false,
+                    }).then(() => {
+                        if (!hasReloaded.current) {
+                            hasReloaded.current = true;
+                            handleDisconnect();
+                            window.location.reload();
+                        }
+                    });
 
-                        return;
-                    }
+                    return;
+                } else if (data.status === 'disconnected') {
+                    showDisconnectedSwal(); // Show waiting screen
                 }
             };
 
@@ -293,6 +289,25 @@ const JoinJam = () => {
                     connectSSE();
                 }, 1000);
             };
+        };
+
+        const showDisconnectedSwal = () => {
+            Swal.fire({
+                title: 'Waiting for Host to Reconnect...',
+                text: 'Please wait while we attempt to reconnect.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: true,
+                confirmButtonText: 'Exit Game',
+                confirmButtonColor: '#d33',
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/math-journey-join';
+                }
+            });
         };
 
         connectSSE();
