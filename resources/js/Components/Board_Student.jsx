@@ -170,13 +170,11 @@ export function Board_Student({ data }) {
     const [timeSpent, setTimeSpent] = useState([]);
     const { auth } = usePage().props;
     const [existingJam, setExistingJam] = useState(null);
-    const studentId = auth?.user.id;
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
             setExistingJam(JSON.parse(storedJam));
-            handleReconnect();
         }
     }, []);
 
@@ -321,40 +319,6 @@ export function Board_Student({ data }) {
                 correctQuestions: newCorrectQuestions,
             };
         });
-    };
-
-    const handleReconnect = async () => {
-        if (!studentId || !existingJam) {
-            return;
-        }
-
-        setLoading(true);
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-        if (!baseUrl) {
-            return;
-        }
-
-        const apiUrl = `${baseUrl}/math-journey/reconnect`;
-
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                },
-                body: JSON.stringify({
-                    student_id: studentId,
-                    math_jam_code: existingJam.math_jam_code,
-                }),
-            });
-
-            const data = await response.json();
-        } catch (err) {
-            console.error('Error reconnecting:', err);
-        } finally {
-            setLoading(false);
-        }
     };
 
     const handleNext = async () => {
