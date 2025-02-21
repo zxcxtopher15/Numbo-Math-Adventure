@@ -94,6 +94,10 @@ export default function BoardContainer_Student({ }) {
                     credentials: 'include',
                 });
             }
+
+            let status = "disconnected";
+            const updatedJam = { ...existingJam, status };
+            setExistingJam(updatedJam);
         } catch (err) {
             console.error('Error during disconnect:', err);
         }
