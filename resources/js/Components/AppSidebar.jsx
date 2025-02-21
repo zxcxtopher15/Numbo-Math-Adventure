@@ -28,18 +28,24 @@ export function AppSidebar(props) {
                 icon: LayoutDashboard,
                 isActive: window.location.pathname === '/dashboard',
             },
-            {
-                title: 'Math Journey ',
-                url: userType === 'Teacher' ? '/math-journey' : '/math-journey-join',
-                icon: Dices,
-                isActive: window.location.pathname === '/math-journey' || window.location.pathname === '/math-journey-join',
-            },
+            ...(userType === 'Teacher' || userType === 'Student'
+                ? [
+                      {
+                          title: 'Math Journey ',
+                          url: userType === 'Teacher' ? '/math-journey' : '/math-journey-join',
+                          icon: Dices,
+                          isActive:
+                              window.location.pathname === '/math-journey' ||
+                              window.location.pathname === '/math-journey-join',
+                      },
+                  ]
+                : []),
             {
                 title: 'Modules',
                 url: 'modules',
                 icon: Settings2,
                 isActive: window.location.pathname === '/modules',
-            }
+            },
         ],
     };
 
