@@ -170,6 +170,7 @@ export function Board_Student({ data }) {
     const { auth } = usePage().props;
     const [existingJam, setExistingJam] = useState(null);
     const [isGameFinished, setIsGameFinished] = useState(false);
+    const studentId = auth?.user.id;
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
@@ -333,7 +334,7 @@ export function Board_Student({ data }) {
             };
         });
 
-        if (!correct || !studentId || !jamCode) return;
+        if (!correct || !studentId || !existingJam) return;
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
@@ -351,7 +352,7 @@ export function Board_Student({ data }) {
                 },
                 body: JSON.stringify({
                     student_id: studentId,
-                    math_jam_code: jamCode,
+                    math_jam_code: existingJam.math_jam_code,
                 }),
             });
 
