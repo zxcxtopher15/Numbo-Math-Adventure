@@ -198,6 +198,7 @@ export function Board_Journey({ data }) {
 
                 const allAnswered = joinedParticipants.every(participant => participant.has_answer === 1);
 
+                console.log(allAnswered);
                 if (allAnswered) {
                     setIsAnswered(true);
                 }
