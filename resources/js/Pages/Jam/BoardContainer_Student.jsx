@@ -10,6 +10,7 @@ export default function BoardContainer_Student({ }) {
     const [existingJam, setExistingJam] = useState(null);
     const { auth } = usePage().props;
     const studentId = auth?.user.id;
+    const [participant, setParticipant] = useState([]);
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
@@ -66,15 +67,13 @@ export default function BoardContainer_Student({ }) {
     const handleDisconnect = async () => {
         if (!studentId || !existingJam) return;
 
-        console.log(existingJam);
-
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
 
         const apiUrl = `${baseUrl}/math-journey/disconnect`;
 
         try {
-            await fetch(apiUrl, {
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -85,6 +84,8 @@ export default function BoardContainer_Student({ }) {
                     math_jam_code: existingJam.math_jam_code,
                 }),
             });
+
+            console.log(response);
         } catch (err) {
             console.error('Error during disconnect:', err);
         }
