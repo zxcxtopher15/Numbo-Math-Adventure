@@ -118,6 +118,28 @@ export default function BoardContainer_Journey({ auth }) {
     useEffect(() => {
         setCategoryTitle(localStorage.getItem('category') || 'Default Title');
 
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
+
+        try {
+            const response = fetch(apiUrl1, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({
+                    math_jam_code: existingJam.math_jam_code,
+                    has_answer: 0,
+                }),
+            });
+
+            const result = response.json();
+            console.log('Has Answer updated:', result);
+        } catch (err) {
+            console.error('Error during update:', err);
+        }
+
         if (existingJam?.math_jam_id) {
             fetch(`/get_ordered_questions?math_jam_id=${existingJam.math_jam_id}`)
                 .then((response) => response.json())

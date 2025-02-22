@@ -19,6 +19,7 @@ import { SvgAsset } from './SvgAsset';
 import Categories from './Categories';
 import Swal from 'sweetalert2';
 import Avatar from './Avatar';
+import axios from "axios";
 
 function RoundResult({ numQuestion, participants, onNext }) {
     return (
@@ -458,7 +459,6 @@ export function Board_Journey({ data }) {
             setIsAnswered(false);
 
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-            
             const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
 
             try {
