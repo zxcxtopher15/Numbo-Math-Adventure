@@ -220,14 +220,34 @@ export function Board_Journey({ data }) {
     }, []);
 
     useEffect(() => {
+        const updateAnswers = async () => {
+            try {
+                const response = await axios.post(apiUrl1, {
+                    math_jam_code: existingJam?.math_jam_code || null,
+                    has_answer: 0,
+                }, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                    },
+                });
+
+                console.log("Has Answer updated:", response.data);
+            } catch (err) {
+                console.error("Error during update:", err.response?.data || err.message);
+            }
+        };
+
         if (participants.length > 0) {
             const joinedParticipants = participants.filter(participant => participant.status === 'joined');
             const allAnswered = joinedParticipants.every(participant => participant.has_answer === 1);
 
-            console.log("All Answered: " + allAnswered);
-            console.log(participants);
+            console.log("All Answered:", allAnswered);
+            console.log("Participants:", participants);
+
             if (allAnswered) {
                 setIsAnswered(true);
+                updateAnswers();
             }
         }
 
@@ -249,7 +269,7 @@ export function Board_Journey({ data }) {
         }, 5000);
 
         return () => clearTimeout(timeout);
-    }, [participants]);
+    }, [participants, apiUrl1, existingJam]); // Ensure dependencies are up-to-date
 
     useEffect(() => {
         setStartTime(Date.now());
@@ -441,25 +461,6 @@ export function Board_Journey({ data }) {
         if (currentQuestion < data.length) {
             const currentQuestionId = data[currentQuestion].question_data.id;
 
-            try {
-                const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.statusText}`);
-                }
-
-                console.log(`Question ${currentQuestionId} deleted successfully`);
-            } catch (error) {
-                console.error('Error deleting question:', error.message);
-            }
-
-            setIsAnswered(false);
-
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
             const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
 
@@ -479,6 +480,24 @@ export function Board_Journey({ data }) {
                 console.error("Error during update:", err.response?.data || err.message);
             }
 
+            try {
+                const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+
+                console.log(`Question ${currentQuestionId} deleted successfully`);
+            } catch (error) {
+                console.error('Error deleting question:', error.message);
+            }
+
+            setIsAnswered(false);
             setIsTimeUp(false);
             setCorrectAnswer('');
             setCurrentQuestion((prev) => (prev < data.length - 1 ? prev + 1 : prev + 1));
