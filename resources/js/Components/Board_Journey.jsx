@@ -457,8 +457,8 @@ export function Board_Journey({ data }) {
 
             setIsAnswered(false);
 
-            const apiUrl1 = `${baseUrl}/math-journey/update_has_answer`;
-            
+            const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
+
             try {
                 const response = await fetch(apiUrl1, {
                     method: 'POST',
@@ -467,7 +467,6 @@ export function Board_Journey({ data }) {
                         'X-CSRF-TOKEN': csrfToken,
                     },
                     body: JSON.stringify({
-                        student_id: studentId,
                         math_jam_code: existingJam.math_jam_code,
                         has_answer: 0,
                     }),

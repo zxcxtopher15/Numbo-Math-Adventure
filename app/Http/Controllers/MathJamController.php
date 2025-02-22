@@ -567,4 +567,30 @@ class MathJamController extends Controller
 
         return response()->json(['results' => array_values($formattedData)]);
     }
+
+    public function update_answers(Request $request)
+    {
+        $request->validate([
+            'math_jam_code' => 'required|string|exists:math_jams,math_jam_code',
+        ]);
+
+        try {
+            $mathJam = MathJam::where('math_jam_code', $request->math_jam_code)->first();
+
+            if (!$mathJam) {
+                return response()->json(['error' => 'MathJam not found'], 404);
+            }
+
+            $updated = MathJamParticipant::where('math_jam_id', $mathJam->id)
+                ->update(['has_answer' => 0]);
+
+            if ($updated) {
+                return response()->json(['message' => 'Has Answer updated successfully'], 200);
+            } else {
+                return response()->json(['error' => 'No records updated'], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong', 'details' => $e->getMessage()], 500);
+        }
+    }
 }

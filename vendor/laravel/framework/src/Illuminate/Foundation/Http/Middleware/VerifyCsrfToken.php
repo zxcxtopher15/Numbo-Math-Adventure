@@ -57,7 +57,8 @@ class VerifyCsrfToken
         '/questions/*',
         '/modules/store',
         '/modules/update',
-        '/modules/*'
+        '/modules/*',
+        '/update_answers'
     ];
 
     /**

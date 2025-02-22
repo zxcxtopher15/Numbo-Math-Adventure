@@ -28,6 +28,7 @@ Route::delete('/modules/{id}', [ModuleController::class, 'destroy'])->name('modu
 Route::get('/get_all_modules', [ModuleController::class, 'get_modules']);
 Route::delete('/modules/single/{id}/{index}', [ModuleController::class, 'destroy_single'])->name('modules.delete');
 Route::post('/math-journey/update_has_answer', [MathJamController::class, 'update_has_answer']);
+Route::post('/math-journey/update_answers', [MathJamController::class, 'update_answers']);
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
