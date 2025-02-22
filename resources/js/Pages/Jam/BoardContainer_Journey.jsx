@@ -135,7 +135,7 @@ export default function BoardContainer_Journey({ auth }) {
             }, {
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": csrfToken,
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
                 },
             });
 
