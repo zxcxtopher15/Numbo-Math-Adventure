@@ -25,7 +25,7 @@ function RoundResult({ numQuestion, participants, onNext }) {
         <div className="w-full h-full flex flex-col lg:flex-row bg-white sm:px-6  px-2 py-5 rounded-3xl shadow-lg">
             <div className="flex flex-col w-full lg:w-[35rem] relative z-10">
                 <h1 className="text-3xl font-bold text-primary mb-5">Student Scores</h1>
-                
+
                 {/* Scrollable List Container */}
                 <div className="p-4 rounded-3xl bg-gray-200 flex-grow overflow-auto max-h-[calc(100vh-230px)]">
                     <div className="grid grid-cols-1 gap-4">
@@ -63,7 +63,7 @@ function RoundResult({ numQuestion, participants, onNext }) {
                 </button>
             </div>
         </div>
-        
+
     );
 }
 
@@ -77,8 +77,8 @@ function TotalResult({ participants, numQuestion }) {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
             setExistingJam(JSON.parse(storedJam));
-            console.log('existingJam:' , existingJam);
-            
+            console.log('existingJam:', existingJam);
+
         }
     }, []);
 
@@ -152,15 +152,15 @@ function TotalResult({ participants, numQuestion }) {
                     </div>
                 </div>
                 <div className="flex flex-col bg-gray-200 h-full rounded-3xl md:p-6 p-2 gap-4 lg:w-4/12 sm:w-full w-full ">
-              
+
 
                     <div className="bg-white h-full rounded-3xl  p-4 space-y-4  mt-4">
                         <div className="bg-success text-white rounded-3xl p-4 flex flex-col full justify-center items-center">
-                    
+
                             <h3 className="text-xl font-semibold">{jamCategory}</h3>
                             <h1 className="text-4xl font-bold">{gameTitle}</h1>
                         </div>
-                            <h1 className="text-2xl font-bold">Final Scores</h1>
+                        <h1 className="text-2xl font-bold">Final Scores</h1>
                         <div className="p-4 rounded-3xl bg-gray-200 flex-grow overflow-auto max-h-[calc(100vh-300px)]">
                             <div className="grid grid-cols-1 gap-4">
                                 {[...new Map(participants.map(p => [p.id, p])).values()] // Remove duplicates
@@ -222,7 +222,6 @@ export function Board_Journey({ data }) {
         if (participants.length > 0) {
             const joinedParticipants = participants.filter(participant => participant.status === 'joined');
             const allAnswered = joinedParticipants.every(participant => participant.has_answer === 1);
-            console.log(allAnswered);
 
             if (allAnswered) {
                 setIsAnswered(true);
@@ -231,7 +230,6 @@ export function Board_Journey({ data }) {
 
         const timeout = setTimeout(() => {
             if (participants.length > 0) {
-                console.log(participants);
                 const joinedParticipants = participants.filter(participant => participant.status === 'joined');
 
                 if (joinedParticipants.length === 0) {
@@ -258,7 +256,7 @@ export function Board_Journey({ data }) {
     useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         const sseUrl = `${baseUrl}/math-journey/stream-participants?teacher_id=${auth.user.id}`;
-    
+
 
         let eventSource;
 
@@ -268,7 +266,7 @@ export function Board_Journey({ data }) {
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 setParticipants(data);
-                
+
             };
 
             eventSource.onerror = (error) => {
@@ -458,6 +456,29 @@ export function Board_Journey({ data }) {
             }
 
             setIsAnswered(false);
+
+            const apiUrl1 = `${baseUrl}/math-journey/update_has_answer`;
+            
+            try {
+                const response = await fetch(apiUrl1, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        student_id: studentId,
+                        math_jam_code: existingJam.math_jam_code,
+                        has_answer: 0,
+                    }),
+                });
+
+                const result = await response.json();
+                console.log('Has Answer updated:', result);
+            } catch (err) {
+                console.error('Error during update:', err);
+            }
+
             setIsTimeUp(false);
             setCorrectAnswer('');
             setCurrentQuestion((prev) => (prev < data.length - 1 ? prev + 1 : prev + 1));

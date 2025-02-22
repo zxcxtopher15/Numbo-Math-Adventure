@@ -27,6 +27,7 @@ Route::post('/modules/update/{id}', [ModuleController::class, 'update'])->name('
 Route::delete('/modules/{id}', [ModuleController::class, 'destroy'])->name('modules.destroy');
 Route::get('/get_all_modules', [ModuleController::class, 'get_modules']);
 Route::delete('/modules/single/{id}/{index}', [ModuleController::class, 'destroy_single'])->name('modules.delete');
+Route::post('/math-journey/update_has_answer', [MathJamController::class, 'update_has_answer']);
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -97,7 +98,6 @@ Route::group(['middleware' => 'student'], function () {
         return Inertia::render('Jam/BoardContainer_Student', request()->all());
     })->name('journey.play');
     Route::post('/math-journey/update_score', [MathJamController::class, 'update_score']);
-    Route::post('/math-journey/update_has_answer', [MathJamController::class, 'update_has_answer']);
 });
 
 Route::group(['middleware' => 'parent'], function () {});
