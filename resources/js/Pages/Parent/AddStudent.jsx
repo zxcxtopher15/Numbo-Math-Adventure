@@ -91,7 +91,7 @@ const AddStudent = () => {
             <div className="pt-12 sm:px-6 lg:px-11 max-w-[100rem] mx-auto">
                 <div className="bg-gray-100 w-full p-8 mb-5 rounded-2xl">
                     <h3 className="font-semibold text-2xl text-pink-800 mb-5">Manage Students</h3>
-                    <div className="rounded-2xl grid grid-cols-2 gap-4">
+                    <div className="rounded-2xl grid lg:grid-cols-2 grid-cols-1 gap-4">
                         {students.length > 0 ? (
                             students.map((student) => (
                                 <div key={student.id} className="bg-white p-5 rounded-xl text-gray-700">
