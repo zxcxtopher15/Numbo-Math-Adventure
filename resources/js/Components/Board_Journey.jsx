@@ -222,6 +222,7 @@ export function Board_Journey({ data }) {
     useEffect(() => {
         if (participants.length > 0) {
             const joinedParticipants = participants.filter(participant => participant.status === 'joined');
+            console.log(participants);
             const allAnswered = joinedParticipants.every(participant => participant.has_answer === 1);
 
             if (allAnswered) {
