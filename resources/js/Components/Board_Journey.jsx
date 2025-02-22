@@ -457,6 +457,8 @@ export function Board_Journey({ data }) {
 
             setIsAnswered(false);
 
+            const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+            
             const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
 
             try {
