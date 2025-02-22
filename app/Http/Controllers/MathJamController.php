@@ -521,8 +521,8 @@ class MathJamController extends Controller
         }
 
         $participant->has_answer = $request->has_answer;
-        $participant->updated_at = now();
         $participant->save();
+        $participant->touch();
 
         return response()->json([
             'message' => 'Updated successfully',
