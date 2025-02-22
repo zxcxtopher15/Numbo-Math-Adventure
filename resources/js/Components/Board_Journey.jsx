@@ -465,7 +465,7 @@ export function Board_Journey({ data }) {
 
             try {
                 const response = await axios.post(apiUrl1, {
-                    math_jam_code: jam.math_jam_code,
+                    math_jam_code: existingJam.math_jam_code,
                     has_answer: 0,
                 }, {
                     headers: {
