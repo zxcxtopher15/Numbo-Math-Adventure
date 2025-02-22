@@ -222,7 +222,7 @@ export function Board_Journey({ data }) {
     useEffect(() => {
         const updateAnswers = async () => {
             const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
-            
+
             try {
                 const response = await axios.post(apiUrl1, {
                     math_jam_code: existingJam?.math_jam_code || null,
@@ -271,7 +271,7 @@ export function Board_Journey({ data }) {
         }, 5000);
 
         return () => clearTimeout(timeout);
-    }, [participants, apiUrl1, existingJam]); // Ensure dependencies are up-to-date
+    }, [participants, existingJam]); // Ensure dependencies are up-to-date
 
     useEffect(() => {
         setStartTime(Date.now());
