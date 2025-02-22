@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Settings2, LayoutDashboard, Dices, HelpCircle } from 'lucide-react';
-
+import { Plus } from 'lucide-react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import {
     Sidebar,
@@ -14,8 +14,10 @@ import {
     SidebarMenuItem,
     SidebarGroup,
     SidebarMenu,
+    SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 import { usePage, Link } from '@inertiajs/react';
+import { SvgAsset } from './SvgAsset';
 
 export function AppSidebar(props) {
     const { auth } = usePage().props;
@@ -72,7 +74,7 @@ export function AppSidebar(props) {
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarMenu>
+                    <SidebarMenu className="flex flex-col gap-2 justify-between items-between">
                         {data.navMain.map((item) => (
                             <SidebarMenuItem key={item.title}>
                                 <SidebarMenuButton asChild isActive={item.isActive} tooltip={item.title}>
@@ -86,7 +88,37 @@ export function AppSidebar(props) {
                     </SidebarMenu>
                 </SidebarGroup>
             </SidebarContent>
-            <SidebarFooter></SidebarFooter>
+            <SidebarFooter>
+                {userType === 'Parent' && (
+                    <>
+                        <SidebarGroupLabel className="mb-3">
+                            <div className="flex items-center justify-center bg-yellow-100 text-yellow-700 py-9 px-3 mb-5 h-10 w-full font-semibold text-sm text-end  relative rounded-2xl">
+                                <img
+                                    src="/images/assets/avatar/student.svg"
+                                    className="bottom-0 left-0 w-12 absolute"
+                                />
+                                Need to manage <br /> another student?
+                            </div>
+                        </SidebarGroupLabel>
+
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton asChild isActive={false} tooltip={'Add Student'}>
+                                    <Link href="/add-student">
+                                        <Plus />
+                                        <span>Add Student</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </>
+                )}
+                {/* <div className="flex items-center justify-center bg-red-200 rounded-3xl min-h-[8rem]"> 
+                   <SvgAsset value="/images/assets/avatar/student.svg" movement='sm' className="bottom-0 left-0 w-20" />
+                   <h1>Manage Student??</h1>
+                   <button></button>
+                </div> */}
+            </SidebarFooter>
             <SidebarRail />
         </Sidebar>
     );

@@ -101,6 +101,11 @@ Route::group(['middleware' => 'student'], function () {
     Route::post('/math-journey/update_score', [MathJamController::class, 'update_score']);
 });
 
-Route::group(['middleware' => 'parent'], function () {});
+Route::group(['middleware' => 'parent'], function () {
+    Route::get('/add-student', function () {
+        return Inertia::render('Parent/AddStudent');
+    });
+
+});
 
 require __DIR__ . '/auth.php';
