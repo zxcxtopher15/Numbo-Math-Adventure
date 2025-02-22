@@ -491,6 +491,7 @@ class MathJamController extends Controller
         }
 
         $participant->score += 1;
+        $participant->updated_at = now();
         $participant->save();
 
         return response()->json([
@@ -582,7 +583,10 @@ class MathJamController extends Controller
             }
 
             $updated = MathJamParticipant::where('math_jam_id', $mathJam->id)
-                ->update(['has_answer' => 0]);
+                ->update([
+                    'has_answer' => 0,
+                    'updated_at' => now(),
+                ]);
 
             if ($updated) {
                 return response()->json(['message' => 'Has Answer updated successfully'], 200);
