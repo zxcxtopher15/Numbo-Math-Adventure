@@ -460,26 +460,23 @@ export function Board_Journey({ data }) {
 
             setIsAnswered(false);
 
-            const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+            const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
             const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
 
             try {
-                const response = await fetch(apiUrl1, {
-                    method: 'POST',
+                const response = await axios.post(apiUrl1, {
+                    math_jam_code: jam.math_jam_code,
+                    has_answer: 0,
+                }, {
                     headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
+                        "Content-Type": "application/json",
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
                     },
-                    body: JSON.stringify({
-                        math_jam_code: existingJam.math_jam_code,
-                        has_answer: 0,
-                    }),
                 });
 
-                const result = await response.json();
-                console.log('Has Answer updated:', result);
+                console.log("Has Answer updated:", response.data);
             } catch (err) {
-                console.error('Error during update:', err);
+                console.error("Error during update:", err.response?.data || err.message);
             }
 
             setIsTimeUp(false);
