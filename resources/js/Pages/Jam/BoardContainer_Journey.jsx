@@ -81,7 +81,7 @@ export default function BoardContainer_Journey({ auth }) {
         return array;
     };
 
-    const handleDisconnect = async () => {
+    const handleDisconnect = async (retryCount = 0) => {
         const existingJam = localStorage.getItem('existingJam');
 
         if (!existingJam) return;
@@ -107,7 +107,7 @@ export default function BoardContainer_Journey({ auth }) {
             });
 
             if (!response.ok) {
-                console.error('Failed to disconnect:', response.status);
+                console.error(`Failed to disconnect: ${response.status}`);
                 return;
             }
 
@@ -115,12 +115,29 @@ export default function BoardContainer_Journey({ auth }) {
 
             if (data?.jam) {
                 localStorage.setItem('existingJam', JSON.stringify(data.jam));
+
+                // **Verify if localStorage is set correctly**
+                const storedData = localStorage.getItem('existingJam');
+                if (storedData) {
+                    console.log('Updated existingJam in localStorage:', data.jam);
+                    return; // **Success, stop retrying**
+                }
             } else {
                 console.warn('No valid jam data in response');
                 localStorage.removeItem('existingJam');
             }
+
+            throw new Error('localStorage not updated, retrying...');
         } catch (err) {
             console.error('Error during disconnect:', err);
+
+            if (retryCount < 5) { // **Retry up to 5 times**
+                const delay = Math.pow(2, retryCount) * 1000; // **Exponential backoff**
+                console.log(`Retrying in ${delay / 1000} seconds...`);
+                setTimeout(() => handleDisconnect(retryCount + 1), delay);
+            } else {
+                console.error('Max retries reached, failed to update localStorage.');
+            }
         }
     };
 
