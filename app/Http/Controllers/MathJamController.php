@@ -90,6 +90,11 @@ class MathJamController extends Controller
         header("Cache-Control: no-cache");
         header("Connection: keep-alive");
 
+        if (ob_get_level() > 0) {
+            ob_end_flush();
+        }
+        ob_implicit_flush(true);
+
         $teacherId = $request->query('teacher_id');
         $lastUpdatedAt = null;
 
@@ -97,27 +102,28 @@ class MathJamController extends Controller
             $jam = MathJam::where('teacher_id', $teacherId)->latest()->first();
 
             if ($jam) {
-                $latestUpdate = DB::table('math_jam_participants')
-                    ->where('math_jam_id', $jam->id)
-                    ->max('updated_at');
+                $latestUpdate = MathJamParticipant::where('math_jam_id', $jam->id)->max('updated_at');
 
-                if ($latestUpdate !== $lastUpdatedAt) {
-                    $participants = DB::table('math_jam_participants')
-                        ->join('users', 'math_jam_participants.student_id', '=', 'users.id')
-                        ->where('math_jam_participants.math_jam_id', $jam->id)
-                        ->select('math_jam_participants.*', 'users.name')
-                        ->get();
+                $participants = MathJamParticipant::where('math_jam_participants.math_jam_id', $jam->id)
+                    ->join('users', 'math_jam_participants.student_id', '=', 'users.id')
+                    ->select('math_jam_participants.*', 'users.name')
+                    ->get();
 
-                    echo "data: " . json_encode($participants) . "\n\n";
-                    $lastUpdatedAt = $latestUpdate;
-                }
+                echo "data: " . json_encode($participants) . "\n\n";
+
+                $lastUpdatedAt = $latestUpdate;
             } else {
                 echo "data: []\n\n";
             }
 
             ob_flush();
             flush();
-            usleep(100000);
+
+            if (connection_status() !== CONNECTION_NORMAL) {
+                break;
+            }
+
+            usleep(1000000);
         }
     }
 
