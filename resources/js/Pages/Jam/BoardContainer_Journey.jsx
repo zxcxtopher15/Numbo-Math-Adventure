@@ -10,15 +10,24 @@ export default function BoardContainer_Journey({ auth }) {
     const [existingJam, setExistingJam] = useState(null);
 
     useEffect(() => {
-        const storedJam = localStorage.getItem('existingJam');
+        setCategoryTitle(localStorage.getItem("category") || "Default Title");
+
+        const storedJam = localStorage.getItem("existingJam");
         if (storedJam) {
             const parsedJam = JSON.parse(storedJam);
             setExistingJam(parsedJam);
+            updateAnswers(parsedJam);
             if (parsedJam.status === "disconnected") {
                 window.location.href = '/math-journey';
             }
         }
     }, []);
+
+    useEffect(() => {
+        if (existingJam?.math_jam_id) {
+            fetchOrderedQuestions(existingJam.math_jam_id);
+        }
+    }, [existingJam]);
 
     useEffect(() => {
         const disableRightClick = (event) => {
@@ -115,65 +124,62 @@ export default function BoardContainer_Journey({ auth }) {
         }
     };
 
-    useEffect(() => {
-        setCategoryTitle(localStorage.getItem('category') || 'Default Title');
-
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+    const updateAnswers = async (jam) => {
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
         const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
 
         try {
-            const response = fetch(apiUrl1, {
-                method: 'POST',
+            const response = await axios.post(apiUrl1, {
+                math_jam_code: jam.math_jam_code,
+                has_answer: 0,
+            }, {
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken,
                 },
-                body: JSON.stringify({
-                    math_jam_code: existingJam.math_jam_code,
-                    has_answer: 0,
-                }),
             });
 
-            const result = response.json();
-            console.log('Has Answer updated:', result);
+            console.log("Has Answer updated:", response.data);
         } catch (err) {
-            console.error('Error during update:', err);
+            console.error("Error during update:", err.response?.data || err.message);
         }
+    };
 
-        if (existingJam?.math_jam_id) {
-            fetch(`/get_ordered_questions?math_jam_id=${existingJam.math_jam_id}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.length > 0) {
-                        const formattedQuestions = data.map((item) => ({
-                            title: `${item.question.category} Challenge`,
-                            time: existingJam.time_limit,
-                            question_data: {
-                                id: item.question.id,
-                                type: item.question.question_type || 'addition',
-                                image: null,
-                                title: 'Solve This',
-                                question: item.question.question,
-                            },
-                            answers: item.question.choices.map((choice, index) => ({
-                                id: index + 1,
-                                answer: choice,
-                                is_correct: choice === item.question.correct_answer,
-                            })),
-                        }));
+    const fetchOrderedQuestions = async (mathJamId) => {
+        try {
+            const response = await fetch(`/get_ordered_questions?math_jam_id=${mathJamId}`);
+            const data = await response.json();
 
-                        setQuestions(formattedQuestions);
+            if (data.length > 0) {
+                const formattedQuestions = data.map((item) => ({
+                    title: `${item.question.category} Challenge`,
+                    time: existingJam?.time_limit,
+                    question_data: {
+                        id: item.question.id,
+                        type: item.question.question_type || "addition",
+                        image: null,
+                        title: "Solve This",
+                        question: item.question.question,
+                    },
+                    answers: item.question.choices.map((choice, index) => ({
+                        id: index + 1,
+                        answer: choice,
+                        is_correct: choice === item.question.correct_answer,
+                    })),
+                }));
 
-                        if (formattedQuestions.length > 0) {
-                            updateCurrentQuestionId(formattedQuestions[0].question_data.id);
-                        }
-                    } else {
-                        fetchNewQuestions();
-                    }
-                })
-                .catch((error) => console.error('Error fetching ordered questions:', error));
+                setQuestions(formattedQuestions);
+
+                if (formattedQuestions.length > 0) {
+                    updateCurrentQuestionId(formattedQuestions[0].question_data.id);
+                }
+            } else {
+                fetchNewQuestions();
+            }
+        } catch (error) {
+            console.error("Error fetching ordered questions:", error);
         }
-    }, [existingJam]);
+    };
 
     const fetchNewQuestions = () => {
         fetch(`/questions_list_teacher?categoryTitle=${categoryTitle}&num_questions=${existingJam.num_questions}`)
