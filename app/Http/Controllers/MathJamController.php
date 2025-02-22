@@ -101,16 +101,14 @@ class MathJamController extends Controller
                     ->where('math_jam_id', $jam->id)
                     ->max('updated_at');
 
-                if ($latestUpdate !== $lastUpdatedAt) {
-                    $participants = DB::table('math_jam_participants')
-                        ->join('users', 'math_jam_participants.student_id', '=', 'users.id')
-                        ->where('math_jam_participants.math_jam_id', $jam->id)
-                        ->select('math_jam_participants.*', 'users.name')
-                        ->get();
+                $participants = DB::table('math_jam_participants')
+                    ->join('users', 'math_jam_participants.student_id', '=', 'users.id')
+                    ->where('math_jam_participants.math_jam_id', $jam->id)
+                    ->select('math_jam_participants.*', 'users.name')
+                    ->get();
 
-                    echo "data: " . json_encode($participants) . "\n\n";
-                    $lastUpdatedAt = $latestUpdate;
-                }
+                echo "data: " . json_encode($participants) . "\n\n";
+                $lastUpdatedAt = $latestUpdate;
             } else {
                 echo "data: []\n\n";
             }
