@@ -221,6 +221,8 @@ export function Board_Journey({ data }) {
 
     useEffect(() => {
         const updateAnswers = async () => {
+            const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
+            
             try {
                 const response = await axios.post(apiUrl1, {
                     math_jam_code: existingJam?.math_jam_code || null,
