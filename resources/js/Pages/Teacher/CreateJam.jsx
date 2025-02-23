@@ -378,7 +378,6 @@ const CreateJam = () => {
         } catch (error) {
             console.error('Error updating Math Jam status:', error);
         }
-        setStartJourney(true);
 
         const fetchNewQuestions = () => {
             fetch(`/questions_list_teacher?categoryTitle=${existingJam.category}&num_questions=${existingJam.num_questions}`)
