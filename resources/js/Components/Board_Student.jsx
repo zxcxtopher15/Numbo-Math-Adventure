@@ -44,6 +44,8 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
 function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, category }) {
     const { width, height } = useWindowSize();
     const [existingJam, setExistingJam] = useState(null);
+    const { auth } = usePage().props;
+    const studentId = auth?.user.id;
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
@@ -51,6 +53,8 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
             setExistingJam(JSON.parse(storedJam));
         }
     }, []);
+
+    console.log(existingJam);
 
     const totalTimeInMinutes = Math.floor(totalTimeSpent / 60000);
     const totalTimeInSeconds = Math.floor((totalTimeSpent % 60000) / 1000);
@@ -149,10 +153,10 @@ export function Board_Student({ data }) {
         correctQuestions: [],
     });
     const [timeSpent, setTimeSpent] = useState([]);
-    const { auth } = usePage().props;
     const [existingJam, setExistingJam] = useState(null);
     const [isGameFinished, setIsGameFinished] = useState(false);
     const [isShowScore, setShowScore] = useState(false);
+    const { auth } = usePage().props;
     const studentId = auth?.user.id;
 
     useEffect(() => {

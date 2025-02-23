@@ -61,6 +61,8 @@ class VerifyCsrfToken
         '/update_answers',
         '/update_is_correct',
         '/math-journey/exit_jam',
+        '/send-otp',
+        '/verify-otp'
     ];
 
     /**

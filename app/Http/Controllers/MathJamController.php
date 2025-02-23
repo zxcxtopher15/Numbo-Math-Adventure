@@ -658,4 +658,52 @@ class MathJamController extends Controller
             'message' => 'Participant removed successfully',
         ]);
     }
+
+    public function getStudentResultsParent()
+    {
+        $studentIds = DB::table('parent_student_relation')
+            ->where('parent_id', Auth::id())
+            ->pluck('student_id');
+
+        if ($studentIds->isEmpty()) {
+            return response()->json(['results' => []]);
+        }
+
+        $rawData = DB::table('users')
+            ->join('math_jam_participants', 'users.id', '=', 'math_jam_participants.student_id')
+            ->join('math_jams', 'math_jam_participants.math_jam_id', '=', 'math_jams.id')
+            ->whereIn('math_jam_participants.student_id', $studentIds)
+            ->select(
+                'users.name',
+                'math_jams.math_journey_for',
+                'math_jams.category',
+                'math_jam_participants.score',
+                'math_jams.num_questions',
+                'math_jam_participants.created_at as date'
+            )
+            ->get();
+
+        $formattedData = [];
+
+        foreach ($rawData as $entry) {
+            $studentName = $entry->name;
+
+            if (!isset($formattedData[$studentName])) {
+                $formattedData[$studentName] = [
+                    'name' => $studentName,
+                    'scores' => [],
+                ];
+            }
+
+            $formattedData[$studentName]['scores'][] = [
+                'math_journey_for' => $entry->math_journey_for,
+                'category' => $entry->category,
+                'score' => $entry->score,
+                'num_questions' => $entry->num_questions,
+                'date' => $entry->date,
+            ];
+        }
+
+        return response()->json(['results' => array_values($formattedData)]);
+    }
 }

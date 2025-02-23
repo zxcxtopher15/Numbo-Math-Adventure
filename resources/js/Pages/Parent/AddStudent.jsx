@@ -8,58 +8,133 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/Compone
 import TextInput from '@/Components/TextInput';
 import PrimaryButton from '@/Components/PrimaryButton';
 import Swal from 'sweetalert2';
-const students = [
-    {
-        id: 1,
-        name: 'John Doe',
-    },
-    {
-        id: 2,
-        name: 'Jane Smith',
-    },
-    {
-        id: 3,
-        name: 'Bob Johnson',
-    },
-];
+import { usePage } from '@inertiajs/react';
+import axios from 'axios';
+import OtpInput from '@/Components/OtpInput';
+
 const AddStudent = () => {
     const [showEmailModal, setShowEmailModal] = useState(false);
     const [showOtpModal, setShowOtpModal] = useState(false);
     const [email, setEmail] = useState('');
-    const [otp, setOtp] = useState('');
+    const [otp, setOtp] = useState("");
+    const [otpAttempts, setOtpAttempts] = useState(0);
+    const { students } = usePage().props;
 
     const handleEmail = async () => {
-        setShowEmailModal(false); // Close the email modal first
+        if (!email.endsWith('@my.jru.edu')) {
+            setShowEmailModal(false);
+            setEmail('');
+            Swal.fire('Error', 'Only @my.jru.edu email addresses are allowed.', 'error');
+            return;
+        }
 
-        await Swal.fire({
-            title: 'Invitation Sent!',
-            text: 'The student will receive an invitation in their email.',
-            icon: 'success',
-            confirmButtonText: 'Confirm',
-            buttonsStyling: false,
-            customClass: {
-                confirmButton: 'bg-pink-600 hover:bg-pink-700 text-white font-semibold py-4 px-9 rounded-2xl uppercase',
+        setShowEmailModal(false);
+
+        Swal.fire({
+            title: 'Sending OTP...',
+            text: 'Please wait while we send the OTP to the student\'s email.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
             },
         });
 
-        setShowOtpModal(true); // Open the OTP modal after SweetAlert is closed
+        try {
+            await axios.post('/send-otp', { email });
+
+            Swal.fire({
+                title: 'Invitation Sent!',
+                text: 'The student will receive an invitation in their email.',
+                icon: 'success',
+                confirmButtonText: 'Confirm',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'bg-pink-600 hover:bg-pink-700 text-white font-semibold py-4 px-9 rounded-2xl uppercase',
+                },
+            }).then(() => {
+                setShowOtpModal(true);
+            });
+
+        } catch (error) {
+            setEmail('');
+            Swal.fire({
+                title: 'Error',
+                text: error.response?.data?.message || 'Failed to send OTP.',
+                icon: 'error',
+                showConfirmButton: true,
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl uppercase',
+                },
+            });
+        }
     };
 
-    const handleOtp = () => {
-        Swal.fire({
-            title: 'OTP Verified!',
-            text: "The student's email has been successfully verified.",
-            icon: 'success',
-            confirmButtonText: 'Okay',
-            buttonsStyling: false,
-            customClass: {
-                confirmButton: 'bg-pink-600 hover:bg-pink-700 text-white font-semibold py-4 px-9 rounded-2xl uppercase',
-            },
-        });
+    const handleOtp = async () => {
+        if (otp.length !== 6) {
+            Swal.fire("Error", "OTP Field is required and must be 6 digits.", "error");
+            return;
+        }
 
-        setEmail('');
-        setOtp('');
-        setShowOtpModal(false);
+        try {
+            await axios.post('/verify-otp', { email, otp });
+
+            setOtpAttempts(0);
+
+            Swal.fire({
+                title: 'OTP Verified!',
+                text: "The student's email has been successfully verified.",
+                icon: 'success',
+                confirmButtonText: 'Okay',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'bg-pink-600 hover:bg-pink-700 text-white font-semibold py-4 px-9 rounded-2xl uppercase',
+                },
+            });
+            setShowOtpModal(false);
+            setEmail('');
+            setOtp('');
+        } catch (error) {
+            setShowOtpModal(false);
+            setOtpAttempts(prevAttempts => {
+                const newAttempts = prevAttempts + 1;
+
+                if (newAttempts >= 3) {
+                    setShowOtpModal(false);
+                    Swal.fire({
+                        title: 'Error',
+                        text: "You have exceeded the maximum number of attempts. Please try again later.",
+                        icon: 'error',
+                        showConfirmButton: true,
+                        buttonsStyling: false,
+                        customClass: {
+                            confirmButton: 'bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl uppercase',
+                        },
+                    }).then(() => {
+                        setEmail('');
+                        setOtp('');
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Invalid OTP. Please try again. Attempts left: ' + (3 - newAttempts),
+                        icon: 'error',
+                        showConfirmButton: true,
+                        buttonsStyling: false,
+                        customClass: {
+                            confirmButton: 'bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl uppercase',
+                        },
+                    }).then(() => {
+                        setOtp('');
+                        setShowOtpModal(true);
+                    });
+                }
+
+                return newAttempts;
+            });
+        }
     };
 
     return (
@@ -120,8 +195,8 @@ const AddStudent = () => {
             </div>
 
             {/* Email Dialog */}
-            <Dialog open={showEmailModal} onOpenChange={() => setShowEmailModal(false)}>
-                <DialogContent className="p-5 max-w-md mx-auto">
+            <Dialog open={showEmailModal} onOpenChange={setShowEmailModal}>
+                <DialogContent className="p-5 max-w-md mx-auto" onInteractOutside={(e) => e.preventDefault()}>
                     <DialogTitle className="font-semibold text-2xl text-pink-700">Add New Student</DialogTitle>
                     <DialogDescription className="text-sm text-gray-600">
                         Please enter the email address of the student you want to manage.
@@ -143,22 +218,17 @@ const AddStudent = () => {
             </Dialog>
 
             {/* OTP Dialog */}
-            <Dialog open={showOtpModal} onOpenChange={() => setShowOtpModal(false)}>
-                <DialogContent className="p-5 max-w-md mx-auto">
+            <Dialog open={showOtpModal} onOpenChange={setShowOtpModal}>
+                <DialogContent className="p-5 max-w-md mx-auto" onInteractOutside={(e) => e.preventDefault()}>
                     <DialogTitle className="font-semibold text-2xl text-pink-700">Verify One-Time-Pin</DialogTitle>
                     <DialogDescription className="text-sm text-gray-600 mt-4">
                         Enter the OTP sent to the student's email.
                     </DialogDescription>
-                    <TextInput
-                        type="text"
-                        name="otp"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
-                        placeholder="Enter OTP"
-                        className="mt-4"
-                    />
+
+                    <OtpInput value={otp} onChange={setOtp} />
+
                     <div className="flex justify-end items-center w-full">
-                        <PrimaryButton className="mt-4 w-max  bg-pink-500" onClick={handleOtp}>
+                        <PrimaryButton className="mt-4 w-max bg-pink-500" onClick={handleOtp}>
                             Verify OTP
                         </PrimaryButton>
                     </div>

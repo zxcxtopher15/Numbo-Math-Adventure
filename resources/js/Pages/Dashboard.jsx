@@ -176,14 +176,16 @@ export default function Dashboard() {
     const [studentsData, setStudentsData] = useState([]);
 
     useEffect(() => {
-        axios.get("/student-results")
+        const endpoint = userType === "Parent" ? "/parent-student-results" : "/student-results";
+
+        axios.get(endpoint)
             .then(response => {
                 setStudentsData(response.data.results);
             })
             .catch(error => {
                 console.error("Error fetching student results:", error);
             });
-    }, []);
+    }, [userType]);
 
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Dashboard</h2>}>

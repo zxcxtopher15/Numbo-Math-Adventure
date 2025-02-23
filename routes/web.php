@@ -1,8 +1,11 @@
 <?php
 
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\OtpController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\MathJamController;
 use App\Http\Controllers\ProfileController;
@@ -21,6 +24,9 @@ Route::get('/', [AuthenticatedSessionController::class, 'create'])
 //     ]);
 // });
 
+Route::post('/send-otp', [OtpController::class, 'sendOtp']);
+Route::post('/verify-otp', [OtpController::class, 'verifyOtp']);
+
 Route::post('/modules/store', [ModuleController::class, 'store'])->name('modules.store');
 Route::get('/modules/{id}', [ModuleController::class, 'get_module'])->name('modules.get');
 Route::post('/modules/update/{id}', [ModuleController::class, 'update'])->name('modules.update');
@@ -35,6 +41,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/student-results', [MathJamController::class, 'getStudentResults']);
+Route::get('/parent-student-results', [MathJamController::class, 'getStudentResultsParent']);
 
 Route::get('/modules', function () {
     return Inertia::render('Modules/Modules', request()->all());
@@ -105,9 +112,18 @@ Route::group(['middleware' => 'student'], function () {
 
 Route::group(['middleware' => 'parent'], function () {
     Route::get('/add-student', function () {
-        return Inertia::render('Parent/AddStudent');
-    });
 
+        $students = DB::table('parent_student_relation')
+            ->join('users', 'users.id', '=', 'parent_student_relation.student_id')
+            ->where('parent_student_relation.parent_id', Auth::id())
+            ->where('users.user_type', 'Student')
+            ->select('users.id', 'users.name')
+            ->get();
+
+        return Inertia::render('Parent/AddStudent', [
+            'students' => $students,
+        ]);
+    });
 });
 
 require __DIR__ . '/auth.php';
