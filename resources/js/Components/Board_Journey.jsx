@@ -193,6 +193,7 @@ export function Board_Journey({ data }) {
     const { auth } = usePage().props;
     const [existingJam, setExistingJam] = useState(null);
     const [participants, setParticipants] = useState([]);
+    const updateScoreCalled = useRef(false);
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
@@ -224,6 +225,10 @@ export function Board_Journey({ data }) {
         };
 
         const updateScore = async () => {
+            if (updateScoreCalled.current) return;
+
+            updateScoreCalled.current = true;
+
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
             if (!baseUrl) return;
 
@@ -298,7 +303,7 @@ export function Board_Journey({ data }) {
                     });
                 }
             }
-        }, 5000);
+        }, 3000);
 
         return () => clearTimeout(timeout);
     }, [participants, existingJam]); // Ensure dependencies are up-to-date
@@ -490,6 +495,7 @@ export function Board_Journey({ data }) {
     };
 
     const handleNext = async () => {
+        updateScoreCalled.current = false;
         if (currentQuestion < data.length) {
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
             const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
