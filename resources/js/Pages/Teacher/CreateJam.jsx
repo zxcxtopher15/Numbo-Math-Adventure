@@ -355,30 +355,6 @@ const CreateJam = () => {
             }
         };
 
-        await fetchOrderedQuestions(existingJam.math_jam_id);
-        const apiUrl = `${baseUrl}/math-journey/update-status`;
-
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    math_jam_id: existingJam.math_jam_id,
-                    status: 'started',
-                }),
-            });
-
-            if (response.ok) {
-                // console.log('Math Jam status updated to start');
-            } else {
-                console.error('Failed to update Math Jam status');
-            }
-        } catch (error) {
-            console.error('Error updating Math Jam status:', error);
-        }
-
         const fetchNewQuestions = () => {
             fetch(`/questions_list_teacher?categoryTitle=${existingJam.category}&num_questions=${existingJam.num_questions}`)
                 .then((response) => response.json())
@@ -468,6 +444,31 @@ const CreateJam = () => {
                 console.error('Error updating current_question_id:', error);
             }
         };
+
+        await fetchOrderedQuestions(existingJam.math_jam_id);
+        const apiUrl = `${baseUrl}/math-journey/update-status`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    math_jam_id: existingJam.math_jam_id,
+                    status: 'started',
+                }),
+            });
+
+            if (response.ok) {
+                // console.log('Math Jam status updated to start');
+            } else {
+                console.error('Failed to update Math Jam status');
+            }
+        } catch (error) {
+            console.error('Error updating Math Jam status:', error);
+        }
+        setStartJourney(true);
     };
 
     const handleReconnect = async () => {
