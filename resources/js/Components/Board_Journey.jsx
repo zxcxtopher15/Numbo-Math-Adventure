@@ -285,6 +285,7 @@ export function Board_Journey({ data }) {
             const isCorrect = joinedParticipants.every(participant => participant.is_correct === 1);
 
             if (allAnswered) {
+                console.log(allAnswered);
                 if (isCorrect) {
                     updateScore();
                 }
