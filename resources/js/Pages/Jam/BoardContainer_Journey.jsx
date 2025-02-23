@@ -63,6 +63,32 @@ export default function BoardContainer_Journey({ auth }) {
         }
     };
 
+    const updateCurrentQuestionId = async (questionId) => {
+        if (!existingJam || !existingJam.math_jam_id) return;
+
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        if (!baseUrl) return;
+
+        try {
+            const response = await fetch(`${baseUrl}/math-journey/update_current_question`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({
+                    math_jam_id: existingJam.math_jam_id,
+                    current_question_id: questionId,
+                }),
+            });
+
+            const data = await response.json();
+            console.log('Updated current_question_id:', data);
+        } catch (error) {
+            console.error('Error updating current_question_id:', error);
+        }
+    };
+
     useEffect(() => {
         const disableRightClick = (event) => {
             event.preventDefault();
