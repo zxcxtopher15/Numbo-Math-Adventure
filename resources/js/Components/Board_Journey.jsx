@@ -194,6 +194,7 @@ export function Board_Journey({ data }) {
     const [existingJam, setExistingJam] = useState(null);
     const [participants, setParticipants] = useState([]);
     const updateScoreCalled = useRef(false);
+    const updateAnswersCalled = useRef(false);
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
@@ -203,6 +204,10 @@ export function Board_Journey({ data }) {
     }, []);
 
     useEffect(() => {
+        if (updateAnswersCalled.current) return;
+
+        updateAnswersCalled.current = true;
+
         const updateAnswers = async () => {
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
             const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
@@ -496,6 +501,7 @@ export function Board_Journey({ data }) {
 
     const handleNext = async () => {
         updateScoreCalled.current = false;
+        updateAnswersCalled.current = false;
         if (currentQuestion < data.length) {
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
             const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
