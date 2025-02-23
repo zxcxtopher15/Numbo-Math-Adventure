@@ -132,7 +132,9 @@ const JoinJam = () => {
         }
     };
 
-    const handleExitConfirmation = (handleExitJam) => {
+    const handleExitConfirmation = (event, handleExitJam) => {
+        event.preventDefault();
+
         Swal.fire({
             title: "Are you sure?",
             text: "You will exit the jam and go back to the dashboard.",
@@ -468,12 +470,15 @@ const JoinJam = () => {
                                 </div>
 
                                 <div className="flex justify-between my-7">
-                                    <button
-                                        onClick={() => handleExitConfirmation(handleExitJam)}
-                                        className="w-fit px-4 bg-danger text-white py-2 rounded-md"
-                                    >
-                                        Go Back
-                                    </button>
+                                    <Link href="/dashboard" passHref>
+                                        <a
+                                            onClick={(event) => handleExitConfirmation(event, handleExitJam)}
+                                        >
+                                            <PrimaryButton className="w-fit px-4 bg-danger">
+                                                Go Back
+                                            </PrimaryButton>
+                                        </a>
+                                    </Link>
 
                                     <PrimaryButton onClick={handleJoinJam} className="w-fit" disabled={loading}>
                                         {loading ? 'Joining...' : 'Join '}
