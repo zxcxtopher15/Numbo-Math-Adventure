@@ -600,34 +600,29 @@ class MathJamController extends Controller
     {
         $validated = $request->validate([
             'math_jam_code' => 'required|exists:math_jams,math_jam_code',
-            'student_id' => 'required|exists:users,id',
-            'is_correct' => 'required|boolean',
         ]);
 
-        $participant = MathJamParticipant::where('student_id', $validated['student_id'])
-            ->whereHas('MathJam', function ($query) use ($validated) {
-                $query->where('math_jam_code', $validated['math_jam_code']);
-                $query->whereNotIn('status', ['cancelled', 'ended', 'disconnected']);
-            })
+        $participants = MathJamParticipant::whereHas('MathJam', function ($query) use ($validated) {
+            $query->where('math_jam_code', $validated['math_jam_code'])
+                ->whereNotIn('status', ['cancelled', 'ended', 'disconnected']);
+        })
             ->whereNotNull('math_jam_id')
-            ->latest()
-            ->first();
+            ->where('is_correct', 1)
+            ->get();
 
-        if (!$participant) {
-            return response()->json(['message' => 'No active participation found', 'error' => true], 200);
+        if ($participants->isEmpty()) {
+            return response()->json(['message' => 'No eligible participants found for score update', 'error' => true], 200);
         }
 
-        if ($validated['is_correct'] == 1) {
-            $participant->score += 1;
+        foreach ($participants as $participant) {
+            $participant->increment('score');
             $participant->updated_at = now();
             $participant->save();
-
-            return response()->json([
-                'message' => 'Score updated successfully',
-                'new_score' => $participant->score
-            ]);
         }
 
-        return response()->json(['message' => 'No score update needed', 'new_score' => $participant->score]);
+        return response()->json([
+            'message' => 'Scores updated successfully',
+            'updated_count' => $participants->count()
+        ]);
     }
 }

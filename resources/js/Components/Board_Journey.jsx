@@ -240,13 +240,13 @@ export function Board_Journey({ data }) {
             }
         };
 
-        const updateScore = async (studentId) => {
+        const updateScore = async () => {
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
             if (!baseUrl) return;
 
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-            const apiUrl = `${baseUrl}/math-journey/update_is_correct`;
+            const apiUrl = `${baseUrl}/math-journey/update_score`;
 
             try {
                 const response = await fetch(apiUrl, {
@@ -256,9 +256,7 @@ export function Board_Journey({ data }) {
                         'X-CSRF-TOKEN': csrfToken,
                     },
                     body: JSON.stringify({
-                        student_id: studentId,
                         math_jam_code: existingJam.math_jam_code,
-                        is_correct: 1,
                     }),
                 });
 
@@ -274,11 +272,9 @@ export function Board_Journey({ data }) {
             const allAnswered = joinedParticipants.every(participant => participant.has_answer === 1);
 
             if (allAnswered) {
+                updateScore();
                 setIsAnswered(true);
                 updateAnswers();
-
-                const correctParticipants = joinedParticipants.filter(participant => participant.is_correct === 1);
-                correctParticipants.forEach(participant => updateScore(participant.student_id));
             }
         }
 
@@ -300,7 +296,7 @@ export function Board_Journey({ data }) {
         }, 5000);
 
         return () => clearTimeout(timeout);
-    }, [participants, existingJam]);
+    }, [participants, existingJam]); // Ensure dependencies are up-to-date
 
     useEffect(() => {
         setStartTime(Date.now());
