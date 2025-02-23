@@ -155,6 +155,8 @@ export function Board_Student({ data }) {
     const [isShowScore, setShowScore] = useState(false);
     const studentId = auth?.user.id;
 
+    console.log(existingJam);
+
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
