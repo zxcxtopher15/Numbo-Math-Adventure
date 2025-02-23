@@ -203,6 +203,7 @@ export function Board_Journey({ data }) {
 
     useEffect(() => {
         const updateAnswers = async () => {
+            const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
             const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
 
             try {
@@ -243,9 +244,7 @@ export function Board_Journey({ data }) {
                 });
 
                 const result = await response.json();
-                console.log(`Score updated for student ${studentId}:`, result);
             } catch (err) {
-                console.error(`Error updating score for student ${studentId}:`, err);
             }
 
             if (currentQuestion < data.length) {
