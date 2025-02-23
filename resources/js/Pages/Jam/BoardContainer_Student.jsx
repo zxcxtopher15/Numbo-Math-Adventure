@@ -10,7 +10,6 @@ export default function BoardContainer_Student({ }) {
     const [existingJam, setExistingJam] = useState(null);
     const { auth } = usePage().props;
     const studentId = auth?.user.id;
-    const [participant, setParticipant] = useState([]);
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
@@ -25,8 +24,6 @@ export default function BoardContainer_Student({ }) {
             const storedJam = localStorage.getItem('disconnectedParticipant');
             if (storedJam) {
                 const parsedJam = JSON.parse(storedJam);
-                setParticipant(parsedJam);
-
                 if (parsedJam.status === 'disconnected') {
                     localStorage.removeItem('disconnectedParticipant');
                     window.location.replace("/math-journey-join");
@@ -40,7 +37,6 @@ export default function BoardContainer_Student({ }) {
 
         return () => clearInterval(interval);
     }, []);
-
 
     useEffect(() => {
         const beforeUnloadHandler = (event) => {
@@ -102,8 +98,8 @@ export default function BoardContainer_Student({ }) {
             const blob = new Blob([payload], { type: "application/json" });
             navigator.sendBeacon(apiUrl, blob);
 
-            localStorage.setItem('disconnectedParticipant', "disconnected");
-            console.log("disconnectedParticipant stored in sessionStorage:", payload);
+            localStorage.setItem('disconnectedParticipant', JSON.stringify({ status: "disconnected" }));
+            console.log("disconnectedParticipant stored in localStorage:", payload);
 
         } catch (err) {
             console.error('Error during disconnect:', err);
