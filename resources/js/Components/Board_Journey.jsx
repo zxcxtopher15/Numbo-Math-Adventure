@@ -270,9 +270,12 @@ export function Board_Journey({ data }) {
         if (participants.length > 0) {
             const joinedParticipants = participants.filter(participant => participant.status === 'joined');
             const allAnswered = joinedParticipants.every(participant => participant.has_answer === 1);
+            const isCorrect = joinedParticipants.every(participant => participant.is_correct === 1);
 
             if (allAnswered) {
-                updateScore();
+                if (isCorrect) {
+                    updateScore();
+                }
                 setIsAnswered(true);
                 updateAnswers();
             }
