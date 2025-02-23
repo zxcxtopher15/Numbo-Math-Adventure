@@ -284,6 +284,8 @@ export function Board_Journey({ data }) {
             const allAnswered = joinedParticipants.every(participant => participant.has_answer === 1);
             const isCorrect = joinedParticipants.every(participant => participant.is_correct === 1);
 
+            console.log("JOINED: " + joinedParticipants);
+            console.log("ALL ANSWERS: " + allAnswered);
             if (allAnswered) {
                 console.log(allAnswered);
                 if (isCorrect) {
@@ -317,8 +319,6 @@ export function Board_Journey({ data }) {
     useEffect(() => {
         setStartTime(Date.now());
     }, [currentQuestion]);
-    console.log("participalnmts", + participants);
-    console.log("participalnmts", + participants);
     useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         const sseUrl = `${baseUrl}/math-journey/stream-participants?teacher_id=${auth.user.id}`;
