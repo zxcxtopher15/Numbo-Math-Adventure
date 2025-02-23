@@ -33,7 +33,7 @@ export default function BoardContainer_Student({ }) {
                 }
             }
         };
-
+        
         checkParticipantStatus();
 
         const interval = setInterval(checkParticipantStatus, 500);
@@ -92,17 +92,26 @@ export default function BoardContainer_Student({ }) {
 
         const apiUrl = `${baseUrl}/math-journey/disconnect`;
 
-        const payload = JSON.stringify({
-            student_id: studentId,
-            math_jam_code: existingJam.math_jam_code,
-        });
-
         try {
-            const blob = new Blob([payload], { type: "application/json" });
-            navigator.sendBeacon(apiUrl, blob);
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    math_jam_code: existingJam.math_jam_code,
+                }),
+            });
 
-            sessionStorage.setItem('disconnectedParticipant', payload);
-            console.log("disconnectedParticipant stored in sessionStorage:", payload);
+            const result = await response.json();
+            console.log("Disconnect API Response:", result);
+
+            if (result.participant) {
+                localStorage.setItem('disconnectedParticipant', JSON.stringify(result.participant));
+                console.log("disconnectedParticipant stored in localStorage:", result.participant);
+            }
 
         } catch (err) {
             console.error('Error during disconnect:', err);
