@@ -29,30 +29,28 @@ export default function Modules({ }) {
     const { auth } = usePage().props;
     const userType = auth?.user?.user_type;
 
-    useEffect(() => {
-        axios.get('/get_all_modules')
-            .then(response => {
-                const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+    // useEffect(() => {
+    //     axios.get('/get_all_modules')
+    //         .then(response => {
+    //             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
 
-                const formattedModules = response.data.map(module => ({
-                    module_id: module.id,
-                    module_name: module.module_name,
-                    module_desc: module.module_desc,
-                    module_file_desc: module.module_file_desc,
-                    file: module.file_name.split(',').map((file, index) => ({
-                        file_name: file.trim(),
-                        file_path: `${baseUrl}/modules/${module.file_path.split(',')[index].trim()}`,
-                    }))
-                }));
+    //             const formattedModules = response.data.map(module => ({
+    //                 module_id: module.id,
+    //                 module_name: module.module_name,
+    //                 module_desc: module.module_desc,
+    //                 module_file_desc: module.module_file_desc,
+    //                 file: module.file_name.split(',').map((file, index) => ({
+    //                     file_name: file.trim(),
+    //                     file_path: `${baseUrl}/modules/${module.file_path.split(',')[index].trim()}`,
+    //                 }))
+    //             }));
 
-                setModuleData(formattedModules);
-            })
-            .catch(error => {
-                console.error("There was an error fetching the modules:", error);
-            });
-    }, []);
-
-
+    //             setModuleData(formattedModules);
+    //         })
+    //         .catch(error => {
+    //             console.error("There was an error fetching the modules:", error);
+    //         });
+    // }, []);
 
     const toggleModal = () => setIsModalOpen(!isModalOpen);
     const toggleEditModal = () => setIsEditModalOpen(!isEditModalOpen);

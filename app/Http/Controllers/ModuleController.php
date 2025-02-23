@@ -66,7 +66,7 @@ class ModuleController extends Controller
             'module_name' => 'required|string|max:255',
             'module_desc' => 'required|string|max:255',
             'module_file_desc' => 'required|string|max:255',
-            'module_file' => 'nullable|array', // Module files are optional during update
+            'module_file' => 'nullable|array',
             'module_file.*' => 'mimes:jpeg,png,jpg,pdf,doc,docx,xls,xlsx,txt|max:10240',
         ]);
 
