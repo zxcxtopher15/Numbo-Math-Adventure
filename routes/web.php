@@ -76,6 +76,7 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::post('/math-journey/update-pause-status', [MathJamController::class, 'updatePauseStatus']);
     Route::post('/math-journey/update_current_question', [MathJamController::class, 'update_current_question']);
     Route::delete('/questions/{id}', [QuestionController::class, 'destroy'])->name('questions.destroy');
+    Route::post('/math-journey/update_score', [MathJamController::class, 'update_score']);
 });
 
 Route::group(['middleware' => 'student'], function () {
@@ -98,7 +99,7 @@ Route::group(['middleware' => 'student'], function () {
     Route::get('/math-journey/play', function () {
         return Inertia::render('Jam/BoardContainer_Student', request()->all());
     })->name('journey.play');
-    Route::post('/math-journey/update_score', [MathJamController::class, 'update_score']);
+    Route::post('/math-journey/update_is_correct', [MathJamController::class, 'update_is_correct']);
 });
 
 Route::group(['middleware' => 'parent'], function () {

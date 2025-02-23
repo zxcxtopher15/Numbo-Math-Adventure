@@ -17,6 +17,8 @@ class MathJamParticipant extends Model
         'student_id',
         'status',
         'score',
+        'has_answer',
+        'is_correct',
         'joined_at',
         'left_at'
     ];

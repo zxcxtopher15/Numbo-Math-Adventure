@@ -78,7 +78,7 @@ export default function BoardContainer_Student({ }) {
         };
     }, []);
 
-    const handleDisconnect = async (retryCount = 0) => {
+    const handleDisconnect = async () => {
         if (!studentId || !existingJam) return;
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
@@ -103,27 +103,12 @@ export default function BoardContainer_Student({ }) {
 
             if (result.participant) {
                 localStorage.setItem('disconnectedParticipant', JSON.stringify(result.participant));
-
-                // Verify if data is stored correctly
-                const storedData = localStorage.getItem('disconnectedParticipant');
-                if (storedData) {
-                    console.log('Participant data saved to localStorage:', result.participant);
-                    console.log(result.message);
-                    return;
-                }
+                console.log('Participant data saved to localStorage:', result.participant);
             }
 
-            throw new Error('localStorage not set, retrying...');
+            console.log(result.message);
         } catch (err) {
             console.error('Error during disconnect:', err);
-
-            if (retryCount < 5) {  // Retry up to 5 times
-                const delay = Math.pow(2, retryCount) * 1000;  // Exponential backoff
-                console.log(`Retrying in ${delay / 1000} seconds...`);
-                setTimeout(() => handleDisconnect(retryCount + 1), delay);
-            } else {
-                console.error('Max retries reached, failed to save data to localStorage.');
-            }
         }
     };
 

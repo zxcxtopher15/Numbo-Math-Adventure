@@ -333,7 +333,7 @@ export function Board_Student({ data }) {
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-        const apiUrl = `${baseUrl}/math-journey/update_score`;
+        const apiUrl = `${baseUrl}/math-journey/update_is_correct`;
 
         try {
             const response = await fetch(apiUrl, {

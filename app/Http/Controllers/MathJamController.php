@@ -468,7 +468,7 @@ class MathJamController extends Controller
         return response()->json(['message' => 'Math Jam current question updated successfully'], 200);
     }
 
-    public function update_score(Request $request)
+    public function update_is_correct(Request $request)
     {
         $validated = $request->validate([
             'math_jam_code' => 'required|exists:math_jams,math_jam_code',
@@ -488,7 +488,7 @@ class MathJamController extends Controller
             return response()->json(['message' => 'No active participation found', 'error' => true], 200);
         }
 
-        $participant->score += 1;
+        $participant->is_correct = 1;
         $participant->updated_at = now();
         $participant->save();
 
@@ -594,5 +594,40 @@ class MathJamController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Something went wrong', 'details' => $e->getMessage()], 500);
         }
+    }
+
+    public function update_score(Request $request)
+    {
+        $validated = $request->validate([
+            'math_jam_code' => 'required|exists:math_jams,math_jam_code',
+            'student_id' => 'required|exists:users,id',
+            'is_correct' => 'required|boolean',
+        ]);
+
+        $participant = MathJamParticipant::where('student_id', $validated['student_id'])
+            ->whereHas('MathJam', function ($query) use ($validated) {
+                $query->where('math_jam_code', $validated['math_jam_code']);
+                $query->whereNotIn('status', ['cancelled', 'ended', 'disconnected']);
+            })
+            ->whereNotNull('math_jam_id')
+            ->latest()
+            ->first();
+
+        if (!$participant) {
+            return response()->json(['message' => 'No active participation found', 'error' => true], 200);
+        }
+
+        if ($validated['is_correct'] == 1) {
+            $participant->score += 1;
+            $participant->updated_at = now();
+            $participant->save();
+
+            return response()->json([
+                'message' => 'Score updated successfully',
+                'new_score' => $participant->score
+            ]);
+        }
+
+        return response()->json(['message' => 'No score update needed', 'new_score' => $participant->score]);
     }
 }

@@ -240,16 +240,45 @@ export function Board_Journey({ data }) {
             }
         };
 
+        const updateScore = async (studentId) => {
+            const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+            if (!baseUrl) return;
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            const apiUrl = `${baseUrl}/math-journey/update_is_correct`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        student_id: studentId,
+                        math_jam_code: existingJam.math_jam_code,
+                        is_correct: 1,
+                    }),
+                });
+
+                const result = await response.json();
+                console.log(`Score updated for student ${studentId}:`, result);
+            } catch (err) {
+                console.error(`Error updating score for student ${studentId}:`, err);
+            }
+        };
+
         if (participants.length > 0) {
             const joinedParticipants = participants.filter(participant => participant.status === 'joined');
             const allAnswered = joinedParticipants.every(participant => participant.has_answer === 1);
 
-            console.log("All Answered:", allAnswered);
-            console.log("Participants:", participants);
-
             if (allAnswered) {
                 setIsAnswered(true);
                 updateAnswers();
+
+                const correctParticipants = joinedParticipants.filter(participant => participant.is_correct === 1);
+                correctParticipants.forEach(participant => updateScore(participant.student_id));
             }
         }
 
@@ -271,7 +300,7 @@ export function Board_Journey({ data }) {
         }, 5000);
 
         return () => clearTimeout(timeout);
-    }, [participants, existingJam]); // Ensure dependencies are up-to-date
+    }, [participants, existingJam]);
 
     useEffect(() => {
         setStartTime(Date.now());
