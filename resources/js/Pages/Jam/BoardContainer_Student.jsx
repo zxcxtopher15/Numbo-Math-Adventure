@@ -21,19 +21,26 @@ export default function BoardContainer_Student({ }) {
     }, []);
 
     useEffect(() => {
-        const storedJam = localStorage.getItem('disconnectedParticipant');
-        if (storedJam) {
-            const parsedJam = JSON.parse(storedJam);
-            setParticipant(parsedJam);
+        const checkDisconnectedParticipant = () => {
+            const storedJam = localStorage.getItem('disconnectedParticipant');
+            if (storedJam) {
+                const parsedJam = JSON.parse(storedJam);
+                setParticipant(parsedJam);
 
-            if (parsedJam.status == 'disconnected') {
-                localStorage.removeItem('disconnectedParticipant');
-                window.location.href = "/math-journey-join";
+                if (parsedJam.status === 'disconnected') {
+                    localStorage.removeItem('disconnectedParticipant');
+                    window.location.replace("/math-journey-join");
+                }
             }
-        }
+        };
+
+        checkDisconnectedParticipant();
+
+        const interval = setInterval(checkDisconnectedParticipant, 1000);
+
+        return () => clearInterval(interval);
     }, []);
 
-    console.log(participant);
 
     useEffect(() => {
         const beforeUnloadHandler = (event) => {
@@ -100,13 +107,13 @@ export default function BoardContainer_Student({ }) {
             });
 
             const result = await response.json();
+            console.log("Disconnect API Response:", result);
 
             if (result.participant) {
                 localStorage.setItem('disconnectedParticipant', JSON.stringify(result.participant));
-                console.log('Participant data saved to localStorage:', result.participant);
+                console.log("disconnectedParticipant stored in localStorage:", result.participant);
             }
 
-            console.log(result.message);
         } catch (err) {
             console.error('Error during disconnect:', err);
         }

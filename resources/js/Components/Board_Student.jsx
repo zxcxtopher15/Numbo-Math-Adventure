@@ -208,7 +208,6 @@ export function Board_Student({ data }) {
                     }).then(() => {
                         if (!hasReloaded.current) {
                             hasReloaded.current = true;
-                            handleDisconnect();
                             window.location.href = "/math-journey-join";
                         }
                     });
