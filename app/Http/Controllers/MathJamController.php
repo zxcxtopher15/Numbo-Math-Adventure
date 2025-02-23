@@ -631,4 +631,31 @@ class MathJamController extends Controller
             'updated_count' => $participants->count()
         ]);
     }
+
+    public function exit_jam(Request $request)
+    {
+        $validated = $request->validate([
+            'math_jam_code' => 'required|exists:math_jams,math_jam_code',
+            'student_id' => 'required|exists:users,id',
+        ]);
+
+        $participant = MathJamParticipant::where('student_id', $validated['student_id'])
+            ->whereHas('MathJam', function ($query) use ($validated) {
+                $query->where('math_jam_code', $validated['math_jam_code']);
+                $query->whereNotIn('status', ['cancelled', 'ended']);
+            })
+            ->whereNotNull('math_jam_id')
+            ->latest()
+            ->first();
+
+        if (!$participant) {
+            return response()->json(['message' => 'No active participation found', 'error' => true], 200);
+        }
+
+        $participant->delete();
+
+        return response()->json([
+            'message' => 'Participant removed successfully',
+        ]);
+    }
 }

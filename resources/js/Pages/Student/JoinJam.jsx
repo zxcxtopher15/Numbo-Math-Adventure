@@ -132,6 +132,31 @@ const JoinJam = () => {
         }
     };
 
+    const handleExitJam = async () => {
+        if (!studentId || !jamCode) return;
+
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        if (!baseUrl) return;
+
+        const apiUrl = `${baseUrl}/math-journey/exit_jam`;
+
+        try {
+            await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    math_jam_code: jamCode,
+                }),
+            });
+        } catch (err) {
+            console.error('Error during disconnect:', err);
+        }
+    };
+
     useEffect(() => {
         if (!studentId) return;
 
@@ -337,17 +362,25 @@ const JoinJam = () => {
     const showDisconnectedSwal = () => {
         Swal.fire({
             title: 'Waiting for Host to Reconnect...',
-            text: 'Please wait while we attempt to reconnect.',
+            html: `
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <p>Please wait while we attempt to reconnect.</p>
+                    <div class="swal-spinner" style="margin-top: 10px;">
+                        <i class="fa fa-spinner fa-spin fa-2x"></i>
+                    </div>
+                </div>
+            `,
             allowOutsideClick: false,
             allowEscapeKey: false,
             showConfirmButton: true,
             confirmButtonText: 'Exit Game',
             confirmButtonColor: '#d33',
             didOpen: () => {
-                Swal.showLoading();
+                Swal.getHtmlContainer().querySelector('.swal-spinner').style.display = 'block';
             }
         }).then((result) => {
             if (result.isConfirmed) {
+                handleExitJam();
                 window.location.href = '/math-journey-join';
             }
         });

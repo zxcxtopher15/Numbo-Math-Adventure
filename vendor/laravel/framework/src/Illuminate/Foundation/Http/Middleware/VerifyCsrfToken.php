@@ -59,7 +59,8 @@ class VerifyCsrfToken
         '/modules/update',
         '/modules/*',
         '/update_answers',
-        '/update_is_correct'
+        '/update_is_correct',
+        '/math-journey/exit_jam',
     ];
 
     /**
