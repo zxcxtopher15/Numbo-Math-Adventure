@@ -44,7 +44,7 @@ Route::get('/student-results', [MathJamController::class, 'getStudentResults']);
 Route::get('/parent-student-results', [MathJamController::class, 'getStudentResultsParent']);
 
 Route::get('/modules', function () {
-    return Inertia::render('Modules/Modules', request()->all());
+    return Inertia::render('Modules/Modules');
 })->name('modules.Modules');
 
 Route::middleware('auth')->group(function () {
