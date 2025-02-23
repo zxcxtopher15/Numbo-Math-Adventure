@@ -204,11 +204,11 @@ export function Board_Journey({ data }) {
     }, []);
 
     useEffect(() => {
-        if (updateAnswersCalled.current) return;
-
-        updateAnswersCalled.current = true;
-
         const updateAnswers = async () => {
+            if (updateAnswersCalled.current) return;
+
+            updateAnswersCalled.current = true;
+
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
             const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
 
@@ -284,8 +284,6 @@ export function Board_Journey({ data }) {
             const allAnswered = joinedParticipants.every(participant => participant.has_answer === 1);
             const isCorrect = joinedParticipants.every(participant => participant.is_correct === 1);
 
-            console.log("JOINED: " + joinedParticipants);
-            console.log("ALL ANSWERS: " + allAnswered);
             if (allAnswered) {
                 console.log(allAnswered);
                 if (isCorrect) {
