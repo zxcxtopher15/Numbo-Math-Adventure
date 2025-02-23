@@ -586,6 +586,11 @@ class MathJamController extends Controller
                     'updated_at' => now(),
                 ]);
 
+            $mathJam->update([
+                'is_paused' => 0,
+                'updated_at' => now(),
+            ]);
+
             if ($updated) {
                 return response()->json(['message' => 'Has Answer updated successfully'], 200);
             } else {
