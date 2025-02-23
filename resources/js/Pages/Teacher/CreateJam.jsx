@@ -319,31 +319,6 @@ const CreateJam = () => {
             return;
         }
 
-        fetchOrderedQuestions(existingJam.math_jam_id);
-
-        const apiUrl = `${baseUrl}/math-journey/update-status`;
-
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    math_jam_id: existingJam.math_jam_id,
-                    status: 'started',
-                }),
-            });
-
-            if (response.ok) {
-                // console.log('Math Jam status updated to start');
-            } else {
-                console.error('Failed to update Math Jam status');
-            }
-        } catch (error) {
-            console.error('Error updating Math Jam status:', error);
-        }
-
         const fetchOrderedQuestions = async (mathJamId) => {
             try {
                 const response = await fetch(`/get_ordered_questions?math_jam_id=${mathJamId}`);
@@ -378,9 +353,32 @@ const CreateJam = () => {
             } catch (error) {
                 console.error("Error fetching ordered questions:", error);
             }
-
-            setStartJourney(true);
         };
+
+        await fetchOrderedQuestions(existingJam.math_jam_id);
+        const apiUrl = `${baseUrl}/math-journey/update-status`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    math_jam_id: existingJam.math_jam_id,
+                    status: 'started',
+                }),
+            });
+
+            if (response.ok) {
+                // console.log('Math Jam status updated to start');
+            } else {
+                console.error('Failed to update Math Jam status');
+            }
+        } catch (error) {
+            console.error('Error updating Math Jam status:', error);
+        }
+        setStartJourney(true);
 
         const fetchNewQuestions = () => {
             fetch(`/questions_list_teacher?categoryTitle=${existingJam.category}&num_questions=${existingJam.num_questions}`)
