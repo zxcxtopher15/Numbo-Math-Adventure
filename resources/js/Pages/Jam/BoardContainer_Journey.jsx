@@ -103,9 +103,8 @@ export default function BoardContainer_Journey({ auth }) {
         };
     }, []);
 
-    const handleDisconnect = async () => {
+    const handleDisconnect = () => {
         const existingJam = localStorage.getItem('existingJam');
-
         if (!existingJam) return;
 
         const parsedJam = JSON.parse(existingJam);
@@ -116,33 +115,14 @@ export default function BoardContainer_Journey({ auth }) {
 
         const apiUrl = `${baseUrl}/math-journey/disconnect_jam`;
 
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-                },
-                body: JSON.stringify({
-                    math_jam_id: parsedJam.math_jam_id,
-                }),
-            });
+        const payload = JSON.stringify({ math_jam_id: parsedJam.math_jam_id });
 
-            if (!response.ok) {
-                console.error('Failed to disconnect:', response.status);
-                return;
-            }
+        const success = navigator.sendBeacon(apiUrl, payload);
 
-            const data = await response.json();
-
-            if (data?.jam) {
-                localStorage.setItem('existingJam', JSON.stringify(data.jam));
-            } else {
-                console.warn('No valid jam data in response');
-                localStorage.removeItem('existingJam');
-            }
-        } catch (err) {
-            console.error('Error during disconnect:', err);
+        if (success) {
+            localStorage.removeItem('existingJam');
+        } else {
+            console.error('sendBeacon failed');
         }
     };
 
