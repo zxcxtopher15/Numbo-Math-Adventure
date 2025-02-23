@@ -17,10 +17,26 @@ export default function BoardContainer_Journey({ auth }) {
             const parsedJam = JSON.parse(storedJam);
             setExistingJam(parsedJam);
             updateAnswers(parsedJam);
-            if (parsedJam.status === "disconnected") {
-                window.location.href = '/math-journey';
-            }
         }
+    }, []);
+
+    useEffect(() => {
+        const checkDisconnectedHost = () => {
+            const storedJam = localStorage.getItem('disconnectedHost');
+            if (storedJam) {
+                const parsedJam = JSON.parse(storedJam);
+                if (parsedJam.status === 'disconnected') {
+                    localStorage.removeItem('disconnectedHost');
+                    window.location.replace("/math-journey");
+                }
+            }
+        };
+
+        checkDisconnectedHost();
+
+        const interval = setInterval(checkDisconnectedHost, 1000);
+
+        return () => clearInterval(interval);
     }, []);
 
     useEffect(() => {
@@ -103,26 +119,27 @@ export default function BoardContainer_Journey({ auth }) {
         };
     }, []);
 
-    const handleDisconnect = () => {
-        const existingJam = localStorage.getItem('existingJam');
+    const handleDisconnect = async () => {
         if (!existingJam) return;
-
-        const parsedJam = JSON.parse(existingJam);
-        if (!parsedJam || !parsedJam.math_jam_id) return;
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
 
         const apiUrl = `${baseUrl}/math-journey/disconnect_jam`;
 
-        const payload = JSON.stringify({ math_jam_id: parsedJam.math_jam_id });
+        const payload = JSON.stringify({
+            math_jam_id: existingJam.math_jam_id,
+        });
 
-        const success = navigator.sendBeacon(apiUrl, payload);
+        try {
+            const blob = new Blob([payload], { type: "application/json" });
+            navigator.sendBeacon(apiUrl, blob);
 
-        if (success) {
-            localStorage.removeItem('existingJam');
-        } else {
-            console.error('sendBeacon failed');
+            localStorage.setItem('disconnectedHost', JSON.stringify({ status: "disconnected" }));
+            console.log("disconnectedHost stored in localStorage:", payload);
+
+        } catch (err) {
+            console.error('Error during disconnect:', err);
         }
     };
 
