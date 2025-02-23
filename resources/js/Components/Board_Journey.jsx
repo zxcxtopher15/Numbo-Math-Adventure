@@ -302,22 +302,6 @@ export function Board_Journey({ data }) {
                 updateAnswers();
             }
         }
-
-        if (participants.length > 0) {
-            const joinedParticipants = participants.filter(participant => participant.status === 'joined');
-
-            if (joinedParticipants.length === 0) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'No Participants',
-                    text: 'There are no participants in the session.',
-                    confirmButtonColor: '#d33',
-                }).then(() => {
-                    window.location.href = '/math-journey';
-                });
-            }
-        }
-
     }, [participants, existingJam]);
 
     useEffect(() => {
