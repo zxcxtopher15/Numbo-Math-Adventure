@@ -13,7 +13,6 @@ import LoadingScreen from '@/Components/LoadingScreen';
 import { Head } from '@inertiajs/react';
 import Categories from '@/Components/Categories';
 import BoardContainer_Journey from '../Jam/BoardContainer_Journey';
-import { useNavigate } from "react-router-dom";
 
 const CreateJam = () => {
     const { auth } = usePage().props;
@@ -30,7 +29,10 @@ const CreateJam = () => {
     const [hasQuestions, setHasQuestions] = useState('');
     const [questions, setQuestions] = useState([]);
     const [startJourney, setStartJourney] = useState(false);
-    const navigate = useNavigate();
+
+    if (startJourney) {
+        return <BoardContainer_Journey questions={questions} />;
+    }
 
     useEffect(() => {
         const fetchExistingJam = async () => {
@@ -357,7 +359,6 @@ const CreateJam = () => {
                     if (formattedQuestions.length > 0) {
                         updateCurrentQuestionId(formattedQuestions[0].question_data.id);
                         setStartJourney(true);
-                        navigate("/board-container-journey", { state: { questions } });
                     }
                 } else {
                     fetchNewQuestions();
@@ -395,7 +396,6 @@ const CreateJam = () => {
                     if (shuffledData.length > 0) {
                         updateCurrentQuestionId(shuffledData[0].question_data.id);
                         setStartJourney(true);
-                        navigate("/board-container-journey", { state: { questions } });
                     }
                 })
                 .catch((error) => {

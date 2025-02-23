@@ -2,14 +2,11 @@ import { useState, useEffect } from 'react';
 
 import { Board_Journey } from '@/Components/Board_Journey';
 import { PageCountDown } from '@/Components/PageCountDown';
-import { useLocation } from "react-router-dom";
 
-export default function BoardContainer_Journey({ }) {
+export default function BoardContainer_Journey({ questions }) {
     const [showCountdown, setShowCountdown] = useState(true);
     const [categoryTitle, setCategoryTitle] = useState('');
     const [existingJam, setExistingJam] = useState(null);
-    const location = useLocation();
-    const questions = location.state?.questions || [];
 
     useEffect(() => {
         setCategoryTitle(localStorage.getItem("category") || "Default Title");
