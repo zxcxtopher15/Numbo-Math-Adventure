@@ -57,7 +57,7 @@ const data = [
             },
             {
                 id: 4,
-                title: 'Complete the Equations (Addition)',
+                title: 'Complete the Equations (+)',
                 description: 'Fill in the missing number to complete the addition equation and practice problem-solving.',
                 sample: '12 + __ = 20',
             },
@@ -102,7 +102,7 @@ const data = [
             },
             {
                 id: 9,
-                title: 'Complete the Equations (Subtraction)',
+                title: 'Complete the Equations (-)',
                 description: 'Fill in the missing number to complete subtraction equations and practice your problem-solving skills.',
                 sample: '15 - __ = 7',
             },
@@ -147,7 +147,7 @@ const data = [
             },
             {
                 id: 14,
-                title: 'Complete The Equation (Multiplication)',
+                title: 'Complete The Equation (x)',
                 description: 'Fill in the missing number in a multiplication equation to practice problem-solving.',
                 sample: '__ × 6 = 36',
             },
@@ -198,7 +198,7 @@ const data = [
             },
             {
                 id: 20,
-                title: 'Comparing Numbers: Greater, Equal, and Less',
+                title: 'Comparing Numbers: (< = >)',
                 description: 'Compare numbers using greater than, less than, or equal signs to test your understanding of number relationships.',
                 sample: '14 > 10 (True or False?)',
             },

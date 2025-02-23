@@ -2,7 +2,7 @@ const addition = [
     'Add Tens',
     'Add Two Numbers',
     'Addition Sentences',
-    'Complete the Equations (Addition)',
+    'Complete the Equations (+)',
     'Add Three Numbers'
 ];
 
@@ -10,7 +10,7 @@ const subtraction = [
     'Subtract Tens',
     'Subtract Two Numbers',
     'Subtraction Sentences',
-    'Complete the Equations (Subtraction)',
+    'Complete the Equations (-)',
     'Subtract Doubles'
 ];
 
@@ -18,7 +18,7 @@ const multiplication = [
     'Multiplication Equation',
     'Multiplication Table',
     'Multiplication Word Problem',
-    'Complete The Equation (Multiplication)',
+    'Complete The Equation (x)',
     'Multiplication Mystery'
 ];
 
@@ -27,7 +27,7 @@ const mixedQuestion = [
     'T or F Equation',
     'True Number Sign',
     'Number Pattern',
-    'Comparing Numbers: Greater, Equal, and Less'
+    'Comparing Numbers: (< = >)'
 ];
 
 const Categories = {
