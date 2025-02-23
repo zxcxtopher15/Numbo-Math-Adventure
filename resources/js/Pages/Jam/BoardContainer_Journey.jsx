@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-
+import React from "react";
 import { Board_Journey } from '@/Components/Board_Journey';
 import { PageCountDown } from '@/Components/PageCountDown';
 
