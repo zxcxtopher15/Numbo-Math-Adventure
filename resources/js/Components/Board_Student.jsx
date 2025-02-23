@@ -52,22 +52,6 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
         }
     }, []);
 
-    useEffect(() => {
-        if (gameTitle) {
-            for (const [category, games] of Object.entries(Categories)) {
-                if (games.includes(gameTitle)) {
-                    setJamCategory(category);
-                    return;
-                }
-            }
-            setJamCategory('');
-        }
-    }, [gameTitle]);
-
-    useEffect(() => {
-        setGameTitle(localStorage.getItem('category') || 'Default Title');
-    }, []);
-
     const totalTimeInMinutes = Math.floor(totalTimeSpent / 60000);
     const totalTimeInSeconds = Math.floor((totalTimeSpent % 60000) / 1000);
 
