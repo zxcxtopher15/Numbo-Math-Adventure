@@ -41,13 +41,9 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
     );
 }
 
-function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
+function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, category }) {
     const { width, height } = useWindowSize();
-    const [jamCategory, setJamCategory] = useState('');
-    const [gameTitle, setGameTitle] = useState('');
     const [existingJam, setExistingJam] = useState(null);
-
-    console.log(existingJam);
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
@@ -140,8 +136,8 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
                         </div>
                         <div className="bg-success text-white rounded-3xl p-4 flex flex-col full justify-center items-center">
                             {' '}
-                            <h3 className="text-xl font-semibold">{existingJam.math_journey_for}</h3>
-                            <h1 className="text-4xl font-bold">{existingJam.category}</h1>
+                            <h3 className="text-xl font-semibold">{gameTitle}</h3>
+                            <h1 className="text-4xl font-bold">{category}</h1>
                         </div>
                     </div>
                     <div className="flex py-4 w-full justify-between text-xl font-semibold text-white">
@@ -482,7 +478,7 @@ export function Board_Student({ data }) {
 
 
     return isGameFinished ? (
-        <TotalResult totalQuestions={data.length} gameState={gameState} totalTimeSpent={totalTimeSpent} />
+        <TotalResult totalQuestions={data.length} gameState={gameState} totalTimeSpent={totalTimeSpent} gameTitle={existingJam.math_jam_for} category={existingJam.category} />
     ) : (
         <>
             <div className="w-full h-full bg-white rounded-3xl p-6">
