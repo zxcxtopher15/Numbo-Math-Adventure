@@ -442,16 +442,24 @@ const JoinJam = () => {
                         </div>
 
                         {status === 'disconnected' ? (
-                            <div className="bg-red-100 p-4 rounded mb-4">
+                            <div className="bg-red-100 p-4 rounded mb-4 text-center">
                                 <h3 className="font-semibold text-red-700">You were disconnected!</h3>
                                 <p>Would you like to reconnect?</p>
-                                <button
-                                    onClick={handleReconnect}
-                                    className="w-full bg-green-500 text-white py-2 px-4 rounded mt-2"
-                                    disabled={loading}
-                                >
-                                    {loading ? 'Reconnecting...' : 'Reconnect'}
-                                </button>
+                                <div className="flex gap-4 mt-4 justify-center">
+                                    <button
+                                        onClick={handleReconnect}
+                                        className="bg-green-500 text-white py-2 px-4 rounded"
+                                        disabled={loading}
+                                    >
+                                        {loading ? 'Reconnecting...' : 'Reconnect'}
+                                    </button>
+                                    <button
+                                        onClick={handleExitJam}
+                                        className="bg-red-500 text-white py-2 px-4 rounded"
+                                    >
+                                        Exit Game
+                                    </button>
+                                </div>
                             </div>
                         ) : (
                             <>
@@ -463,9 +471,17 @@ const JoinJam = () => {
                                         type="text"
                                         id="jamCode"
                                         value={jamCode}
-                                        onChange={(e) => setJamCode(e.target.value)}
+                                        onChange={(e) => {
+                                            const value = e.target.value.replace(/\D/g, "");
+                                            if (value.length <= 4) {
+                                                setJamCode(value);
+                                            }
+                                        }}
                                         className="w-full mt-1 p-2 border rounded"
                                         placeholder="Enter Math Journey Code"
+                                        maxLength={4}
+                                        inputMode="numeric"
+                                        pattern="\d{4}"
                                     />
                                 </div>
 
@@ -480,8 +496,12 @@ const JoinJam = () => {
                                         </a>
                                     </Link>
 
-                                    <PrimaryButton onClick={handleJoinJam} className="w-fit" disabled={loading}>
-                                        {loading ? 'Joining...' : 'Join '}
+                                    <PrimaryButton
+                                        onClick={handleJoinJam}
+                                        className="w-fit"
+                                        disabled={loading || status === 'joined'}
+                                    >
+                                        {loading ? 'Joining...' : 'Join'}
                                     </PrimaryButton>
                                 </div>
 
