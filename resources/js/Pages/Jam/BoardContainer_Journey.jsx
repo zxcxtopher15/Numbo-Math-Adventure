@@ -120,8 +120,12 @@ export default function BoardContainer_Journey({ auth }) {
     }, []);
 
     const handleDisconnect = async () => {
+        const existingJam = localStorage.getItem('existingJam');
+
         if (!existingJam) return;
-        console.log(existingJam);
+
+        const parsedJam = JSON.parse(existingJam);
+        if (!parsedJam || !parsedJam.math_jam_id) return;
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
