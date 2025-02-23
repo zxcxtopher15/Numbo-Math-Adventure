@@ -682,15 +682,18 @@ export function Board_Journey({ data }) {
                         </div>
                         <div className="flex flex-col-reverse sm:flex-row justify-center w-full">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 rounded-3xl bg-gray-200">
-                                {data[currentQuestion].answers.map((answer, index) => (
-                                    <button
-                                        key={answer.id}
-                                        className={`${colors[index % colors.length]} text-center text-white text-2xl font-bold w-full min-w-56 rounded-2xl p-4 hover:bg-opacity-75 active:bg-opacity-50`}
-                                        onClick={() => handleAnswer(answer)}
-                                        disabled={isAnswered || auth.user.user_type === 'Teacher'}
-                                    >
-                                        {answer.answer}
-                                    </button>
+
+                                {data[currentQuestion].answers
+                                    .filter((answer) => answer?.answer) // Filter out empty answers
+                                    .map((answer, index) => (
+                                        <button
+                                            key={answer.id}
+                                            className={`${colors[index % colors.length]} text-center text-white text-2xl font-bold w-full min-w-56 rounded-2xl p-4 hover:bg-opacity-75 active:bg-opacity-50`}
+                                            onClick={() => handleAnswer(answer)}
+                                            disabled={isAnswered || auth.user.user_type === 'Teacher'}
+                                        >
+                                            {answer.answer}
+                                        </button>
                                 ))}
                             </div>
                         </div>

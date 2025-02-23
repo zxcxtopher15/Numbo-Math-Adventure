@@ -107,17 +107,19 @@ export default function Questions({ questions = [] }) {
                                             ? 'to-[#7A00E6] from-[#8C6FFF]'
                                             : category === 'Division'
                                                 ? 'to-[#34D399] from-[#50DE65]'
-                                                : 'to-[#FBBF24] from-[#EC4899]';
+                                                : category === 'Mixed Question'
+                                                    ? 'to-[#6366F1] from-[#4F46E5]'
+                                                    : 'to-[#FBBF24] from-[#EC4899]';
                             const correctColor =
                                 category === 'Addition'
                                     ? 'bg-success'
                                     : category === 'Subtraction'
                                         ? 'bg-info'
                                         : category === 'Multiplication'
-                                            ? 'bg-[#7A00E6]'
-                                            : category === 'Division'
-                                                ? 'bg-[#34D399]'
-                                                : 'bg-[#FBBF24]';
+                                            ? 'bg-warning'
+                                            : category === 'Mixed Question'
+                                                ? 'bg-primary'
+                                                : 'bg-gray-500';
 
                             return (
                                 <div
@@ -151,15 +153,18 @@ export default function Questions({ questions = [] }) {
                                                             <div
                                                                 className={`text-sm text-gray-700 font-medium mt-2 flex gap-3`}
                                                             >
-                                                                {q.choices.map((choice, i) => (
-                                                                    <div
-                                                                        key={`${q.id}-${choice}`}
-                                                                        className={`bg-gray-200 p-2 rounded-lg w-1/4 ${choice === q.correct_answer ? correctColor + ' text-white' : ''}`}
-                                                                    >
-                                                                        {choice}
-                                                                        {i < q.choices.length - 1 && ' '}
-                                                                    </div>
-                                                                ))}
+                                                             
+                                                                {q.choices
+                                                                    .filter((choice) => choice !== null && choice !== '')
+                                                                    .map((choice, i) => (
+                                                                        <div
+                                                                            key={`${q.id}-${choice}`}
+                                                                            className={`bg-gray-200 p-2 rounded-lg w-full ${choice === q.correct_answer ? correctColor + ' text-white' : ''}`}
+                                                                        >
+                                                                            {choice}
+                                                                            {i < q.choices.length - 1 && ' '}
+                                                                        </div>
+                                                                    ))}
                                                             </div>
                                                         </div>
 
