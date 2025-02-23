@@ -32,7 +32,6 @@ function RoundResult({ numQuestion, participants, onNext }) {
             window.location.href = '/math-journey';
         });
     }
-    
     return (
         <div className="w-full h-full flex flex-col lg:flex-row bg-white sm:px-6  px-2 py-5 rounded-3xl shadow-lg">
             <div className="flex flex-col w-full lg:w-[35rem] relative z-10">
@@ -319,7 +318,6 @@ export function Board_Journey({ data }) {
             }
         }
 
-        return () => clearTimeout(timeout);
     }, [participants, existingJam]);
 
     useEffect(() => {
