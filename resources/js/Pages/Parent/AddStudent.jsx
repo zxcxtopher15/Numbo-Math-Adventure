@@ -91,10 +91,12 @@ const AddStudent = () => {
                 customClass: {
                     confirmButton: 'bg-pink-600 hover:bg-pink-700 text-white font-semibold py-4 px-9 rounded-2xl uppercase',
                 },
+            }).then(() => {
+                setShowOtpModal(false);
+                setEmail('');
+                setOtp('');
+                window.location.reload();
             });
-            setShowOtpModal(false);
-            setEmail('');
-            setOtp('');
         } catch (error) {
             setShowOtpModal(false);
             setOtpAttempts(prevAttempts => {
