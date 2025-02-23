@@ -92,7 +92,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
 
     useEffect(() => {
         if (existingJam && studentId) {
-            fetchStudentScore(studentId, existingJam.math_jam_id).then((score) => {
+            fetchStudentScore(studentId, existingJam.id).then((score) => {
                 setScore(score);
             });
         }
