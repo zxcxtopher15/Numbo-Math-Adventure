@@ -319,6 +319,14 @@ const CreateJam = () => {
             return;
         }
 
+        const shuffleArray = (array) => {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        };
+
         const fetchOrderedQuestions = async (mathJamId) => {
             try {
                 const response = await fetch(`/get_ordered_questions?math_jam_id=${mathJamId}`);
@@ -346,6 +354,7 @@ const CreateJam = () => {
 
                     if (formattedQuestions.length > 0) {
                         updateCurrentQuestionId(formattedQuestions[0].question_data.id);
+                        setStartJourney(true);
                     }
                 } else {
                     fetchNewQuestions();
@@ -382,6 +391,7 @@ const CreateJam = () => {
 
                     if (shuffledData.length > 0) {
                         updateCurrentQuestionId(shuffledData[0].question_data.id);
+                        setStartJourney(true);
                     }
                 })
                 .catch((error) => {
@@ -468,7 +478,6 @@ const CreateJam = () => {
         } catch (error) {
             console.error('Error updating Math Jam status:', error);
         }
-        setStartJourney(true);
     };
 
     const handleReconnect = async () => {
