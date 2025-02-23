@@ -616,6 +616,7 @@ class MathJamController extends Controller
 
         foreach ($participants as $participant) {
             $participant->increment('score');
+            $participant->is_correct = 0;
             $participant->updated_at = now();
             $participant->save();
         }
