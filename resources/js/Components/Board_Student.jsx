@@ -46,6 +46,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
     const [existingJam, setExistingJam] = useState(null);
     const { auth } = usePage().props;
     const studentId = auth?.user.id;
+    const [score , setScore] = useState(0);
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
@@ -54,7 +55,48 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
         }
     }, []);
 
-    console.log(existingJam);
+    const fetchStudentScore = async (studentId, mathJamId) => {
+        if (!studentId || !mathJamId) {
+            console.error("Student ID or Math Jam ID is missing.");
+            return null;
+        }
+
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        if (!baseUrl) {
+            console.error("Base URL not found.");
+            return null;
+        }
+
+        const apiUrl = `${baseUrl}/math-journey/get-score?student_id=${studentId}&math_jam_id=${mathJamId}`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) {
+                console.error("Failed to fetch student score.");
+                return null;
+            }
+
+            const data = await response.json();
+            return data.score;
+        } catch (error) {
+            console.error("Error fetching student score:", error);
+            return null;
+        }
+    };
+
+    useEffect(() => {
+        if (existingJam && studentId) {
+            fetchStudentScore(studentId, existingJam.math_jam_id).then((score) => {
+                setScore(score);
+            });
+        }
+    }, [existingJam, studentId]);
 
     const totalTimeInMinutes = Math.floor(totalTimeSpent / 60000);
     const totalTimeInSeconds = Math.floor((totalTimeSpent % 60000) / 1000);
@@ -109,11 +151,11 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
                         />
                     </div>
                 </div>
-               <div className="flex flex-col bg-gray-200 h-full rounded-3xl md:p-6 p-2 gap-4 lg:w-4/12 sm:w-full w-full ">
+                <div className="flex flex-col bg-gray-200 h-full rounded-3xl md:p-6 p-2 gap-4 lg:w-4/12 sm:w-full w-full ">
                     <div className="flex justify-start items-center w-full p-4 bg-white rounded-3xl px-6 gap-8 ">
                         <img className="w-14 h-14" src="/images/assets/stars/glossy_3.svg" alt="" />
                         <h1 className="text-warning font-bold  text-6xl">
-                            {gameState.correctQuestions.length} / {totalQuestions}
+                            {score} / {totalQuestions}
                         </h1>
                     </div>
 

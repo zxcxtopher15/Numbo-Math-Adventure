@@ -706,4 +706,24 @@ class MathJamController extends Controller
 
         return response()->json(['results' => array_values($formattedData)]);
     }
+
+    public function getScore(Request $request)
+    {
+        $studentId = $request->query('student_id');
+        $mathJamId = $request->query('math_jam_id');
+
+        if (!$studentId || !$mathJamId) {
+            return response()->json(['error' => 'Missing parameters'], 400);
+        }
+
+        $score = MathJamParticipant::where('student_id', $studentId)
+            ->where('math_jam_id', $mathJamId)
+            ->value('score');
+
+        if ($score === null) {
+            return response()->json(['error' => 'Score not found'], 404);
+        }
+
+        return response()->json(['score' => $score], 200);
+    }
 }

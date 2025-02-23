@@ -108,6 +108,7 @@ Route::group(['middleware' => 'student'], function () {
     })->name('journey.play');
     Route::post('/math-journey/update_is_correct', [MathJamController::class, 'update_is_correct']);
     Route::post('/math-journey/exit_jam', [MathJamController::class, 'exit_jam']);
+    Route::get('/math-journey/get-score', [MathJamController::class, 'getScore']);
 });
 
 Route::group(['middleware' => 'parent'], function () {
