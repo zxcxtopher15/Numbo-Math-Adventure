@@ -23,12 +23,6 @@ export default function BoardContainer_Journey({ questions }) {
     }, []);
 
     useEffect(() => {
-        if (existingJam?.math_jam_id) {
-            fetchOrderedQuestions(existingJam.math_jam_id);
-        }
-    }, [existingJam]);
-
-    useEffect(() => {
         const disableRightClick = (event) => {
             event.preventDefault();
         };
