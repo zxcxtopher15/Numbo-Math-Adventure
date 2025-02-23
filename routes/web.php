@@ -43,9 +43,9 @@ Route::get('/dashboard', function () {
 Route::get('/student-results', [MathJamController::class, 'getStudentResults']);
 Route::get('/parent-student-results', [MathJamController::class, 'getStudentResultsParent']);
 
-Route::get('/modules123', function () {
+Route::get('/view_modules', function () {
     return Inertia::render('Modules/Modules', request()->all());
-})->name('modules.Modules');
+})->middleware(['auth', 'verified'])->name('view.modules');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
