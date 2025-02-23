@@ -262,7 +262,7 @@ export function Board_Journey({ data }) {
                 const currentQuestionId = data[currentQuestion].question_data.id;
 
                 try {
-                    const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
+                    const response = await fetch(`/ordered-questions/${currentQuestionId}/${existingJam.math_jam_id}`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
@@ -560,7 +560,7 @@ export function Board_Journey({ data }) {
             const currentQuestionId = data[currentQuestion].question_data.id;
 
             try {
-                const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
+                const response = await fetch(`/ordered-questions/${currentQuestionId}/${existingJam.math_jam_id}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',

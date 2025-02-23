@@ -400,9 +400,11 @@ class MathJamController extends Controller
         return response()->json($questions);
     }
 
-    public function destroy($id)
+    public function destroy($id, $math_jam_id)
     {
-        $orderedQuestion = OrderedQuestion::where('question_id', $id)->first();
+        $orderedQuestion = OrderedQuestion::where('question_id', $id)
+            ->where('math_jam_id', $math_jam_id)
+            ->first();
 
         if ($orderedQuestion) {
             $orderedQuestion->delete();
