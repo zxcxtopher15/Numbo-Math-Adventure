@@ -712,6 +712,8 @@ class MathJamController extends Controller
         $studentId = $request->query('student_id');
         $mathJamId = $request->query('math_jam_id');
 
+        echo '<pre>'; print_r($studentId); exit;
+
         if (!$studentId || !$mathJamId) {
             return response()->json(['error' => 'Missing parameters'], 400);
         }
