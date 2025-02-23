@@ -15,17 +15,19 @@ const subtraction = [
 ];
 
 const multiplication = [
-    'Times Tables Race',
-    'Multiply and Match',
-    'Magic Multipliers',
-    'Multiplication Mystery'
+    'multiplication equation ',
+    'Multiplication Table ',
+    'Multiplication Word Problem ',
+    'Complete The Equation (Multiplication)',
+    ' Multiplication Mystery'
 ];
 
 const mixedQuestion = [
     'Missing Number',
     'T or F Equation',
     'True Number Sign',
-    'Number Pattern'
+    'Number Pattern',
+    'Comparing Numbers: Greater, Equal, and Less'
 ];
 
 const Categories = {
