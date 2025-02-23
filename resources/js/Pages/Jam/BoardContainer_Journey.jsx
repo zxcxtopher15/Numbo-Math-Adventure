@@ -121,6 +121,7 @@ export default function BoardContainer_Journey({ auth }) {
 
     const handleDisconnect = async () => {
         if (!existingJam) return;
+        console.log(existingJam);
 
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
