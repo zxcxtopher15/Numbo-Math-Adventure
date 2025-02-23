@@ -28,11 +28,6 @@ const CreateJam = () => {
     const [showReconnectModal, setShowReconnectModal] = useState(false);
     const [hasQuestions, setHasQuestions] = useState('');
     const [questions, setQuestions] = useState([]);
-    const [startJourney, setStartJourney] = useState(false);
-
-    if (startJourney) {
-        return <BoardContainer_Journey questions={questions} />;
-    }
 
     useEffect(() => {
         const fetchExistingJam = async () => {
@@ -358,7 +353,6 @@ const CreateJam = () => {
 
                     if (formattedQuestions.length > 0) {
                         updateCurrentQuestionId(formattedQuestions[0].question_data.id);
-                        setStartJourney(true);
                     }
                 } else {
                     fetchNewQuestions();
@@ -395,7 +389,6 @@ const CreateJam = () => {
 
                     if (shuffledData.length > 0) {
                         updateCurrentQuestionId(shuffledData[0].question_data.id);
-                        setStartJourney(true);
                     }
                 })
                 .catch((error) => {
@@ -533,7 +526,6 @@ const CreateJam = () => {
 
                     if (formattedQuestions.length > 0) {
                         updateCurrentQuestionId(formattedQuestions[0].question_data.id);
-                        setStartJourney(true);
                     }
                 } else {
                     fetchNewQuestions();
@@ -570,7 +562,6 @@ const CreateJam = () => {
 
                     if (shuffledData.length > 0) {
                         updateCurrentQuestionId(shuffledData[0].question_data.id);
-                        setStartJourney(true);
                     }
                 })
                 .catch((error) => {
@@ -879,14 +870,30 @@ const CreateJam = () => {
                                                         Cancel
                                                     </PrimaryButton>
 
-                                                    {startJourney ? (
-                                                        <BoardContainer_Journey questions={questions} />
-                                                    ) : hasJoinedParticipants ? (
-                                                        <PrimaryButton className="w-max px-5" onClick={handleStartJourney}>
-                                                            Start
-                                                        </PrimaryButton>
+                                                    {hasJoinedParticipants ? (
+                                                        <Link
+                                                            href="/math-journey/watch"
+                                                            onClick={(e) => {
+                                                                handleStart();
+                                                                if (existingJam) {
+                                                                    localStorage.setItem(
+                                                                        'category',
+                                                                        existingJam.category,
+                                                                    );
+                                                                    localStorage.setItem(
+                                                                        'existingJam',
+                                                                        JSON.stringify(existingJam),
+                                                                    );
+                                                                }
+                                                            }}
+                                                        >
+                                                            <PrimaryButton className="w-max px-5">Start</PrimaryButton>
+                                                        </Link>
                                                     ) : (
-                                                        <PrimaryButton className="w-max px-5 opacity-50 cursor-not-allowed" disabled>
+                                                        <PrimaryButton
+                                                            className="w-max px-5 opacity-50 cursor-not-allowed"
+                                                            disabled
+                                                        >
                                                             Start
                                                         </PrimaryButton>
                                                     )}

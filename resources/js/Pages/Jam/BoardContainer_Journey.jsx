@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import React from "react";
+
 import { Board_Journey } from '@/Components/Board_Journey';
 import { PageCountDown } from '@/Components/PageCountDown';
 
-export default function BoardContainer_Journey({ questions }) {
+export default function BoardContainer_Journey({ auth }) {
     const [showCountdown, setShowCountdown] = useState(true);
     const [categoryTitle, setCategoryTitle] = useState('');
     const [existingJam, setExistingJam] = useState(null);
+    const [questions, setQuestions] = useState([]);
 
     useEffect(() => {
         setCategoryTitle(localStorage.getItem("category") || "Default Title");
@@ -21,6 +22,46 @@ export default function BoardContainer_Journey({ questions }) {
             }
         }
     }, []);
+
+    useEffect(() => {
+        if (existingJam?.math_jam_id) {
+            fetchOrderedQuestions(existingJam.math_jam_id);
+        }
+    }, [existingJam]);
+
+    const fetchOrderedQuestions = async (mathJamId) => {
+        try {
+            const response = await fetch(`/get_ordered_questions?math_jam_id=${mathJamId}`);
+            const data = await response.json();
+
+            if (data.length > 0) {
+                const formattedQuestions = data.map((item) => ({
+                    title: `${item.question.category} Challenge`,
+                    time: existingJam?.time_limit,
+                    question_data: {
+                        id: item.question.id,
+                        type: item.question.question_type || "addition",
+                        image: null,
+                        title: "Solve This",
+                        question: item.question.question,
+                    },
+                    answers: item.question.choices.map((choice, index) => ({
+                        id: index + 1,
+                        answer: choice,
+                        is_correct: choice === item.question.correct_answer,
+                    })),
+                }));
+
+                setQuestions(formattedQuestions);
+
+                if (formattedQuestions.length > 0) {
+                    updateCurrentQuestionId(formattedQuestions[0].question_data.id);
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching ordered questions:", error);
+        }
+    };
 
     useEffect(() => {
         const disableRightClick = (event) => {

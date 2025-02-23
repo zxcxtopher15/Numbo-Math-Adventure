@@ -272,10 +272,7 @@ const JoinJam = () => {
                 if (data && data.status === 'started') {
                     localStorage.removeItem('disconnectedParticipant');
                     localStorage.setItem('existingJam', JSON.stringify(data));
-
-                    setTimeout(() => {
-                        window.location.href = '/math-journey/play';
-                    }, 300);
+                    window.location.href = '/math-journey/play';
                 } else if (data.status === 'cancelled' || data.status === 'ended') {
                     eventSource.close();
 
