@@ -110,7 +110,7 @@ const CreateJam = () => {
                 const data = JSON.parse(event.data);
                 setParticipants(data);
 
-                const allDisconnected = data.length > 0 && data.every(participant => participant.status === "disconnected");
+                const allDisconnected = (data.length > 0 && data.every(participant => participant.status === "disconnected")) || data.length == 0;
                 setShowReconnectModal(!allDisconnected);
             };
 
