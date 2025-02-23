@@ -133,7 +133,7 @@ export default function BoardContainer_Journey({ auth }) {
         const apiUrl = `${baseUrl}/math-journey/disconnect_jam`;
 
         const payload = JSON.stringify({
-            math_jam_id: existingJam.math_jam_id,
+            math_jam_id: parsedJam.math_jam_id,
         });
 
         try {
