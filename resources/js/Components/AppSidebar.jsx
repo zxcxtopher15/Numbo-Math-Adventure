@@ -44,9 +44,9 @@ export function AppSidebar(props) {
                 : []),
             {
                 title: 'Modules',
-                url: 'modules',
+                url: 'view_modules',
                 icon: Settings2,
-                isActive: window.location.pathname === '/modules',
+                isActive: window.location.pathname === '/view_modules',
             },
         ],
     };
