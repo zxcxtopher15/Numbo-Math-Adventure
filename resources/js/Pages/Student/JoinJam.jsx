@@ -132,6 +132,24 @@ const JoinJam = () => {
         }
     };
 
+    const handleExitConfirmation = (handleExitJam) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You will exit the jam and go back to the dashboard.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, Exit",
+            cancelButtonText: "Cancel",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                handleExitJam();
+                window.location.href = "/dashboard";
+            }
+        });
+    };
+
     const handleExitJam = async () => {
         if (!studentId || !jamCode) return;
 
@@ -450,10 +468,12 @@ const JoinJam = () => {
                                 </div>
 
                                 <div className="flex justify-between my-7">
-                                    <Link href="/dashboard">
-                                        {' '}
-                                        <PrimaryButton className="w-fit px-4 bg-danger">Go Back</PrimaryButton>
-                                    </Link>
+                                    <button
+                                        onClick={() => handleExitConfirmation(handleExitJam)}
+                                        className="w-fit px-4 bg-danger text-white py-2 rounded-md"
+                                    >
+                                        Go Back
+                                    </button>
 
                                     <PrimaryButton onClick={handleJoinJam} className="w-fit" disabled={loading}>
                                         {loading ? 'Joining...' : 'Join '}
