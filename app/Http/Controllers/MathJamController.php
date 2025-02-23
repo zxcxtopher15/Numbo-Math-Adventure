@@ -550,17 +550,18 @@ class MathJamController extends Controller
         $formattedData = [];
 
         foreach ($rawData as $entry) {
-            $studentName = $entry->name;
+            $studentId = $entry->student_id;
 
-            if (!isset($formattedData[$studentName])) {
-                $formattedData[$studentName] = [
-                    'name' => $studentName,
+            if (!isset($formattedData[$studentId])) {
+                $formattedData[$studentId] = [
+                    'student_id' => $studentId,
+                    'name' => $entry->name,
                     'scores' => [],
                 ];
             }
 
             if ($entry->score !== null) {
-                $formattedData[$studentName]['scores'][] = [
+                $formattedData[$studentId]['scores'][] = [
                     'math_journey_for' => $entry->math_journey_for,
                     'category' => $entry->category,
                     'score' => $entry->score,
@@ -568,7 +569,7 @@ class MathJamController extends Controller
                     'date' => $entry->date,
                 ];
             } else {
-                $formattedData[$studentName]['scores'][] = [
+                $formattedData[$studentId]['scores'][] = [
                     'math_journey_for' => null,
                     'category' => null,
                     'score' => null,
@@ -702,17 +703,18 @@ class MathJamController extends Controller
         $formattedData = [];
 
         foreach ($rawData as $entry) {
-            $studentName = $entry->name;
+            $studentId = $entry->student_id;
 
-            if (!isset($formattedData[$studentName])) {
-                $formattedData[$studentName] = [
-                    'name' => $studentName,
+            if (!isset($formattedData[$studentId])) {
+                $formattedData[$studentId] = [
+                    'student_id' => $studentId,
+                    'name' => $entry->name,
                     'scores' => [],
                 ];
             }
 
             if ($entry->score !== null) {
-                $formattedData[$studentName]['scores'][] = [
+                $formattedData[$studentId]['scores'][] = [
                     'math_journey_for' => $entry->math_journey_for,
                     'category' => $entry->category,
                     'score' => $entry->score,
@@ -720,7 +722,7 @@ class MathJamController extends Controller
                     'date' => $entry->date,
                 ];
             } else {
-                $formattedData[$studentName]['scores'][] = [
+                $formattedData[$studentId]['scores'][] = [
                     'math_journey_for' => null,
                     'category' => null,
                     'score' => null,
