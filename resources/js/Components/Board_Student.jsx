@@ -47,6 +47,8 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
     const [gameTitle, setGameTitle] = useState('');
     const [existingJam, setExistingJam] = useState(null);
 
+    console.log(existingJam);
+
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
         if (storedJam) {
