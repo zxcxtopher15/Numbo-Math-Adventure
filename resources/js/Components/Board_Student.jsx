@@ -464,7 +464,7 @@ export function Board_Student({ data }) {
 
 
     return isGameFinished ? (
-        <TotalResult totalQuestions={data.length} gameState={gameState} totalTimeSpent={totalTimeSpent} gameTitle={existingJam.math_jam_for} category={existingJam.category} />
+        <TotalResult totalQuestions={existingJam.num_questions} gameState={gameState} totalTimeSpent={totalTimeSpent} gameTitle={existingJam.math_journey_for} category={existingJam.category} />
     ) : (
         <>
             <div className="w-full h-full bg-white rounded-3xl p-6">

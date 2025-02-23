@@ -68,10 +68,8 @@ function RoundResult({ numQuestion, participants, onNext }) {
     );
 }
 
-function TotalResult({ participants, numQuestion }) {
+function TotalResult({ participants, numQuestion, gameTitle, category }) {
     const { width, height } = useWindowSize();
-    const [jamCategory, setJamCategory] = useState('');
-    const [gameTitle, setGameTitle] = useState('');
     const [existingJam, setExistingJam] = useState(null);
 
     useEffect(() => {
@@ -81,22 +79,6 @@ function TotalResult({ participants, numQuestion }) {
             console.log('existingJam:', existingJam);
 
         }
-    }, []);
-
-    useEffect(() => {
-        if (gameTitle) {
-            for (const [category, games] of Object.entries(Categories)) {
-                if (games.includes(gameTitle)) {
-                    setJamCategory(category);
-                    return;
-                }
-            }
-            setJamCategory('');
-        }
-    }, [gameTitle]);
-
-    useEffect(() => {
-        setGameTitle(localStorage.getItem('category') || 'Default Title');
     }, []);
 
     // const totalTimeInMinutes = Math.floor(totalTimeSpent / 60000);
@@ -158,8 +140,8 @@ function TotalResult({ participants, numQuestion }) {
                     <div className="bg-white h-full rounded-3xl  p-4 space-y-4  mt-4">
                         <div className="bg-success text-white rounded-3xl p-4 flex flex-col full justify-center items-center">
 
-                            <h3 className="text-xl font-semibold">{jamCategory}</h3>
-                            <h1 className="text-4xl font-bold">{gameTitle}</h1>
+                            <h3 className="text-xl font-semibold">{gameTitle}</h3>
+                            <h1 className="text-4xl font-bold">{category}</h1>
                         </div>
                         <h1 className="text-2xl font-bold">Final Scores</h1>
                         <div className="p-4 rounded-3xl bg-gray-200 flex-grow overflow-auto max-h-[calc(100vh-300px)]">
@@ -642,7 +624,7 @@ export function Board_Journey({ data }) {
         return () => window.removeEventListener('resize', updateFontSize);
     }, [currentQuestion, data]);
     return isGameFinished ? (
-        <TotalResult participants={participants} numQuestion={data.length} />
+        <TotalResult participants={participants} numQuestion={existingJam.num_questions} gameTitle={existingJam.math_journey_for} category={existingJam.category} />
     ) : (
         <>
             <div className="w-full h-full bg-white rounded-3xl p-6">
@@ -739,7 +721,7 @@ export function Board_Journey({ data }) {
                 {(isAnswered || isTimeUp) && (
                     <div className="absolute inset-0 flex justify-center items-center z-50 bg-opacity-50 p-3">
                         <RoundResult
-                            numQuestion={10} // di ko alam kung saan kukunin par hahaha
+                            numQuestion={existingJam.num_questions} // di ko alam kung saan kukunin par hahaha
                             participants={participants}
                             onNext={handleNext}
                         />
