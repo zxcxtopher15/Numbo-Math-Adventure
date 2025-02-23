@@ -353,6 +353,7 @@ const CreateJam = () => {
 
                     if (formattedQuestions.length > 0) {
                         updateCurrentQuestionId(formattedQuestions[0].question_data.id);
+                        window.location.href = "/math-journey/watch";
                     }
                 } else {
                     fetchNewQuestions();
@@ -389,6 +390,7 @@ const CreateJam = () => {
 
                     if (shuffledData.length > 0) {
                         updateCurrentQuestionId(shuffledData[0].question_data.id);
+                        window.location.href = "/math-journey/watch";
                     }
                 })
                 .catch((error) => {
@@ -872,9 +874,8 @@ const CreateJam = () => {
 
                                                     {hasJoinedParticipants ? (
                                                         <Link
-                                                            href="/math-journey/watch"
                                                             onClick={(e) => {
-                                                                handleStart();
+                                                                handleStartJourney();
                                                                 if (existingJam) {
                                                                     localStorage.setItem(
                                                                         'category',
