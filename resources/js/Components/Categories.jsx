@@ -15,11 +15,11 @@ const subtraction = [
 ];
 
 const multiplication = [
-    'multiplication equation ',
-    'Multiplication Table ',
-    'Multiplication Word Problem ',
+    'Multiplication Equation',
+    'Multiplication Table',
+    'Multiplication Word Problem',
     'Complete The Equation (Multiplication)',
-    ' Multiplication Mystery'
+    'Multiplication Mystery'
 ];
 
 const mixedQuestion = [
