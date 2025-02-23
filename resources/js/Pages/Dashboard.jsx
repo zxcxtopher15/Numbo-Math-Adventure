@@ -186,6 +186,8 @@ export default function Dashboard() {
                 console.error("Error fetching student results:", error);
             });
     }, [userType]);
+    console.log("Students Data:", studentsData);
+    
 
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Dashboard</h2>}>
