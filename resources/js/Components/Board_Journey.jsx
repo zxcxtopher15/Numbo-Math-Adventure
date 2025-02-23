@@ -247,6 +247,27 @@ export function Board_Journey({ data }) {
             } catch (err) {
                 console.error(`Error updating score for student ${studentId}:`, err);
             }
+
+            if (currentQuestion < data.length) {
+                const currentQuestionId = data[currentQuestion].question_data.id;
+
+                try {
+                    const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.statusText}`);
+                    }
+
+                    console.log(`Question ${currentQuestionId} deleted successfully`);
+                } catch (error) {
+                    console.error('Error deleting question:', error.message);
+                }
+            }
         };
 
         if (participants.length > 0) {
@@ -471,8 +492,6 @@ export function Board_Journey({ data }) {
 
     const handleNext = async () => {
         if (currentQuestion < data.length) {
-            const currentQuestionId = data[currentQuestion].question_data.id;
-
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
             const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
 
@@ -490,23 +509,6 @@ export function Board_Journey({ data }) {
                 console.log("Has Answer updated:", response.data);
             } catch (err) {
                 console.error("Error during update:", err.response?.data || err.message);
-            }
-
-            try {
-                const response = await fetch(`/ordered-questions/${currentQuestionId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.statusText}`);
-                }
-
-                console.log(`Question ${currentQuestionId} deleted successfully`);
-            } catch (error) {
-                console.error('Error deleting question:', error.message);
             }
 
             setIsAnswered(false);
