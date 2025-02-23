@@ -45,7 +45,7 @@ Route::get('/parent-student-results', [MathJamController::class, 'getStudentResu
 
 Route::get('/modules', function () {
     return Inertia::render('Modules/Modules');
-})->name('modules.Modules');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
