@@ -109,6 +109,10 @@ const CreateJam = () => {
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 setParticipants(data);
+
+                if (data.length == 0) {
+                    setShowReconnectModal(false);
+                }
             };
 
             eventSource.onerror = (error) => {
