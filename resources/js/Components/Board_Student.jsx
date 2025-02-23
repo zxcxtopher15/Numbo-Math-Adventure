@@ -138,8 +138,8 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent }) {
                         </div>
                         <div className="bg-success text-white rounded-3xl p-4 flex flex-col full justify-center items-center">
                             {' '}
-                            <h3 className="text-xl font-semibold">{jamCategory}</h3>
-                            <h1 className="text-4xl font-bold">{gameTitle}</h1>
+                            <h3 className="text-xl font-semibold">{existingJam.math_journey_for}</h3>
+                            <h1 className="text-4xl font-bold">{existingJam.category}</h1>
                         </div>
                     </div>
                     <div className="flex py-4 w-full justify-between text-xl font-semibold text-white">
