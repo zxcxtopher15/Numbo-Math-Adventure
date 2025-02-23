@@ -275,7 +275,7 @@ const JoinJam = () => {
 
                     setTimeout(() => {
                         window.location.href = '/math-journey/play';
-                    }, 100);
+                    }, 300);
                 } else if (data.status === 'cancelled' || data.status === 'ended') {
                     eventSource.close();
 
