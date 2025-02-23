@@ -108,12 +108,10 @@ const CreateJam = () => {
 
             eventSource.onmessage = (event) => {
                 const data = JSON.parse(event.data);
-                console.log(data);
                 setParticipants(data);
 
-                if (data.length == 0) {
-                    setShowReconnectModal(false);
-                }
+                const allDisconnected = data.length > 0 && data.every(participant => participant.status === "disconnected");
+                setShowReconnectModal(!allDisconnected);
             };
 
             eventSource.onerror = (error) => {
