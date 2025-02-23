@@ -27,7 +27,9 @@ export default function BoardContainer_Journey({ auth }) {
                 const parsedJam = JSON.parse(storedJam);
                 if (parsedJam.status === 'disconnected') {
                     localStorage.removeItem('disconnectedHost');
-                    window.location.replace("/math-journey");
+                    setTimeout(() => {
+                        window.location.replace("/math-journey");
+                    }, 1000);
                 }
             }
         };
