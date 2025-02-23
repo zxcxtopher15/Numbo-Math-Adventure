@@ -533,9 +533,10 @@ class MathJamController extends Controller
     public function getStudentResults()
     {
         $rawData = DB::table('users')
-            ->join('math_jam_participants', 'users.id', '=', 'math_jam_participants.student_id')
-            ->join('math_jams', 'math_jam_participants.math_jam_id', '=', 'math_jams.id')
+            ->leftJoin('math_jam_participants', 'users.id', '=', 'math_jam_participants.student_id')
+            ->leftJoin('math_jams', 'math_jam_participants.math_jam_id', '=', 'math_jams.id')
             ->select(
+                'users.id as student_id',
                 'users.name',
                 'math_jams.math_journey_for',
                 'math_jams.category',
@@ -543,6 +544,7 @@ class MathJamController extends Controller
                 'math_jams.num_questions',
                 'math_jam_participants.created_at as date'
             )
+            ->where('users.user_type', 'Student')
             ->get();
 
         $formattedData = [];
@@ -557,13 +559,23 @@ class MathJamController extends Controller
                 ];
             }
 
-            $formattedData[$studentName]['scores'][] = [
-                'math_journey_for' => $entry->math_journey_for,
-                'category' => $entry->category,
-                'score' => $entry->score,
-                'num_questions' => $entry->num_questions,
-                'date' => $entry->date,
-            ];
+            if ($entry->score !== null) {
+                $formattedData[$studentName]['scores'][] = [
+                    'math_journey_for' => $entry->math_journey_for,
+                    'category' => $entry->category,
+                    'score' => $entry->score,
+                    'num_questions' => $entry->num_questions,
+                    'date' => $entry->date,
+                ];
+            } else {
+                $formattedData[$studentName]['scores'][] = [
+                    'math_journey_for' => null,
+                    'category' => null,
+                    'score' => null,
+                    'num_questions' => null,
+                    'date' => null,
+                ];
+            }
         }
 
         return response()->json(['results' => array_values($formattedData)]);
@@ -672,10 +684,11 @@ class MathJamController extends Controller
         }
 
         $rawData = DB::table('users')
-            ->join('math_jam_participants', 'users.id', '=', 'math_jam_participants.student_id')
-            ->join('math_jams', 'math_jam_participants.math_jam_id', '=', 'math_jams.id')
-            ->whereIn('math_jam_participants.student_id', $studentIds)
+            ->leftJoin('math_jam_participants', 'users.id', '=', 'math_jam_participants.student_id')
+            ->leftJoin('math_jams', 'math_jam_participants.math_jam_id', '=', 'math_jams.id')
+            ->whereIn('users.id', $studentIds)
             ->select(
+                'users.id as student_id',
                 'users.name',
                 'math_jams.math_journey_for',
                 'math_jams.category',
@@ -683,6 +696,7 @@ class MathJamController extends Controller
                 'math_jams.num_questions',
                 'math_jam_participants.created_at as date'
             )
+            ->where('users.user_type', 'Student')
             ->get();
 
         $formattedData = [];
@@ -697,13 +711,23 @@ class MathJamController extends Controller
                 ];
             }
 
-            $formattedData[$studentName]['scores'][] = [
-                'math_journey_for' => $entry->math_journey_for,
-                'category' => $entry->category,
-                'score' => $entry->score,
-                'num_questions' => $entry->num_questions,
-                'date' => $entry->date,
-            ];
+            if ($entry->score !== null) {
+                $formattedData[$studentName]['scores'][] = [
+                    'math_journey_for' => $entry->math_journey_for,
+                    'category' => $entry->category,
+                    'score' => $entry->score,
+                    'num_questions' => $entry->num_questions,
+                    'date' => $entry->date,
+                ];
+            } else {
+                $formattedData[$studentName]['scores'][] = [
+                    'math_journey_for' => null,
+                    'category' => null,
+                    'score' => null,
+                    'num_questions' => null,
+                    'date' => null,
+                ];
+            }
         }
 
         return response()->json(['results' => array_values($formattedData)]);
