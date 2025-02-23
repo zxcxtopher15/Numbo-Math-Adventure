@@ -22,6 +22,17 @@ import Avatar from './Avatar';
 import axios from "axios";
 
 function RoundResult({ numQuestion, participants, onNext }) {
+    if (participants.length == 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Participants',
+            text: 'There are no participants in the session.',
+            confirmButtonColor: '#d33',
+        }).then(() => {
+            window.location.href = '/math-journey';
+        });
+    }
+    
     return (
         <div className="w-full h-full flex flex-col lg:flex-row bg-white sm:px-6  px-2 py-5 rounded-3xl shadow-lg">
             <div className="flex flex-col w-full lg:w-[35rem] relative z-10">
@@ -285,7 +296,6 @@ export function Board_Journey({ data }) {
             const isCorrect = joinedParticipants.every(participant => participant.is_correct === 1);
 
             if (allAnswered) {
-                console.log(allAnswered);
                 if (isCorrect) {
                     updateScore();
                 }
@@ -294,29 +304,28 @@ export function Board_Journey({ data }) {
             }
         }
 
-        const timeout = setTimeout(() => {
-            if (participants.length > 0) {
-                const joinedParticipants = participants.filter(participant => participant.status === 'joined');
+        if (participants.length > 0) {
+            const joinedParticipants = participants.filter(participant => participant.status === 'joined');
 
-                if (joinedParticipants.length === 0) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'No Participants',
-                        text: 'There are no participants in the session.',
-                        confirmButtonColor: '#d33',
-                    }).then(() => {
-                        window.location.href = '/math-journey';
-                    });
-                }
+            if (joinedParticipants.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Participants',
+                    text: 'There are no participants in the session.',
+                    confirmButtonColor: '#d33',
+                }).then(() => {
+                    window.location.href = '/math-journey';
+                });
             }
-        }, 3000);
+        }
 
         return () => clearTimeout(timeout);
-    }, [participants, existingJam]); // Ensure dependencies are up-to-date
+    }, [participants, existingJam]);
 
     useEffect(() => {
         setStartTime(Date.now());
     }, [currentQuestion]);
+
     useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         const sseUrl = `${baseUrl}/math-journey/stream-participants?teacher_id=${auth.user.id}`;
