@@ -21,26 +21,25 @@ export default function BoardContainer_Student({ }) {
     }, []);
 
     useEffect(() => {
-        const checkDisconnectedParticipant = () => {
-            const storedJam = localStorage.getItem('disconnectedParticipant');
+        const checkParticipantStatus = () => {
+            const storedJam = sessionStorage.getItem('disconnectedParticipant');
             if (storedJam) {
                 const parsedJam = JSON.parse(storedJam);
                 setParticipant(parsedJam);
 
                 if (parsedJam.status === 'disconnected') {
-                    localStorage.removeItem('disconnectedParticipant');
-                    window.location.replace("/math-journey-join");
+                    sessionStorage.removeItem('disconnectedParticipant');
+                    window.location.href = "/math-journey-join";
                 }
             }
         };
 
-        checkDisconnectedParticipant();
+        checkParticipantStatus();
 
-        const interval = setInterval(checkDisconnectedParticipant, 1000);
+        const interval = setInterval(checkParticipantStatus, 500);
 
         return () => clearInterval(interval);
     }, []);
-
 
     useEffect(() => {
         const beforeUnloadHandler = (event) => {
@@ -93,26 +92,17 @@ export default function BoardContainer_Student({ }) {
 
         const apiUrl = `${baseUrl}/math-journey/disconnect`;
 
+        const payload = JSON.stringify({
+            student_id: studentId,
+            math_jam_code: existingJam.math_jam_code,
+        });
+
         try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                },
-                body: JSON.stringify({
-                    student_id: studentId,
-                    math_jam_code: existingJam.math_jam_code,
-                }),
-            });
+            const blob = new Blob([payload], { type: "application/json" });
+            navigator.sendBeacon(apiUrl, blob);
 
-            const result = await response.json();
-            console.log("Disconnect API Response:", result);
-
-            if (result.participant) {
-                localStorage.setItem('disconnectedParticipant', JSON.stringify(result.participant));
-                console.log("disconnectedParticipant stored in localStorage:", result.participant);
-            }
+            sessionStorage.setItem('disconnectedParticipant', payload);
+            console.log("disconnectedParticipant stored in sessionStorage:", payload);
 
         } catch (err) {
             console.error('Error during disconnect:', err);
