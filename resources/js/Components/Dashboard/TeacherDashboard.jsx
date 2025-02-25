@@ -169,28 +169,32 @@ export function TeacherDashboard(result) {
                                             <div className="flex md:flex-col md:gap-0 gap-5 md:bg-transparent bg-yellow-100 rounded-2xl md:items-end items-center md:justify-end justify-center p-4">
                                                 <p>Average score</p>
                                                 <h1 className="rounded-2xl text-warning font-bold text-3xl">
-
-                                                {student.scores.length > 0 && student.scores[0].score ? (
-                                                    (student.scores.reduce((acc, score) => acc + score.score, 0) /
-                                                        student.scores.reduce(
-                                                            (acc, score) => acc + score.num_questions,
-                                                            0,
-                                                        ) *
-                                                        100
-                                                    ).toFixed(1) + '%'
-                                                   
-                                                ) : (
-                                                    'N/a'
-                                                )}
-                                                
+                                                    {student.scores.length > 0 &&
+                                                    student.scores[0].category &&
+                                                    student.scores[0].score
+                                                        ? (
+                                                              (student.scores.reduce(
+                                                                  (acc, score) => acc + score.score,
+                                                                  0,
+                                                              ) /
+                                                                  student.scores.reduce(
+                                                                      (acc, score) => acc + score.num_questions,
+                                                                      0,
+                                                                  )) *
+                                                              100
+                                                          ).toFixed(1) + '%'
+                                                        : 'N/a'}
                                                 </h1>
                                             </div>
                                         </div>
-                                        {student.scores.length > 0 && student.scores[0].score ? (
+                                        {student.scores.length > 0 &&
+                                        student.scores[0].category &&
+                                        student.scores[0].score ? (
                                             <div className="p-4 mt-3 bg-gray-100 rounded-2xl">
-                                            
                                                 <div className="flex justify-between items-center mb-5">
-                                                    <h1 className="font-semibold text-xl text-gray-600 ">Recent Results</h1>
+                                                    <h1 className="font-semibold text-xl text-gray-600 ">
+                                                        Recent Results
+                                                    </h1>
 
                                                     <Dialog>
                                                         <DialogTrigger className="px-2 py-1 bg-primary text-white font-semibold text-sm rounded-xl mx-2">
@@ -203,7 +207,6 @@ export function TeacherDashboard(result) {
                                                                 </DialogTitle>
                                                             </DialogHeader>
                                                             <div className="space-y-4">
-                                                                
                                                                 {student.scores.map((score, index) => (
                                                                     <div key={score.id} className="mt-3">
                                                                         <div className="flex md:flex-row flex-col md:items-center items-start justify-between gap-2 p-2 border-b border-blue-200 w-full">
@@ -213,7 +216,9 @@ export function TeacherDashboard(result) {
                                                                                 </p>
                                                                                 <div className="flex flex-col">
                                                                                     <p className="font-medium">
-                                                                                        {getCategoryType(score.category) +
+                                                                                        {getCategoryType(
+                                                                                            score.category,
+                                                                                        ) +
                                                                                             ' -  ' +
                                                                                             score.category}
                                                                                     </p>
@@ -222,13 +227,16 @@ export function TeacherDashboard(result) {
                                                                                     </p>
                                                                                     <div className="text-xs mt-2 flex items-center gap-1">
                                                                                         <FaClock />
-                                                                                        {new Intl.DateTimeFormat('en-US', {
-                                                                                            month: 'short',
-                                                                                            day: '2-digit',
-                                                                                            year: 'numeric',
-                                                                                            hour: '2-digit',
-                                                                                            minute: '2-digit',
-                                                                                        }).format(new Date(score.date))}
+                                                                                        {new Intl.DateTimeFormat(
+                                                                                            'en-US',
+                                                                                            {
+                                                                                                month: 'short',
+                                                                                                day: '2-digit',
+                                                                                                year: 'numeric',
+                                                                                                hour: '2-digit',
+                                                                                                minute: '2-digit',
+                                                                                            },
+                                                                                        ).format(new Date(score.date))}
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -242,26 +250,30 @@ export function TeacherDashboard(result) {
                                                                                             : 'text-green-600'
                                                                                     }`}
                                                                                 >
-                                                                                    {score.score} / {score.num_questions}
+                                                                                    {score.score} /{' '}
+                                                                                    {score.num_questions}
                                                                                 </p>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 ))}
-                                                
-                                                    
                                                             </div>
                                                         </DialogContent>
                                                     </Dialog>
                                                 </div>
                                                 {student.scores.slice(0, 2).map((score, index) => (
-                                                    <div key={score.id} className="flex items-center justify-between mb-2">
+                                                    <div
+                                                        key={score.id}
+                                                        className="flex items-center justify-between mb-2"
+                                                    >
                                                         <div className="flex md:flex-row flex-col md:items-center items-start justify-between gap-2 p-2 border-b border-blue-200 w-full">
                                                             <div className="flex gap-3">
                                                                 <p className="font-semibold">{index + 1}.</p>
                                                                 <div className="flex flex-col">
                                                                     <p className="font-medium">
-                                                                        {getCategoryType(score.category) + ' -  ' + score.category}
+                                                                        {getCategoryType(score.category) +
+                                                                            ' -  ' +
+                                                                            score.category}
                                                                     </p>
                                                                     <p className="text-white text-xs bg-primary rounded-2xl px-2 w-max">
                                                                         {score.math_journey_for}
@@ -294,10 +306,13 @@ export function TeacherDashboard(result) {
                                                     </div>
                                                 ))}
                                             </div>
-                                            ) : (
-                                                <div className="p-4 mt-3 bg-gray-100 rounded-2xl text-center font-semibold text-info flex flex-col items-center gap-2"> <FaQuestion className='bg-blue-200 p-2 w-10 h-10 rounded-full'/> <h1>No scores yet</h1></div>
+                                        ) : (
+                                            <div className="p-4 mt-3 bg-gray-100 rounded-2xl text-center font-semibold text-info flex flex-col items-center gap-2">
+                                                {' '}
+                                                <FaQuestion className="bg-blue-200 p-2 w-10 h-10 rounded-full" />{' '}
+                                                <h1>No scores yet</h1>
+                                            </div>
                                         )}
-                                        
                                     </div>
                                 ))}
                             </div>
