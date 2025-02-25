@@ -54,14 +54,16 @@ export function TeacherDashboard(result) {
     const categories = {};
     raw_students_data.forEach((student) => {
         student.scores.forEach((scoreData) => {
-            if (!categories[scoreData.category]) {
+            if (scoreData.category && !categories[scoreData.category]) {
                 categories[scoreData.category] = {
                     totalScore: 0,
                     totalQuestions: 0,
                 };
             }
-            categories[scoreData.category].totalScore += scoreData.score;
-            categories[scoreData.category].totalQuestions += scoreData.num_questions;
+            if (scoreData.category) {
+                categories[scoreData.category].totalScore += scoreData.score;
+                categories[scoreData.category].totalQuestions += scoreData.num_questions;
+            }
         });
     });
 
@@ -145,7 +147,7 @@ export function TeacherDashboard(result) {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search Student"
-                            className="w-full my-2 w-full text-lg bg-white text-gray-700 bg-transparent border border-gray-300 rounded-xl mb-7 focus:outline-none focus:ring-2 focus:ring-primary"
+                            className="w-full my-2 text-lg bg-white text-gray-700 bg-transparent border border-gray-300 rounded-xl mb-7 focus:outline-none focus:ring-2 focus:ring-primary"
                         />
                         {students_data.length === 0 ? (
                             <div className="bg-gray-200 py-12 rounded-2xl flex flex-col items-center justify-center">
