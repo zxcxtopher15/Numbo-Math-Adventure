@@ -333,6 +333,11 @@ export function Board_Student({ data }) {
         const apiUrl1 = `${baseUrl}/math-journey/update_has_answer`;
 
         try {
+            const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+            if (!baseUrl) return;
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
             const response = await fetch(apiUrl1, {
                 method: 'POST',
                 headers: {
