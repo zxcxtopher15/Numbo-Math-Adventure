@@ -46,7 +46,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
     const [existingJam, setExistingJam] = useState(null);
     const { auth } = usePage().props;
     const studentId = auth?.user.id;
-    const [score , setScore] = useState(0);
+    const [score, setScore] = useState(0);
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
@@ -97,8 +97,6 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
             });
         }
     }, [existingJam, studentId]);
-
-    console.log(existingJam);
 
     const totalTimeInMinutes = Math.floor(totalTimeSpent / 60000);
     const totalTimeInSeconds = Math.floor((totalTimeSpent % 60000) / 1000);
@@ -154,12 +152,14 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
                     </div>
                 </div>
                 <div className="flex flex-col bg-gray-200 h-full rounded-3xl md:p-6 p-2 gap-4 lg:w-4/12 sm:w-full w-full ">
-                    <div className="flex justify-start items-center w-full p-4 bg-white rounded-3xl px-6 gap-8 ">
-                        <img className="w-14 h-14" src="/images/assets/stars/glossy_3.svg" alt="" />
-                        <h1 className="text-warning font-bold  text-6xl">
-                            {score} / {totalQuestions}
-                        </h1>
-                    </div>
+                    {existingJam.show_scores && (
+                        <div className="flex justify-start items-center w-full p-4 bg-white rounded-3xl px-6 gap-8 ">
+                            <img className="w-14 h-14" src="/images/assets/stars/glossy_3.svg" alt="" />
+                            <h1 className="text-warning font-bold text-6xl">
+                                {score} / {totalQuestions}
+                            </h1>
+                        </div>
+                    )}
 
                     <div className="bg-white h-full rounded-3xl  p-4 space-y-4  mt-4">
                         <div className="bg-primary text-white p-4 rounded-3xl font-semibold text-2xl">
@@ -549,7 +549,7 @@ export function Board_Student({ data }) {
                         )}
                         <div className="flex flex-col-reverse sm:flex-row justify-center w-full">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 rounded-3xl bg-gray-200">
-           
+
                                 {data[currentQuestion].answers
                                     .filter((answer) => answer?.answer) // Filter out empty answers
                                     .map((answer, index) => (
