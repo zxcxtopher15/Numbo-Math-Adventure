@@ -330,6 +330,28 @@ export function Board_Student({ data }) {
         setIsCorrect(false);
         setIsAnswered(true);
 
+        const apiUrl1 = `${baseUrl}/math-journey/update_has_answer`;
+
+        try {
+            const response = await fetch(apiUrl1, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    math_jam_code: existingJam.math_jam_code,
+                    has_answer: 1,
+                }),
+            });
+
+            const result = await response.json();
+            console.log('Has Answer updated:', result);
+        } catch (err) {
+            console.error('Error during update:', err);
+        }
+
         const endTime = Date.now();
         const questionTime = endTime - startTime;
 
@@ -360,30 +382,6 @@ export function Board_Student({ data }) {
                 correctQuestions: newCorrectQuestions,
             };
         });
-
-        if (!studentId || !existingJam) return;
-
-        const apiUrl1 = `${baseUrl}/math-journey/update_has_answer`;
-
-        try {
-            const response = await fetch(apiUrl1, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                },
-                body: JSON.stringify({
-                    student_id: studentId,
-                    math_jam_code: existingJam.math_jam_code,
-                    has_answer: 1,
-                }),
-            });
-
-            const result = await response.json();
-            console.log('Has Answer updated:', result);
-        } catch (err) {
-            console.error('Error during update:', err);
-        }
 
         if (!correct || !studentId || !existingJam) return;
 
