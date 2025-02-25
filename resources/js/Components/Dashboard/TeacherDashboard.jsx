@@ -169,9 +169,7 @@ export function TeacherDashboard(result) {
                                             <div className="flex md:flex-col md:gap-0 gap-5 md:bg-transparent bg-yellow-100 rounded-2xl md:items-end items-center md:justify-end justify-center p-4">
                                                 <p>Average score</p>
                                                 <h1 className="rounded-2xl text-warning font-bold text-3xl">
-                                                    {student.scores.length > 0 &&
-                                                    student.scores[0].category &&
-                                                    student.scores[0].score
+                                                    {student.scores.length > 0 && student.scores[0].category
                                                         ? (
                                                               (student.scores.reduce(
                                                                   (acc, score) => acc + score.score,
@@ -187,9 +185,7 @@ export function TeacherDashboard(result) {
                                                 </h1>
                                             </div>
                                         </div>
-                                        {student.scores.length > 0 &&
-                                        student.scores[0].category &&
-                                        student.scores[0].score ? (
+                                        {student.scores.length > 0 && student.scores[0].category ? (
                                             <div className="p-4 mt-3 bg-gray-100 rounded-2xl">
                                                 <div className="flex justify-between items-center mb-5">
                                                     <h1 className="font-semibold text-xl text-gray-600 ">
