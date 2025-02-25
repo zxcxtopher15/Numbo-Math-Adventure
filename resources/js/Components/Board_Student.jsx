@@ -152,13 +152,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
                     </div>
                 </div>
                 <div className="flex flex-col bg-gray-200 h-full rounded-3xl md:p-6 p-2 gap-4 lg:w-4/12 sm:w-full w-full ">
-                    {existingJam && existingJam.show_scores ? (
-                        <div className="flex justify-start items-center w-full p-4 bg-white rounded-3xl px-6 gap-8 ">
-                            <img className="w-14 h-14" src="/images/assets/stars/glossy_3.svg" alt="" />
-                            <h1 className="text-warning font-bold text-6xl">
-                            </h1>
-                        </div>
-                    ) : (
+                    {existingJam && existingJam.show_scores === 1 && (
                         <div className="flex justify-start items-center w-full p-4 bg-white rounded-3xl px-6 gap-8 ">
                             <img className="w-14 h-14" src="/images/assets/stars/glossy_3.svg" alt="" />
                             <h1 className="text-warning font-bold text-6xl">
