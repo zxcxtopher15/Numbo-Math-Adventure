@@ -1,9 +1,7 @@
-export default function Avatar({ name, image }) {
-    let url = '';
+export default function Avatar({ name, image, className }) {
+    const url = image
+        ? `/images/assets/profiles/${image}`
+        : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&font-family=Fredoka&bold=true&color=F68C8C&background=F1EFEF`;
 
-    image
-        ? (url = '/images/assets/profiles/' + image)
-        : (url = ` https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&font-family=Fredoka&bold=true&color=F68C8C&background=F1EFEF`);
-
-    return <img src={url} alt={name} className="rounded-xl" />;
+    return <img src={url} alt={name} className={`rounded-xl ${className}`} />;
 }

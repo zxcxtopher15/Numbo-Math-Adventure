@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Settings2, LayoutDashboard, Dices, HelpCircle } from 'lucide-react';
+import { Settings2, LayoutDashboard, Dices, HelpCircle, LayoutList } from 'lucide-react';
 import { Plus } from 'lucide-react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import {
@@ -57,6 +57,12 @@ export function AppSidebar(props) {
             url: '/questions',
             icon: HelpCircle,
             isActive: window.location.pathname === '/questions',
+        });
+        data.navMain.push({
+            title: 'Sections',
+            url: '/sections',
+            icon: LayoutList,
+            isActive: window.location.pathname === '/sections',
         });
     }
 
