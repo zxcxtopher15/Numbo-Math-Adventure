@@ -22,49 +22,49 @@ import Swal from 'sweetalert2';
 const sectionData = {
     // kukunin nito par yung active lang pag walang active gar pa return nalang as empty []
     section_id: 1,
-    is_active: 0,
+    is_active: 1,
     teacher_name: 'John Doe',
     students: [
-        {
-            id: 1,
-            name: 'John Doe',
-        },
-        {
-            id: 2,
-            name: 'Jane Doe',
-        },
-        {
-            id: 3,
-            name: 'Bob Smith',
-        },
-        {
-            id: 4,
-            name: 'Alice Johnson',
-        },
-        {
-            id: 5,
-            name: 'Michael Brown',
-        },
-        {
-            id: 6,
-            name: 'Emily Davis',
-        },
-        {
-            id: 7,
-            name: 'William Taylor',
-        },
-        {
-            id: 8,
-            name: 'Sarah Lee',
-        },
-        {
-            id: 9,
-            name: 'Kevin White',
-        },
-        {
-            id: 10,
-            name: 'Olivia Martin',
-        },
+        // {
+        //     id: 1,
+        //     name: 'John Doe',
+        // },
+        // {
+        //     id: 2,
+        //     name: 'Jane Doe',
+        // },
+        // {
+        //     id: 3,
+        //     name: 'Bob Smith',
+        // },
+        // {
+        //     id: 4,
+        //     name: 'Alice Johnson',
+        // },
+        // {
+        //     id: 5,
+        //     name: 'Michael Brown',
+        // },
+        // {
+        //     id: 6,
+        //     name: 'Emily Davis',
+        // },
+        // {
+        //     id: 7,
+        //     name: 'William Taylor',
+        // },
+        // {
+        //     id: 8,
+        //     name: 'Sarah Lee',
+        // },
+        // {
+        //     id: 9,
+        //     name: 'Kevin White',
+        // },
+        // {
+        //     id: 10,
+        //     name: 'Olivia Martin',
+        // },
     ],
 };
 
@@ -198,7 +198,7 @@ const Sections = () => {
                     <div className="p-4 space-y-4">
                         <div className="bg-blue-50 border border-4 flex flex-col sm:flex-row justify-between border-blue-300 p-5 rounded-3xl">
                             <div className="text-2xl font-semibold text-primary"> Section</div>
-                            {sectionData ? ( // pag may active na section achieve lalabas dito
+                            {!sectionData ? ( // pag may active na section achive lalabas dito
                                 <button
                                     className="bg-red-600 font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
                                     onClick={handleArchive}
@@ -214,37 +214,59 @@ const Sections = () => {
                                 </button>
                             )}
                         </div>
-
-                        <div className="p-4 border rounded-3xl">
-                            <div className="p-6 bg-white rounded-2xl space-y-4">
-                                <div className="bg-white mb-10 flex flex-col sm:flex-row justify-between  items-center rounded-2xl">
-                                    <h1 className="text-2xl font-semibold text-blue-500">Student List</h1>
-                                    <button
-                                        onClick={handleAddStudent}
-                                        className="bg-blue-500 text-sm font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
-                                    >
-                                        Add Students
-                                    </button>
-                                </div>
-                                {sectionData.students.map((student) => (
-                                    <div
-                                        key={student.id}
-                                        className="flex items-center justify-between gap-4 pb-4 border-b border-gray-300"
-                                    >
-                                        <div className="flex items-center justify-start gap-3">
-                                            <Avatar name={student.name} className={'w-12 h-12'} />
-                                            <h3 className="font-medium text-lg text-gray-700">{student.name}</h3>
-                                        </div>
+                        {sectionData ? (
+                            <div className="p-4 border rounded-3xl">
+                                <div className="p-6 bg-white rounded-2xl space-y-4">
+                                    <div className="bg-white mb-10 flex flex-col sm:flex-row justify-between  items-center rounded-2xl">
+                                        <h1 className="text-2xl font-semibold text-blue-500">Student List</h1>
                                         <button
-                                            className="bg-danger text-white p-1 rounded-full hover:scale-110 transition duration-200 ease-in-out"
-                                            onClick={handleDeleteStudent}
+                                            onClick={handleAddStudent}
+                                            className="bg-blue-500 text-sm font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
                                         >
-                                            <IoClose />
+                                            Add Students
                                         </button>
                                     </div>
-                                ))}
+
+                                    {sectionData.students.length === 0 ? (
+                                        <div className="p-6 bg-white rounded-2xl space-y-4 flex flex-col justify-center items-center">
+                                            <img src="/images/assets/background/not_found.svg" alt="" />
+                                            <h1 className="text-primary text-3xl font-bold text-center">
+                                                No Students Found!
+                                            </h1>
+                                        </div>
+                                    ) : (
+                                        sectionData.students.map((student) => (
+                                            <div
+                                                key={student.id}
+                                                className="flex items-center justify-between gap-4 pb-4 border-b border-gray-300"
+                                            >
+                                                <div className="flex items-center justify-start gap-3">
+                                                    <Avatar name={student.name} className={'w-12 h-12'} />
+                                                    <h3 className="font-medium text-lg text-gray-700">
+                                                        {student.name}
+                                                    </h3>
+                                                </div>
+                                                <button
+                                                    className="bg-danger text-white p-1 rounded-full hover:scale-110 transition duration-200 ease-in-out"
+                                                    onClick={handleDeleteStudent}
+                                                >
+                                                    <IoClose />
+                                                </button>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="p-4 border rounded-3xl">
+                                <div className="p-6 bg-white rounded-2xl space-y-4 flex flex-col justify-center items-center">
+                                    <img src="/images/assets/background/not_found.svg" alt="" />
+                                    <h1 className="text-primary text-3xl font-bold text-center">
+                                        Opps! No Active Section Found
+                                    </h1>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
