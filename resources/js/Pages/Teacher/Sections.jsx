@@ -25,46 +25,46 @@ const sectionData = {
     is_active: 1,
     teacher_name: 'John Doe',
     students: [
-        // {
-        //     id: 1,
-        //     name: 'John Doe',
-        // },
-        // {
-        //     id: 2,
-        //     name: 'Jane Doe',
-        // },
-        // {
-        //     id: 3,
-        //     name: 'Bob Smith',
-        // },
-        // {
-        //     id: 4,
-        //     name: 'Alice Johnson',
-        // },
-        // {
-        //     id: 5,
-        //     name: 'Michael Brown',
-        // },
-        // {
-        //     id: 6,
-        //     name: 'Emily Davis',
-        // },
-        // {
-        //     id: 7,
-        //     name: 'William Taylor',
-        // },
-        // {
-        //     id: 8,
-        //     name: 'Sarah Lee',
-        // },
-        // {
-        //     id: 9,
-        //     name: 'Kevin White',
-        // },
-        // {
-        //     id: 10,
-        //     name: 'Olivia Martin',
-        // },
+        {
+            id: 1,
+            name: 'John Doe',
+        },
+        {
+            id: 2,
+            name: 'Jane Doe',
+        },
+        {
+            id: 3,
+            name: 'Bob Smith',
+        },
+        {
+            id: 4,
+            name: 'Alice Johnson',
+        },
+        {
+            id: 5,
+            name: 'Michael Brown',
+        },
+        {
+            id: 6,
+            name: 'Emily Davis',
+        },
+        {
+            id: 7,
+            name: 'William Taylor',
+        },
+        {
+            id: 8,
+            name: 'Sarah Lee',
+        },
+        {
+            id: 9,
+            name: 'Kevin White',
+        },
+        {
+            id: 10,
+            name: 'Olivia Martin',
+        },
     ],
 };
 
