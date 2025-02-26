@@ -84,6 +84,10 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::post('/math-journey/update_current_question', [MathJamController::class, 'update_current_question']);
     Route::delete('/questions/{id}', [QuestionController::class, 'destroy'])->name('questions.destroy');
     Route::post('/math-journey/update_score', [MathJamController::class, 'update_score']);
+
+    Route::get('/sections', function () {
+        return Inertia::render('Teacher/Sections');
+    })->name('teacher.sections');
 });
 
 Route::group(['middleware' => 'student'], function () {

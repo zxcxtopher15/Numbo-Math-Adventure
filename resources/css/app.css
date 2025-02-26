@@ -181,3 +181,14 @@
         fadeIn 1s forwards,
         fadeOut 1s 1s forwards;
 }
+
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    }
+}
