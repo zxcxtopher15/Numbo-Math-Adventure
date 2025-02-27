@@ -21,12 +21,12 @@ const AddStudent = () => {
     const { students } = usePage().props;
 
     const handleEmail = async () => {
-        if (!email.endsWith('@my.jru.edu')) {
-            setShowEmailModal(false);
-            setEmail('');
-            Swal.fire('Error', 'Only @my.jru.edu email addresses are allowed.', 'error');
-            return;
-        }
+        // if (!email.endsWith('@my.jru.edu')) {
+        //     setShowEmailModal(false);
+        //     setEmail('');
+        //     Swal.fire('Error', 'Only @my.jru.edu email addresses are allowed.', 'error');
+        //     return;
+        // }
 
         setShowEmailModal(false);
 
@@ -73,7 +73,10 @@ const AddStudent = () => {
 
     const handleOtp = async () => {
         if (otp.length !== 6) {
-            Swal.fire("Error", "OTP Field is required and must be 6 digits.", "error");
+            setShowOtpModal(false);
+            Swal.fire("Error", "OTP Field is required and must be 6 digits.", "error").then(() => {
+                setShowOtpModal(true);
+            });
             return;
         }
 
@@ -82,6 +85,7 @@ const AddStudent = () => {
 
             setOtpAttempts(0);
 
+            setShowOtpModal(false);
             Swal.fire({
                 title: 'OTP Verified!',
                 text: "The student's email has been successfully verified.",
