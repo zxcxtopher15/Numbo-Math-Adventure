@@ -55,10 +55,10 @@ export function AppSidebar(props) {
             ...(userType == 'Administrator'
                 ? [
                     {
-                        title: 'Game Category',
-                        url: 'game_category',
-                        icon: SquareLibrary,
-                        isActive: window.location.pathname === '/game_category',
+                        title: 'Sections',
+                        url: '/section_list',
+                        icon: LayoutList,
+                        isActive: window.location.pathname === '/section_list',
                     },
                 ]
                 : []),

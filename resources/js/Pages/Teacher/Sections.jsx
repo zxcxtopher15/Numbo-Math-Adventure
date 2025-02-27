@@ -279,7 +279,6 @@ const Sections = () => {
                         </DialogHeader>
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                ``
                                 <InputLabel htmlFor="sectionName" className="block text-lg font-medium text-gray-700">
                                     Section Name
                                 </InputLabel>
