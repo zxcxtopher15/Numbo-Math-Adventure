@@ -59,7 +59,9 @@ Route::middleware('auth')->group(function () {
 Route::get('/get_ordered_questions', [MathJamController::class, 'getOrderedQuestions']);
 
 Route::group(['middleware' => 'administrator'], function () {
-    
+    Route::get('/game_category', function () {
+        return Inertia::render('GameCategory');
+    })->middleware(['auth', 'verified'])->name('game_category');
 });
 
 Route::group(['middleware' => 'teacher'], function () {

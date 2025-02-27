@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Settings2, LayoutDashboard, Dices, HelpCircle, LayoutList } from 'lucide-react';
+import { Settings2, LayoutDashboard, Dices, HelpCircle, LayoutList, SquareLibrary } from 'lucide-react';
 import { Plus } from 'lucide-react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import {
@@ -49,6 +49,16 @@ export function AppSidebar(props) {
                         url: 'view_modules',
                         icon: Settings2,
                         isActive: window.location.pathname === '/view_modules',
+                    },
+                ]
+                : []),
+            ...(userType == 'Administrator'
+                ? [
+                    {
+                        title: 'Game Category',
+                        url: 'game_category',
+                        icon: SquareLibrary,
+                        isActive: window.location.pathname === '/game_category',
                     },
                 ]
                 : []),
