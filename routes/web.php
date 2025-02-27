@@ -44,6 +44,9 @@ Route::get('/student-results', [MathJamController::class, 'getStudentResults']);
 Route::get('/parent-student-results', [MathJamController::class, 'getStudentResultsParent']);
 
 Route::get('/view_modules', function () {
+    if (Auth::check() && Auth::user()->user_type === 'Administrator') {
+        return redirect()->route('dashboard');
+    }
     return Inertia::render('Modules/Modules', request()->all());
 })->middleware(['auth', 'verified'])->name('view.modules');
 

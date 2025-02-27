@@ -32,22 +32,26 @@ export function AppSidebar(props) {
             },
             ...(userType === 'Teacher' || userType === 'Student'
                 ? [
-                      {
-                          title: 'Math Journey ',
-                          url: userType === 'Teacher' ? '/math-journey' : '/math-journey-join',
-                          icon: Dices,
-                          isActive:
-                              window.location.pathname === '/math-journey' ||
-                              window.location.pathname === '/math-journey-join',
-                      },
-                  ]
+                    {
+                        title: 'Math Journey ',
+                        url: userType === 'Teacher' ? '/math-journey' : '/math-journey-join',
+                        icon: Dices,
+                        isActive:
+                            window.location.pathname === '/math-journey' ||
+                            window.location.pathname === '/math-journey-join',
+                    },
+                ]
                 : []),
-            {
-                title: 'Modules',
-                url: 'view_modules',
-                icon: Settings2,
-                isActive: window.location.pathname === '/view_modules',
-            },
+            ...(userType !== 'Administrator'
+                ? [
+                    {
+                        title: 'Modules',
+                        url: 'view_modules',
+                        icon: Settings2,
+                        isActive: window.location.pathname === '/view_modules',
+                    },
+                ]
+                : []),
         ],
     };
 

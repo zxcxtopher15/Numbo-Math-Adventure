@@ -17,7 +17,7 @@ export default defineConfig({
     ],
     server: {
         watch: {
-          usePolling: true, // Fixes auto-reloading issues on some systems
+          usePolling: false, // Fixes auto-reloading issues on some systems
         },
         hmr: {
           host: 'numbo-math-adventure.test', // Adjust if using Docker/WSL
