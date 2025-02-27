@@ -21,12 +21,12 @@ const AddStudent = () => {
     const { students } = usePage().props;
 
     const handleEmail = async () => {
-        // if (!email.endsWith('@my.jru.edu')) {
-        //     setShowEmailModal(false);
-        //     setEmail('');
-        //     Swal.fire('Error', 'Only @my.jru.edu email addresses are allowed.', 'error');
-        //     return;
-        // }
+        if (!email.endsWith('@my.jru.edu')) {
+            setShowEmailModal(false);
+            setEmail('');
+            Swal.fire('Error', 'Only @my.jru.edu email addresses are allowed.', 'error');
+            return;
+        }
 
         setShowEmailModal(false);
 
