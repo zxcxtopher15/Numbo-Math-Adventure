@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditTrail;
 use App\Models\MathJam;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -46,6 +47,12 @@ class MathJamController extends Controller
             'category' => $request->category,
             'show_scores' => $request->show_scores,
             'status' => 'waiting',
+        ]);
+
+        AuditTrail::create([
+            'user_id' => $request->teacher_id,
+            'action' => 'Created Math Journey (ID: ' . $mathJam->id . ') for ' . $mathJam->math_journey_for,
+            'created_at' => now()
         ]);
 
         return response()->json([
@@ -131,6 +138,12 @@ class MathJamController extends Controller
         $jam->status = 'cancelled';
         $jam->save();
 
+        AuditTrail::create([
+            'user_id' => $jam->teacher_id,
+            'action' => 'Cancelled Math Journey (ID: ' . $jam->id . ') for ' . $jam->math_journey_for,
+            'created_at' => now()
+        ]);
+
         return response()->json([
             'message' => 'Math Journey has been cancelled.',
             'jam' => $jam,
@@ -178,6 +191,12 @@ class MathJamController extends Controller
                     'status' => 'joined',
                     'score' => 0,
                     'joined_at' => now(),
+                ]);
+
+                AuditTrail::create([
+                    'user_id' => $validated['student_id'],
+                    'action' => 'Joined Math Journey (ID: ' . $mathJam->id . ') for ' . $mathJam->math_journey_for,
+                    'created_at' => now()
                 ]);
 
                 return response()->json([
@@ -254,6 +273,10 @@ class MathJamController extends Controller
             ->latest()
             ->first();
 
+        $mathJam = MathJam::where('math_jam_code', $validated['math_jam_code'])
+        ->whereNotIn('status', ['cancelled', 'ended'])
+        ->get();
+
         if (!$participant) {
             return response()->json(['message' => 'No active participation found', 'error' => true], 200);
         }
@@ -261,6 +284,12 @@ class MathJamController extends Controller
         $participant->disconnected_at = now();
         $participant->status = 'disconnected';
         $participant->save();
+
+        AuditTrail::create([
+            'user_id' => $validated['student_id'],
+            'action' => 'Disconnected on Math Journey (ID: ' . $mathJam->id . ') for ' . $mathJam->math_journey_for,
+            'created_at' => now()
+        ]);
 
         return response()->json([
             'participant' => $participant,
