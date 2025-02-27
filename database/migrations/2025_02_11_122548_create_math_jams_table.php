@@ -15,7 +15,10 @@ return new class extends Migration {
             $table->integer('num_questions');
             $table->integer('time_limit');
             $table->string('category');
+            $table->string('math_journey_for');
             $table->boolean('show_scores')->default(true);
+            $table->boolean('is_paused')->default(false);
+            $table->integer('current_question_id')->default(0);
             $table->string('status')->default('waiting');
             $table->timestamps();
 

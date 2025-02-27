@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('math_jam_id');
             $table->unsignedBigInteger('question_id');
             $table->integer('order_number');
-            $table->integer('time');
+            $table->tinyInteger('status')->default(0);
             $table->timestamps();
         });
     }

@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('otps', function (Blueprint $table) {
+        Schema::create('parent_student_relation', function (Blueprint $table) {
             $table->id();
+            $table->integer('parent_id');
+            $table->integer('student_id');
+            $table->tinyInteger('status')->default(0);
             $table->timestamps();
         });
     }
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('otps');
+        Schema::dropIfExists('parent_student_relation');
     }
 };

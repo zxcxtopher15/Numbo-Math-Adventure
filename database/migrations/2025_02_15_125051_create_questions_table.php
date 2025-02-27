@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
+            $table->integer('section_id');
             $table->string('category');
             $table->string('question_type')->nullable();
-            // $table->integer('number_1');
-            // $table->integer('number_2');
             $table->string('question');
             $table->json('choices');
             $table->string('correct_answer');
