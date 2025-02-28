@@ -37,6 +37,10 @@ class AuthenticatedSessionController extends Controller
             return redirect()->back()->withErrors(['email' => 'Your account is disabled. Please contact admin.']);
         }
 
+        if ($user && $user->section_id == 0) {
+            return redirect()->back()->withErrors(['email' => "You can't login yet. No section assigned! Please contact admin."]);
+        }
+
         $request->authenticate();
         $request->session()->regenerate();
 

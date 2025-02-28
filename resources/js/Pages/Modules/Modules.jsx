@@ -28,22 +28,27 @@ export default function Modules({ }) {
     const [modulesData, setModuleData] = useState([]);
     const { auth } = usePage().props;
     const userType = auth?.user?.user_type;
+    const section_id = auth?.user?.section_id;
 
     useEffect(() => {
         axios.get('/get_all_modules')
             .then(response => {
                 const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
 
-                const formattedModules = response.data.map(module => ({
-                    module_id: module.id,
-                    module_name: module.module_name,
-                    module_desc: module.module_desc,
-                    module_file_desc: module.module_file_desc,
-                    file: module.file_name.split(',').map((file, index) => ({
+                const formattedModules = response.data.map(module => {
+                    const files = module.file_name.split(',').map((file, index) => ({
                         file_name: file.trim(),
-                        file_path: `${baseUrl}/modules/${module.file_path.split(',')[index].trim()}`,
-                    }))
-                }));
+                        file_path: module.file_path.split(',')[index]?.trim() ? `${baseUrl}/modules/${module.file_path.split(',')[index].trim()}` : ''
+                    })).filter(file => file.file_name && file.file_path);
+
+                    return {
+                        module_id: module.id,
+                        module_name: module.module_name,
+                        module_desc: module.module_desc,
+                        module_file_desc: module.module_file_desc,
+                        file: files.length > 0 ? files : []
+                    };
+                });
 
                 setModuleData(formattedModules);
             })
@@ -51,6 +56,7 @@ export default function Modules({ }) {
                 console.error("There was an error fetching the modules:", error);
             });
     }, []);
+
 
     const toggleModal = () => setIsModalOpen(!isModalOpen);
     const toggleEditModal = () => setIsEditModalOpen(!isEditModalOpen);
@@ -61,6 +67,7 @@ export default function Modules({ }) {
         e.preventDefault();
 
         const formData = new FormData();
+        formData.append('section_id', section_id);
         formData.append('module_name', data.module_name);
         formData.append('module_desc', data.module_desc);
         formData.append('module_file_desc', data.module_file_desc);
@@ -104,6 +111,7 @@ export default function Modules({ }) {
         e.preventDefault();
 
         const formData = new FormData();
+        formData.append('section_id', section_id);
         formData.append('module_name', editModuleData.module_name);
         formData.append('module_desc', editModuleData.module_desc);
         formData.append('module_file_desc', editModuleData.module_file_desc);
