@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\MathJam;
+use App\Models\Section;
+use App\Models\Question;
 use App\Models\AuditTrail;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -23,6 +25,25 @@ class MathJamController extends Controller
             'category' => 'required|string',
             'show_scores' => 'required|boolean',
         ]);
+
+        $sectionId = Auth::user()->section_id;
+
+        $has_questions = Question::where('section_id', $sectionId)
+            ->where('status', 0)
+            ->where('category',  $request->category)
+            ->get();
+
+        if ($has_questions->isEmpty()) {
+            return response()->json([
+                'message' => 'No available questions for the selected category in this section.',
+            ], 400);
+        }
+
+        if ($has_questions->count() < $request->num_questions) {
+            return response()->json([
+                'message' => 'Not enough questions. Requested: ' . $request->num_questions . ', Available: ' . $has_questions->count(),
+            ], 400);
+        }
 
         $existingJam = MathJam::where('teacher_id', $request->teacher_id)
             ->whereIn('status', ['waiting', 'started'])
@@ -50,9 +71,11 @@ class MathJamController extends Controller
             'status' => 'waiting',
         ]);
 
+        $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
+
         AuditTrail::create([
-            'user_id' => $request->teacher_id,
-            'action' => 'Created Math Journey (ID: ' . $mathJam->id . ') for ' . $mathJam->math_journey_for,
+            'user_id' => Auth::user()->id,
+            'action' => 'Created Math Journey for ' . $mathJam->math_journey_for . ' in ' . $section_name . ' section',
             'created_at' => now()
         ]);
 
@@ -139,9 +162,11 @@ class MathJamController extends Controller
         $jam->status = 'cancelled';
         $jam->save();
 
+        $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
+
         AuditTrail::create([
-            'user_id' => $jam->teacher_id,
-            'action' => 'Cancelled Math Journey (ID: ' . $jam->id . ') for ' . $jam->math_journey_for,
+            'user_id' => Auth::user()->id,
+            'action' => 'Cancelled Math Journey for ' . $jam->math_journey_for . ' in ' . $section_name . ' section',
             'created_at' => now()
         ]);
 
@@ -208,9 +233,11 @@ class MathJamController extends Controller
                     'joined_at' => now(),
                 ]);
 
+                $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
+
                 AuditTrail::create([
-                    'user_id' => $validated['student_id'],
-                    'action' => 'Joined Math Journey (ID: ' . $mathJam->id . ') for ' . $mathJam->math_journey_for,
+                    'user_id' => Auth::user()->id,
+                    'action' => 'Joined Math Journey for ' . $mathJam->math_journey_for . ' in ' . $section_name . ' section',
                     'created_at' => now()
                 ]);
 
@@ -333,9 +360,11 @@ class MathJamController extends Controller
         $participant->status = 'disconnected';
         $participant->save();
 
+        $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
+
         AuditTrail::create([
-            'user_id' => $validated['student_id'],
-            'action' => 'Disconnected on Math Journey (ID: ' . $mathJam->id . ') for ' . $mathJam->math_journey_for,
+            'user_id' => Auth::user()->id,
+            'action' => 'Disconnected in Math Journey for ' . $mathJam->math_journey_for . ' in ' . $section_name . ' section',
             'created_at' => now()
         ]);
 
@@ -376,6 +405,14 @@ class MathJamController extends Controller
             'status' => 'joined',
             'updated_at' => now(),
             'disconnected_at' => null,
+        ]);
+
+        $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
+
+        AuditTrail::create([
+            'user_id' => Auth::user()->id,
+            'action' => 'Reconnected in Math Journey for ' . $mathJam->math_journey_for . ' in ' . $section_name . ' section',
+            'created_at' => now()
         ]);
 
         return response()->json([
@@ -504,6 +541,14 @@ class MathJamController extends Controller
             $mathJam->updated_at = now();
             $mathJam->save();
 
+            $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
+
+            AuditTrail::create([
+                'user_id' => Auth::user()->id,
+                'action' => 'Disconnected in Math Journey for ' . $mathJam->math_journey_for . ' in ' . $section_name . ' section',
+                'created_at' => now()
+            ]);
+
             return response()->json([
                 'jam' => $mathJam,
                 'message' => 'MathJam disconnected successfully',
@@ -609,6 +654,8 @@ class MathJamController extends Controller
 
     public function getStudentResults()
     {
+        $sectionId = Auth::user()->section_id;
+
         $rawData = DB::table('users')
             ->leftJoin('math_jam_participants', 'users.id', '=', 'math_jam_participants.student_id')
             ->leftJoin('math_jams', 'math_jam_participants.math_jam_id', '=', 'math_jams.id')
@@ -622,6 +669,7 @@ class MathJamController extends Controller
                 'math_jam_participants.created_at as date'
             )
             ->where('users.user_type', 'Student')
+            ->where('users.section_id', $sectionId)
             ->get();
 
         $formattedData = [];
@@ -731,6 +779,8 @@ class MathJamController extends Controller
             'student_id' => 'required|exists:users,id',
         ]);
 
+        $mathJam = MathJam::where('math_jam_code', $validated['math_jam_code'])->first();
+
         $participant = MathJamParticipant::where('student_id', $validated['student_id'])
             ->whereHas('MathJam', function ($query) use ($validated) {
                 $query->where('math_jam_code', $validated['math_jam_code']);
@@ -745,6 +795,14 @@ class MathJamController extends Controller
         }
 
         $participant->delete();
+
+        $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
+
+        AuditTrail::create([
+            'user_id' => Auth::user()->id,
+            'action' => 'Left in Math Journey for ' . $mathJam->math_journey_for . ' in ' . $section_name . ' section',
+            'created_at' => now()
+        ]);
 
         return response()->json([
             'message' => 'Participant removed successfully',

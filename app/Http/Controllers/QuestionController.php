@@ -2,16 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Question;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Section;
+use App\Models\Question;
+use App\Models\AuditTrail;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class QuestionController extends Controller
 {
     public function index(): Response
     {
-        $questions = Question::all();
+        $sectionId = Auth::user()->section_id;
+
+        $questions = Question::where('status', 0)
+            ->where('section_id', $sectionId)
+            ->get();
 
         return Inertia::render('Teacher/Questions', [
             'questions' => $questions
@@ -21,6 +28,7 @@ class QuestionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'section_id' => 'required|exists:sections,id',
             'category' => 'required|string',
             'question' => 'required|string',
             'choices' => 'required|array|max:4',
@@ -29,11 +37,21 @@ class QuestionController extends Controller
 
         Question::create($request->all());
 
+        $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
+        
+        AuditTrail::create([
+            'user_id' => Auth::user()->id,
+            'action' => 'Added Question: ' . $request->question . ' for Section ' . $section_name,
+            'created_at' => now()
+        ]);
+
         return redirect()->route('questions')->with('success', 'Question added successfully.');
     }
 
     public function getQuestions(Request $request)
     {
+        $sectionId = Auth::user()->section_id;
+
         $categoryTitle = $request->query('categoryTitle');
         $num_questions = $request->query('num_questions');
 
@@ -70,6 +88,7 @@ class QuestionController extends Controller
                 if ($remainingQuestions > 0) {
                     $additionalQuestions = Question::where('category', $category)
                         ->where('status', 0)
+                        ->where('section_id', $sectionId)
                         ->whereNotIn('id', array_column($allFetchedQuestions, 'id'))
                         ->inRandomOrder()
                         ->limit($remainingQuestions)
@@ -94,8 +113,17 @@ class QuestionController extends Controller
     public function destroy($id)
     {
         $question = Question::findOrFail($id);
-        $question->delete();
+        $question->status = 1;
+        $question->save();
 
-        return response()->json(['message' => 'Question deleted successfully.']);
+        $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
+        
+        AuditTrail::create([
+            'user_id' => Auth::user()->id,
+            'action' => 'Remove Question: ' . $question->question . ' for Section ' . $section_name,
+            'created_at' => now()
+        ]);
+
+        return response()->json(['message' => 'Question status updated successfully.']);
     }
 }

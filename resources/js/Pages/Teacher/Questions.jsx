@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Label } from '@/components/ui/label';
 export default function Questions({ questions = [] }) {
     const { auth } = usePage().props;
+    const section_id = auth?.user?.section_id;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalCategoryOpen, setIsModalCategoryOpen] = useState(false);
     const [isEditQuestionModalOpen, setIsEditQuestionModalOpen] = useState(false);
@@ -22,6 +23,7 @@ export default function Questions({ questions = [] }) {
     const [selectedQuestion, setSelectedQuestion] = useState(null);
 
     const { data, setData, post, reset } = useForm({
+        section_id: section_id,
         category: '',
         question: '',
         choices: ['', '', '', ''],
@@ -60,14 +62,69 @@ export default function Questions({ questions = [] }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route('questions.store'), {
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            },
-            onSuccess: () => {
-                reset();
-                toggleModal();
-            },
+        setIsModalOpen(false);
+        const trimmedChoices = data.choices.map(choice => choice.trim());
+        const trimmedCorrectAnswer = data.correct_answer.trim();
+
+        if (!data.category.trim() || !data.question.trim() || trimmedChoices.some(choice => choice === '') || trimmedCorrectAnswer === '') {
+            Swal.fire({
+                icon: "error",
+                title: "Validation Error",
+                text: "All fields are required.",
+            }).then(() => {
+                setIsModalOpen(true);
+            });
+            return;
+        }
+
+        const uniqueChoices = new Set(trimmedChoices);
+        if (uniqueChoices.size !== trimmedChoices.length) {
+            Swal.fire({
+                icon: "error",
+                title: "Validation Error",
+                text: "Each choice must be unique.",
+            }).then(() => {
+                setIsModalOpen(true);
+            });
+            return;
+        }
+
+        if (!trimmedChoices.includes(trimmedCorrectAnswer)) {
+            Swal.fire({
+                icon: "error",
+                title: "Validation Error",
+                text: "The correct answer must be one of the choices.",
+            }).then(() => {
+                setIsModalOpen(true);
+            });
+            return;
+        }
+
+        Swal.fire({
+            icon: "question",
+            title: "Are you sure?",
+            text: "Do you want to save this question?",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, save it!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                post(route("questions.store"), {
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                    },
+                    onSuccess: () => {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Success",
+                            text: "Question added successfully!",
+                        });
+                        reset();
+                        toggleModal();
+                    },
+                });
+            }
         });
     };
 
@@ -277,6 +334,18 @@ export default function Questions({ questions = [] }) {
                             ))}
                         </SelectInput>
                         <InputLabel htmlFor="category" value="Category" />
+
+                        <TextInput
+                            type="hidden"
+                            name="section_id"
+                            value={section_id}
+                        />
+
+                        <TextInput
+                            type="hidden"
+                            name="section_id"
+                            value={section_id}
+                        />
 
                         <SelectInput
                             name="category"
