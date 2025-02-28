@@ -16,8 +16,9 @@ import { Label } from '@/components/ui/label';
 export default function Questions({ questions = [] }) {
     const { auth } = usePage().props;
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isModalLessonOpen, setIsModalLessonOpen] = useState(false);
+    const [isModalCategoryOpen, setIsModalCategoryOpen] = useState(false);
     const [isEditQuestionModalOpen, setIsEditQuestionModalOpen] = useState(false);
+    const [isModalGameTypeOpen, setIsModalGameTypeOpen] = useState(false);
     const [selectedQuestion, setSelectedQuestion] = useState(null);
 
     const { data, setData, post, reset } = useForm({
@@ -31,14 +32,23 @@ export default function Questions({ questions = [] }) {
         setIsModalOpen(!isModalOpen);
     };
 
-    const toggleModalLesson = () => {
-        setIsModalLessonOpen(!isModalLessonOpen);
+    const toggleModalGameType = () => {
+        setIsModalGameTypeOpen(!isModalGameTypeOpen);
+    };
+    const toggleModalCategory = () => {
+        setIsModalCategoryOpen(!isModalCategoryOpen);
     };
     const toggleEditQuestionModal = () => {
         setIsEditQuestionModalOpen(!isEditQuestionModalOpen);
     };
 
     const handleChange = (e) => {
+        setData(e.target.name, e.target.value);
+    };
+    const handleChangeCategory = (e) => {
+        setData(e.target.name, e.target.value);
+    };
+    const handleChangeGameType = (e) => {
         setData(e.target.name, e.target.value);
     };
 
@@ -92,6 +102,10 @@ export default function Questions({ questions = [] }) {
         });
     };
 
+    const handleSubmitCategory = () => {};
+
+    const handleSubmitGameType = () => {};
+
     const handleEditQuestion = (question) => {
         setSelectedQuestion(question);
         toggleEditQuestionModal();
@@ -121,24 +135,32 @@ export default function Questions({ questions = [] }) {
                     <div className="p-4 space-y-4">
                         <div className="grid lg:grid-cols-2 gap-4 grid-cols-1">
                             <div className="bg-blue-50 border border-4 flex flex-col sm:flex-row justify-between border-blue-300 p-5 rounded-3xl">
-                                <div className="text-2xl font-semibold text-primary"> Add Category</div>
+                                <div className="text-2xl font-semibold text-primary"> Game Type</div>
                                 <button
-                                    onClick={toggleModalLesson}
+                                    onClick={toggleModalGameType}
+                                    className="bg-primary font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
+                                >
+                                    Add Game Type
+                                </button>
+                            </div>
+                            <div className="bg-blue-50 border border-4 flex flex-col sm:flex-row justify-between border-blue-300 p-5 rounded-3xl">
+                                <div className="text-2xl font-semibold text-primary"> Category</div>
+                                <button
+                                    onClick={toggleModalCategory}
                                     className="bg-primary font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
                                 >
                                     Add Category
                                 </button>
                             </div>
-
-                            <div className="bg-blue-50 border border-4 flex flex-col sm:flex-row justify-between border-blue-300 p-5 rounded-3xl">
-                                <div className="text-2xl font-semibold text-primary"> Add a New Question</div>
-                                <button
-                                    onClick={toggleModal}
-                                    className="bg-primary font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
-                                >
-                                    Add Question
-                                </button>
-                            </div>
+                        </div>
+                        <div className="bg-blue-50 border border-4 flex flex-col sm:flex-row justify-between border-blue-300 p-5 rounded-3xl">
+                            <div className="text-2xl font-semibold text-primary"> Add a New Question</div>
+                            <button
+                                onClick={toggleModal}
+                                className="bg-primary font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
+                            >
+                                Add Question
+                            </button>
                         </div>
 
                         {Object.keys(Categories).map((category) => {
@@ -409,18 +431,60 @@ export default function Questions({ questions = [] }) {
                     </form>
                 </DialogContent>
             </Dialog>
-            <Dialog open={isModalLessonOpen} onOpenChange={toggleModalLesson} className="fixed inset-0 overflow-y-auto">
+            <Dialog
+                open={isModalCategoryOpen}
+                onOpenChange={toggleModalCategory}
+                className="fixed inset-0 overflow-y-auto"
+            >
                 <DialogContent className="overflow-y-auto max-h-[80vh] max-w-lg">
-                    <form onSubmit={handleSubmit} className="">
+                    <form onSubmit={handleSubmitCategory} className="">
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-semibold mb-5">Add Category</DialogTitle>
                         </DialogHeader>
                         <InputLabel htmlFor="category" value="Category Name" />
-                        <TextInput type="text" name="category" onChange={handleChange} className="border w-full p-2 " />
+                        <TextInput
+                            type="text"
+                            name="category"
+                            onChange={handleChangeCategory}
+                            className="border w-full p-2 "
+                        />
                         <div className="bg-white sticky bottom-0 p-4  flex justify-end space-x-4">
                             <DangerButton
                                 type="button"
-                                onClick={toggleModalLesson}
+                                onClick={toggleModalCategory}
+                                className="bg-gray-500 text-white px-4 py-2 rounded"
+                            >
+                                Cancel
+                            </DangerButton>
+
+                            <PrimaryButton type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+                                Save
+                            </PrimaryButton>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+            <Dialog
+                open={isModalGameTypeOpen}
+                onOpenChange={toggleModalGameType}
+                className="fixed inset-0 overflow-y-auto"
+            >
+                <DialogContent className="overflow-y-auto max-h-[80vh] max-w-lg">
+                    <form onSubmit={handleSubmitGameType} className="">
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-semibold mb-5">Add Game Type</DialogTitle>
+                        </DialogHeader>
+                        <InputLabel htmlFor="gameType" value="Game Type" />
+                        <TextInput
+                            type="text"
+                            name="gameType"
+                            onChange={handleChangeGameType}
+                            className="border w-full p-2 "
+                        />
+                        <div className="bg-white sticky bottom-0 p-4  flex justify-end space-x-4">
+                            <DangerButton
+                                type="button"
+                                onClick={toggleModalGameType}
                                 className="bg-gray-500 text-white px-4 py-2 rounded"
                             >
                                 Cancel
