@@ -319,6 +319,12 @@ export default function Questions({ questions = [] }) {
                             value={section_id}
                         />
 
+                        <TextInput
+                            type="hidden"
+                            name="section_id"
+                            value={section_id}
+                        />
+
                         <SelectInput
                             name="category"
                             value={data.category}
