@@ -98,9 +98,9 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::delete('/questions/{id}', [QuestionController::class, 'destroy'])->name('questions.destroy');
     Route::post('/math-journey/update_score', [MathJamController::class, 'update_score']);
 
-    Route::get('/sections', function () {
-        return Inertia::render('Teacher/Sections');
-    })->name('teacher.sections');
+    Route::get('/sections', [SectionController::class, 'teacher_index']);
+    Route::post('/remove-student-section', [SectionController::class, 'removeFromSection']);
+    Route::post('/add-student-section', [SectionController::class, 'addToSection']);
 });
 
 Route::group(['middleware' => 'student'], function () {

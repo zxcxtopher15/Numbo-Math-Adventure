@@ -66,7 +66,9 @@ class VerifyCsrfToken
         '/save_section',
         '/delete_section',
         '/assign-teacher',
-        '/remove-assigned-teacher'
+        '/remove-assigned-teacher',
+        '/remove-student-section',
+        '/add-from-section'
     ];
 
     /**

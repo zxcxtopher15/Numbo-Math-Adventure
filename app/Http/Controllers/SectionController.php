@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Section;
+use App\Models\AuditTrail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\Auth;
 
 class SectionController extends Controller
 {
@@ -38,6 +40,43 @@ class SectionController extends Controller
         ]);
     }
 
+    public function teacher_index()
+    {
+        $unassigned = User::where('user_type', 'Student')
+            ->where('section_id', 0)
+            ->where('status', 0)
+            ->get(['id', 'name']);
+
+        $assigned = Section::leftJoin('users', 'sections.id', '=', 'users.section_id')
+            ->where('sections.status', 0)
+            ->where(function ($query) {
+                $query->where('users.user_type', 'Student')
+                    ->where('users.section_id', Auth::user()->section_id)
+                    ->where('users.status', 0)
+                    ->orWhereNull('users.id');
+            })
+            ->select([
+                'users.id',
+                DB::raw('COALESCE(users.name, "") AS name')
+            ])
+            ->whereNotNull('users.id')
+            ->get();
+
+        $sectionData = [
+            'students' => $assigned->map(function ($student) {
+                return [
+                    'id' => $student->id,
+                    'name' => $student->name,
+                ];
+            })->toArray(),
+        ];
+
+        return Inertia::render('Teacher/Sections', [
+            'allStudents' => $unassigned,
+            'sectionData' => $sectionData
+        ]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -57,6 +96,12 @@ class SectionController extends Controller
             'status' => 0,
         ]);
 
+        AuditTrail::create([
+            'user_id' => Auth::user()->id,
+            'action' => 'Add Section: ' . $request->section_name,
+            'created_at' => now()
+        ]);
+
         return response()->json(['message' => 'Section created successfully'], 201);
     }
 
@@ -71,14 +116,19 @@ class SectionController extends Controller
         $section->status = 1;
         $section->save();
 
-        if (!is_null($request->id)) {
-            DB::table('users')
-                ->where('id', $request->id)
-                ->update(['section_id' => 0]);
-        }
+        DB::table('users')
+            ->where('section_id', $request->sectionId)
+            ->update(['section_id' => 0]);
 
-        return response()->json(['message' => 'Section deactivated successfully']);
+        AuditTrail::create([
+            'user_id' => Auth::user()->id,
+            'action' => 'Delete Section: ' . $section->section_name,
+            'created_at' => now()
+        ]);
+
+        return response()->json(['message' => 'Section deactivated and students updated successfully']);
     }
+
 
     public function assignTeacher(Request $request)
     {
@@ -88,6 +138,7 @@ class SectionController extends Controller
         ]);
 
         $teacher = User::find($request->teacher_id);
+        $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
 
         if (!$teacher) {
             return response()->json(['message' => 'Teacher not found.'], 404);
@@ -95,6 +146,12 @@ class SectionController extends Controller
 
         $teacher->section_id = $request->section_id;
         $teacher->save();
+
+        AuditTrail::create([
+            'user_id' => Auth::user()->id,
+            'action' => 'Assign Teacher: ' . $teacher->name . ' to Section ' . $section_name,
+            'created_at' => now()
+        ]);
 
         return response()->json([
             'message' => 'Teacher successfully assigned to section.',
@@ -117,9 +174,84 @@ class SectionController extends Controller
         $teacher->section_id = 0;
         $teacher->save();
 
+        $section_name = Section::where('id', $teacher->section_id)->value('section_name');
+
+        AuditTrail::create([
+            'user_id' => Auth::user()->id,
+            'action' => 'Assign Teacher: ' . $teacher->name . ' to Section ' . $section_name,
+            'created_at' => now()
+        ]);
+
         return response()->json([
             'message' => 'Teacher unassigned to section.',
             'teacher' => $teacher
         ], 200);
+    }
+
+    public function removeFromSection(Request $request)
+    {
+        $studentId = $request->input('student_id');
+
+        if (!$studentId) {
+            return response()->json(['success' => false, 'message' => 'Invalid student ID'], 400);
+        }
+
+        $student = User::where('id', $studentId)->first();
+
+        if (!$student) {
+            return response()->json(['success' => false, 'message' => 'Student not found'], 404);
+        }
+
+        $section_id = User::where('id', $studentId)->value('section_id');
+        $section_name = Section::where('id', $section_id)->value('section_name');
+
+        $student->section_id = 0;
+        $student->save();
+
+        AuditTrail::create([
+            'user_id' => Auth::user()->id,
+            'action' => 'Remove Student: ' . $student->name . ' from Section ' . $section_name,
+            'created_at' => now()
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Student removed from section']);
+    }
+
+    public function addToSection(Request $request)
+    {
+        $request->validate([
+            'student_ids' => 'required|array',
+            'student_ids.*' => 'integer|exists:users,id',
+        ]);
+
+        $section_id = Auth::user()->section_id;
+
+        if (!$section_id) {
+            return response()->json(['success' => false, 'message' => 'You are not assigned to any section.'], 403);
+        }
+
+        try {
+            $section_name = Section::where('id', $section_id)->value('section_name');
+
+            $students = User::whereIn('id', $request->student_ids)->get();
+
+            foreach ($students as $student) {
+                $student->forceFill(['section_id' => $section_id])->save();
+
+                AuditTrail::create([
+                    'user_id' => Auth::user()->id,
+                    'action' => 'Added Student: ' . $student->name . ' to Section: ' . $section_name,
+                    'created_at' => now()
+                ]);
+            }
+
+            return response()->json(['success' => true, 'message' => 'Students added to your section successfully']);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add students to section',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

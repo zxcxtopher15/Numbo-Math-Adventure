@@ -174,13 +174,9 @@ export default function Questions({ questions = [] }) {
         });
     };
 
-    const handleSubmitCategory = () => {};
+    const handleSubmitCategory = () => { };
 
-    const handleDeleteCategory = (category_id) => {
-        console.log(category_id);
-    };
-
-    const handleSubmitGameType = () => {};
+    const handleSubmitGameType = () => { };
 
     const handleDeleteGameType = (game_type_id) => {
         console.log(game_type_id);
@@ -333,24 +329,24 @@ export default function Questions({ questions = [] }) {
                                 category === 'Addition'
                                     ? 'to-[#CDDA1E] from-[#50DE65]'
                                     : category === 'Subtraction'
-                                      ? 'to-[#EC4899] from-[#8B5CF6]'
-                                      : category === 'Subtraction'
-                                        ? 'to-[#7A00E6] from-[#8C6FFF]'
-                                        : category === 'Division'
-                                          ? 'to-[#34D399] from-[#50DE65]'
-                                          : category === 'Mixed Question'
-                                            ? 'to-[#6366F1] from-[#4F46E5]'
-                                            : 'to-[#FBBF24] from-[#EC4899]';
+                                        ? 'to-[#EC4899] from-[#8B5CF6]'
+                                        : category === 'Subtraction'
+                                            ? 'to-[#7A00E6] from-[#8C6FFF]'
+                                            : category === 'Division'
+                                                ? 'to-[#34D399] from-[#50DE65]'
+                                                : category === 'Mixed Question'
+                                                    ? 'to-[#6366F1] from-[#4F46E5]'
+                                                    : 'to-[#FBBF24] from-[#EC4899]';
                             const correctColor =
                                 category === 'Addition'
                                     ? 'bg-success'
                                     : category === 'Subtraction'
-                                      ? 'bg-info'
-                                      : category === 'Multiplication'
-                                        ? 'bg-warning'
-                                        : category === 'Mixed Question'
-                                          ? 'bg-primary'
-                                          : 'bg-gray-500';
+                                        ? 'bg-info'
+                                        : category === 'Multiplication'
+                                            ? 'bg-warning'
+                                            : category === 'Mixed Question'
+                                                ? 'bg-primary'
+                                                : 'bg-gray-500';
 
                             return (
                                 <div
@@ -440,21 +436,11 @@ export default function Questions({ questions = [] }) {
                             className="border w-full p-2 mb-2"
                         >
                             <option value="">Select Category</option>
-                            {Object.entries(
-                                categories.reduce((acc, curr) => {
-                                    const existing = acc[curr.type];
-                                    if (!existing) {
-                                        acc[curr.type] = [curr];
-                                    } else {
-                                        existing.push(curr);
-                                    }
-                                    return acc;
-                                }, {}),
-                            ).map(([type, categories]) => (
+                            {Object.entries(Categories).map(([type, options]) => (
                                 <optgroup key={type} label={type}>
-                                    {categories.map((category) => (
-                                        <option key={category.category_id} value={category.category_id}>
-                                            {category.category}
+                                    {options.map((cat) => (
+                                        <option key={cat} value={cat}>
+                                            {cat}
                                         </option>
                                     ))}
                                 </optgroup>

@@ -7,107 +7,18 @@ import { IoClose } from 'react-icons/io5';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
 import Swal from 'sweetalert2';
+import { usePage } from "@inertiajs/react";
+import axios from 'axios';
 
-const sectionData = {
-    // kukunin nito par yung active lang pag walang active gar pa return nalang as empty []
-    section_id: 1,
-    is_active: 1,
-    teacher_name: 'John Doe',
-    students: [
-        {
-            id: 1,
-            name: 'John Doe',
-        },
-        {
-            id: 2,
-            name: 'Jane Doe',
-        },
-        {
-            id: 3,
-            name: 'Bob Smith',
-        },
-        {
-            id: 4,
-            name: 'Alice Johnson',
-        },
-        {
-            id: 5,
-            name: 'Michael Brown',
-        },
-        {
-            id: 6,
-            name: 'Emily Davis',
-        },
-        {
-            id: 7,
-            name: 'William Taylor',
-        },
-        {
-            id: 8,
-            name: 'Sarah Lee',
-        },
-        {
-            id: 9,
-            name: 'Kevin White',
-        },
-        {
-            id: 10,
-            name: 'Olivia Martin',
-        },
-    ],
-};
-
-const allStudents = [
-    // student list na wala pang section
-    {
-        id: 1,
-        name: 'John Doe',
-    },
-    {
-        id: 2,
-        name: 'Jane Doe',
-    },
-    {
-        id: 3,
-        name: 'Bob Smith',
-    },
-    {
-        id: 4,
-        name: 'Alice Johnson',
-    },
-    {
-        id: 5,
-        name: 'Michael Brown',
-    },
-    {
-        id: 6,
-        name: 'Emily Davis',
-    },
-    {
-        id: 7,
-        name: 'William Taylor',
-    },
-    {
-        id: 8,
-        name: 'Sarah Lee',
-    },
-    {
-        id: 9,
-        name: 'Kevin White',
-    },
-    {
-        id: 10,
-        name: 'Olivia Martin',
-    },
-];
 const Sections = () => {
+    const { sectionData, allStudents } = usePage().props;
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenStudent, setIsOpenStudent] = useState(false);
     const [sectionName, setSectionName] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
-    const [selectedStudents, setSelectedStudents] = useState([]); // eto gar yung selected sa modal na students
+    const [selectedStudents, setSelectedStudents] = useState([]);
 
     const handleCheckboxChange = (id) => {
         setSelectedStudents((prev) => (prev.includes(id) ? prev.filter((userId) => userId !== id) : [...prev, id]));
@@ -121,7 +32,10 @@ const Sections = () => {
     const handleAddStudent = () => {
         setIsOpenStudent(true);
     };
+
     const handleAddStudentSubmit = () => {
+        setIsOpenStudent(false);
+
         Swal.fire({
             title: 'Add Student/s',
             text: 'Are you sure you want to add the student/s to this section?',
@@ -133,16 +47,30 @@ const Sections = () => {
             if (result.isConfirmed) {
                 setIsOpenStudent(false);
 
-                Swal.fire({
-                    title: 'Student Added',
-                    text: 'The student has been successfully added to the section.',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                });
+                axios.post('/add-student-section', { student_ids: selectedStudents })
+                    .then(response => {
+                        if (response.data.success) {
+                            Swal.fire({
+                                title: 'Student Added',
+                                text: 'The student has been successfully added to the section.',
+                                icon: 'success',
+                                confirmButtonText: 'OK',
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', 'Failed to delete student. Please try again.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire('Error', 'Something went wrong!', 'error');
+                        console.error('Delete Error:', error);
+                    });
             }
         });
     };
-    const handleDeleteStudent = () => {
+
+    const handleDeleteStudent = (studentId) => {
         Swal.fire({
             title: 'Delete Student',
             text: 'Are you sure you want to delete the student from the section?',
@@ -152,7 +80,24 @@ const Sections = () => {
             cancelButtonText: 'No',
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire('Deleted!', 'The student has been deleted from the section.', 'success');
+                axios.post('/remove-student-section', { student_id: studentId })
+                    .then(response => {
+                        if (response.data.success) {
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: 'The student has been removed from the section.',
+                                icon: 'success',
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', 'Failed to delete student. Please try again.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire('Error', 'Something went wrong!', 'error');
+                        console.error('Delete Error:', error);
+                    });
             }
         });
     };
@@ -200,7 +145,7 @@ const Sections = () => {
                                                 </div>
                                                 <button
                                                     className="bg-danger text-white p-1 rounded-full hover:scale-110 transition duration-200 ease-in-out"
-                                                    onClick={handleDeleteStudent}
+                                                    onClick={() => handleDeleteStudent(student.id)}
                                                 >
                                                     <IoClose />
                                                 </button>
