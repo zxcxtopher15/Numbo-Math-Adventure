@@ -16,7 +16,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import Checkbox from '@/Components/Checkbox';
 import { SvgAsset } from '@/Components/SvgAsset';
 import Avatar from '@/Components/Avatar';
-import axios from "axios";
+import axios from 'axios';
 
 import { StudentDashboard } from '@/Components/Dashboard/StudentDashboard';
 import { TeacherDashboard } from '@/Components/Dashboard/TeacherDashboard';
@@ -27,14 +27,16 @@ const data = [
     {
         id: 1,
         title: 'Addition Challenge',
-        description: 'Engage in various fun exercises designed to strengthen your addition skills, from simple sums to more complex problems.',
+        description:
+            'Engage in various fun exercises designed to strengthen your addition skills, from simple sums to more complex problems.',
         gradient: 'from-[#CDDA1E] to-[#50DE65]',
         textColor: 'text-[#50DE65]',
         items: [
             {
                 id: 0,
                 title: 'Custom Game',
-                description: 'Design your own addition challenges by selecting the difficulty level and types of problems.',
+                description:
+                    'Design your own addition challenges by selecting the difficulty level and types of problems.',
                 sample: 'Create a set of addition problems like "15 + 12" or "3 + 7".',
             },
             {
@@ -46,7 +48,8 @@ const data = [
             {
                 id: 2,
                 title: 'Add Two Numbers',
-                description: 'Add two single-digit or double-digit numbers together to improve your basic addition skills.',
+                description:
+                    'Add two single-digit or double-digit numbers together to improve your basic addition skills.',
                 sample: '6 + 8 = 14',
             },
             {
@@ -58,7 +61,8 @@ const data = [
             {
                 id: 4,
                 title: 'Complete the Equations (+)',
-                description: 'Fill in the missing number to complete the addition equation and practice problem-solving.',
+                description:
+                    'Fill in the missing number to complete the addition equation and practice problem-solving.',
                 sample: '12 + __ = 20',
             },
             {
@@ -72,14 +76,16 @@ const data = [
     {
         id: 2,
         title: 'Subtraction Showdown',
-        description: 'Sharpen your subtraction skills with challenging exercises ranging from simple subtractions to word problems.',
+        description:
+            'Sharpen your subtraction skills with challenging exercises ranging from simple subtractions to word problems.',
         gradient: 'from-[#EC4899] to-[#FBBF24]',
         textColor: 'text-[#FBBF24]',
         items: [
             {
                 id: 0,
                 title: 'Custom Game',
-                description: 'Create your own subtraction challenges by selecting the difficulty level and types of problems.',
+                description:
+                    'Create your own subtraction challenges by selecting the difficulty level and types of problems.',
                 sample: 'Design your subtraction problems like "20 - 5" or "45 - 30".',
             },
             {
@@ -103,13 +109,15 @@ const data = [
             {
                 id: 9,
                 title: 'Complete the Equations (-)',
-                description: 'Fill in the missing number to complete subtraction equations and practice your problem-solving skills.',
+                description:
+                    'Fill in the missing number to complete subtraction equations and practice your problem-solving skills.',
                 sample: '15 - __ = 7',
             },
             {
                 id: 10,
                 title: 'Subtract Doubles',
-                description: 'Learn to subtract numbers that are the same, focusing on simple and repetitive subtraction tasks.',
+                description:
+                    'Learn to subtract numbers that are the same, focusing on simple and repetitive subtraction tasks.',
                 sample: '10 - 5 = 5',
             },
         ],
@@ -117,14 +125,16 @@ const data = [
     {
         id: 3,
         title: 'Multiplication Mania',
-        description: 'Enhance your multiplication skills with fun exercises, from solving equations to applying multiplication in real-world problems.',
+        description:
+            'Enhance your multiplication skills with fun exercises, from solving equations to applying multiplication in real-world problems.',
         gradient: 'from-[#EC4899] to-[#8B5CF6]',
         textColor: 'text-[#8B5CF6]',
         items: [
             {
                 id: 0,
                 title: 'Custom Game',
-                description: 'Create your own multiplication challenges by selecting difficulty levels and types of multiplication problems.',
+                description:
+                    'Create your own multiplication challenges by selecting difficulty levels and types of multiplication problems.',
                 sample: 'Design multiplication problems like "8 × 7" or "4 × 9".',
             },
             {
@@ -136,7 +146,8 @@ const data = [
             {
                 id: 12,
                 title: 'Multiplication Table',
-                description: 'Memorize and practice multiplication tables to increase speed and accuracy in solving problems.',
+                description:
+                    'Memorize and practice multiplication tables to increase speed and accuracy in solving problems.',
                 sample: '4 × 6 = 24',
             },
             {
@@ -162,26 +173,30 @@ const data = [
     {
         id: 4,
         title: 'Mixed Math Challenges',
-        description: 'Tackle a variety of math problems, including number patterns, true/false equations, and comparisons between numbers.',
+        description:
+            'Tackle a variety of math problems, including number patterns, true/false equations, and comparisons between numbers.',
         gradient: 'from-[#34D399] to-[#6366F1]',
         textColor: 'text-[#6366F1]',
         items: [
             {
                 id: 0,
                 title: 'Custom Game',
-                description: 'Create your own set of mixed math challenges by selecting difficulty levels and types of problems.',
+                description:
+                    'Create your own set of mixed math challenges by selecting difficulty levels and types of problems.',
                 sample: 'Design mixed math problems like "3 × 4" or "8 + 7".',
             },
             {
                 id: 16,
                 title: 'Missing Number',
-                description: 'Identify the missing number in a sequence or equation to test your number pattern recognition.',
+                description:
+                    'Identify the missing number in a sequence or equation to test your number pattern recognition.',
                 sample: '2, 4, __, 8, 10',
             },
             {
                 id: 17,
                 title: 'True or False Equations',
-                description: 'Determine whether an equation is true or false based on your understanding of basic operations.',
+                description:
+                    'Determine whether an equation is true or false based on your understanding of basic operations.',
                 sample: '5 + 3 = 8 (True or False?)',
             },
             {
@@ -199,7 +214,8 @@ const data = [
             {
                 id: 20,
                 title: 'Comparing Numbers: (< = >)',
-                description: 'Compare numbers using greater than, less than, or equal signs to test your understanding of number relationships.',
+                description:
+                    'Compare numbers using greater than, less than, or equal signs to test your understanding of number relationships.',
                 sample: '14 > 10 (True or False?)',
             },
         ],
@@ -212,18 +228,18 @@ export default function Dashboard() {
     const [studentsData, setStudentsData] = useState([]);
 
     useEffect(() => {
-        const endpoint = userType === "Parent" ? "/parent-student-results" : "/student-results";
+        const endpoint = userType === 'Parent' ? '/parent-student-results' : '/student-results';
 
-        axios.get(endpoint)
-            .then(response => {
+        axios
+            .get(endpoint)
+            .then((response) => {
                 setStudentsData(response.data.results);
             })
-            .catch(error => {
-                console.error("Error fetching student results:", error);
+            .catch((error) => {
+                console.error('Error fetching student results:', error);
             });
     }, [userType]);
-    console.log("Students Data:", studentsData);
-
+    console.log('Students Data:', studentsData);
 
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Dashboard</h2>}>
@@ -254,6 +270,8 @@ export default function Dashboard() {
                 <StudentDashboard data={data} />
             ) : userType === 'Teacher' ? (
                 <TeacherDashboard data={studentsData} />
+            ) : userType === 'Administrator' ? (
+                <ParentDashboard data={studentsData} />
             ) : (
                 <ParentDashboard data={studentsData} />
             )}

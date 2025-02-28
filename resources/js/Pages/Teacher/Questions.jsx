@@ -13,14 +13,18 @@ import DangerButton from '@/Components/DangerButton';
 import InputLabel from '@/Components/InputLabel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { IoClose } from 'react-icons/io5';
 export default function Questions({ questions = [] }) {
     const { auth } = usePage().props;
     const section_id = auth?.user?.section_id;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalCategoryOpen, setIsModalCategoryOpen] = useState(false);
+    const [isModalManageCategoryOpen, setIsModalManageCategoryOpen] = useState(false);
     const [isEditQuestionModalOpen, setIsEditQuestionModalOpen] = useState(false);
+    const [isModalManageGameTypeOpen, setIsModalManageGameTypeOpen] = useState(false);
     const [isModalGameTypeOpen, setIsModalGameTypeOpen] = useState(false);
     const [selectedQuestion, setSelectedQuestion] = useState(null);
+    const [search, setSearch] = useState('');
 
     const { data, setData, post, reset } = useForm({
         section_id: section_id,
@@ -37,8 +41,14 @@ export default function Questions({ questions = [] }) {
     const toggleModalGameType = () => {
         setIsModalGameTypeOpen(!isModalGameTypeOpen);
     };
+    const toggleModalManageGameType = () => {
+        setIsModalManageGameTypeOpen(!isModalManageGameTypeOpen);
+    };
     const toggleModalCategory = () => {
         setIsModalCategoryOpen(!isModalCategoryOpen);
+    };
+    const toggleModalManageCategory = () => {
+        setIsModalManageCategoryOpen(!isModalManageCategoryOpen);
     };
     const toggleEditQuestionModal = () => {
         setIsEditQuestionModalOpen(!isEditQuestionModalOpen);
@@ -63,14 +73,19 @@ export default function Questions({ questions = [] }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         setIsModalOpen(false);
-        const trimmedChoices = data.choices.map(choice => choice.trim());
+        const trimmedChoices = data.choices.map((choice) => choice.trim());
         const trimmedCorrectAnswer = data.correct_answer.trim();
 
-        if (!data.category.trim() || !data.question.trim() || trimmedChoices.some(choice => choice === '') || trimmedCorrectAnswer === '') {
+        if (
+            !data.category.trim() ||
+            !data.question.trim() ||
+            trimmedChoices.some((choice) => choice === '') ||
+            trimmedCorrectAnswer === ''
+        ) {
             Swal.fire({
-                icon: "error",
-                title: "Validation Error",
-                text: "All fields are required.",
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'All fields are required.',
             }).then(() => {
                 setIsModalOpen(true);
             });
@@ -80,9 +95,9 @@ export default function Questions({ questions = [] }) {
         const uniqueChoices = new Set(trimmedChoices);
         if (uniqueChoices.size !== trimmedChoices.length) {
             Swal.fire({
-                icon: "error",
-                title: "Validation Error",
-                text: "Each choice must be unique.",
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Each choice must be unique.',
             }).then(() => {
                 setIsModalOpen(true);
             });
@@ -91,9 +106,9 @@ export default function Questions({ questions = [] }) {
 
         if (!trimmedChoices.includes(trimmedCorrectAnswer)) {
             Swal.fire({
-                icon: "error",
-                title: "Validation Error",
-                text: "The correct answer must be one of the choices.",
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'The correct answer must be one of the choices.',
             }).then(() => {
                 setIsModalOpen(true);
             });
@@ -101,24 +116,24 @@ export default function Questions({ questions = [] }) {
         }
 
         Swal.fire({
-            icon: "question",
-            title: "Are you sure?",
-            text: "Do you want to save this question?",
+            icon: 'question',
+            title: 'Are you sure?',
+            text: 'Do you want to save this question?',
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, save it!",
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, save it!',
         }).then((result) => {
             if (result.isConfirmed) {
-                post(route("questions.store"), {
+                post(route('questions.store'), {
                     headers: {
-                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     },
                     onSuccess: () => {
                         Swal.fire({
-                            icon: "success",
-                            title: "Success",
-                            text: "Question added successfully!",
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Question added successfully!',
                         });
                         reset();
                         toggleModal();
@@ -161,7 +176,15 @@ export default function Questions({ questions = [] }) {
 
     const handleSubmitCategory = () => {};
 
+    const handleDeleteCategory = (category_id) => {
+        console.log(category_id);
+    };
+
     const handleSubmitGameType = () => {};
+
+    const handleDeleteGameType = (game_type_id) => {
+        console.log(game_type_id);
+    };
 
     const handleEditQuestion = (question) => {
         setSelectedQuestion(question);
@@ -171,19 +194,104 @@ export default function Questions({ questions = [] }) {
 
     // Dummy data
     const gameTypes = [
-        { id: 1, type: 'Addition' },
-        { id: 2, type: 'Subtraction' },
-        { id: 3, type: 'Multiplication' },
-        { id: 4, type: 'Mixed' },
+        { game_type_id: 1, type: 'Addition' },
+        { game_type_id: 2, type: 'Subtraction' },
+        { game_type_id: 3, type: 'Multiplication' },
+        { game_type_id: 4, type: 'Mixed' },
     ];
 
+    const gameTypes_data = gameTypes.filter((type) => type.type.toLowerCase().includes(search.toLowerCase()));
+
     const categories = [
-        { id: 1, category: 'Add Tens' },
-        { id: 2, category: 'Add Two Numbers' },
-        { id: 3, category: 'Addition Sentences' },
-        { id: 4, category: 'Complete the Equations (+)' },
-        { id: 5, category: 'Add Three Numbers' },
+        {
+            category_id: 1,
+            category: 'Add Tens',
+            type: 'Addition',
+            game_type_id: 1,
+        },
+        {
+            category_id: 2,
+            category: 'Add Two Numbers',
+            type: 'Subtraction',
+            game_type_id: 2,
+        },
+        {
+            category_id: 3,
+            category: 'Addition Sentences',
+            type: 'Addition',
+            game_type_id: 1,
+        },
+        {
+            category_id: 4,
+            category: 'Complete the Equations (+)',
+            type: 'Multiplication',
+            game_type_id: 3,
+        },
+        {
+            category_id: 5,
+            category: 'Add Three Numbers',
+            type: 'Mixed',
+            game_type_id: 4,
+        },
+        {
+            category_id: 6,
+            category: 'Subtract Tens',
+            type: 'Subtraction',
+            game_type_id: 2,
+        },
+        {
+            category_id: 7,
+            category: 'Subtract Two Numbers',
+            type: 'Subtraction',
+            game_type_id: 2,
+        },
+        {
+            category_id: 8,
+            category: 'Subtraction Sentences',
+            type: 'Subtraction',
+            game_type_id: 2,
+        },
+        {
+            category_id: 9,
+            category: 'Complete the Equations (-)',
+            type: 'Subtraction',
+            game_type_id: 2,
+        },
+        {
+            category_id: 10,
+            category: 'Subtract Doubles',
+            type: 'Subtraction',
+            game_type_id: 2,
+        },
+        {
+            category_id: 11,
+            category: 'Multiplication Table',
+            type: 'Multiplication',
+            game_type_id: 3,
+        },
+        {
+            category_id: 12,
+            category: 'Multiplication Word Problem',
+            type: 'Multiplication',
+            game_type_id: 3,
+        },
+        {
+            category_id: 13,
+            category: 'Complete the Equations (x)',
+            type: 'Multiplication',
+            game_type_id: 3,
+        },
+        {
+            category_id: 14,
+            category: 'Multiplication Mystery',
+            type: 'Multiplication',
+            game_type_id: 3,
+        },
     ];
+
+    const categories_data = categories.filter((category) =>
+        category.category.toLowerCase().includes(search.toLowerCase()),
+    );
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Questions</h2>}>
             <Head title="Questions" />
@@ -191,22 +299,22 @@ export default function Questions({ questions = [] }) {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="p-4 space-y-4">
                         <div className="grid lg:grid-cols-2 gap-4 grid-cols-1">
-                            <div className="bg-blue-50 border border-4 flex flex-col sm:flex-row justify-between border-blue-300 p-5 rounded-3xl">
-                                <div className="text-2xl font-semibold text-primary"> Game Type</div>
+                            <div className="bg-green-50 border border-4 flex flex-col sm:flex-row justify-between border-green-300 p-5 rounded-3xl">
+                                <div className="text-2xl font-semibold text-green-500"> Game Type</div>
                                 <button
-                                    onClick={toggleModalGameType}
-                                    className="bg-primary font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
+                                    onClick={toggleModalManageGameType}
+                                    className="bg-green-500 font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
                                 >
-                                    Add Game Type
+                                    Manage
                                 </button>
                             </div>
-                            <div className="bg-blue-50 border border-4 flex flex-col sm:flex-row justify-between border-blue-300 p-5 rounded-3xl">
-                                <div className="text-2xl font-semibold text-primary"> Category</div>
+                            <div className="bg-yellow-50 border border-4 flex flex-col sm:flex-row justify-between border-yellow-300 p-5 rounded-3xl">
+                                <div className="text-2xl font-semibold text-yellow-500">Manage Categories</div>
                                 <button
-                                    onClick={toggleModalCategory}
-                                    className="bg-primary font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
+                                    onClick={toggleModalManageCategory}
+                                    className="bg-yellow-500 font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
                                 >
-                                    Add Category
+                                    Manage
                                 </button>
                             </div>
                         </div>
@@ -318,34 +426,12 @@ export default function Questions({ questions = [] }) {
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-semibold mb-5">Add New Question</DialogTitle>
                         </DialogHeader>
-                        <InputLabel htmlFor="game_type" value="Game Type" />
 
-                        <SelectInput
-                            name="game_type"
-                            value={data.game_type}
-                            onChange={handleChange}
-                            className="border w-full p-2 mb-2"
-                        >
-                            <option value="">Select Game Type</option>
-                            {gameTypes.map((type) => (
-                                <option key={type.id} value={type.id}>
-                                    {type.type}
-                                </option>
-                            ))}
-                        </SelectInput>
                         <InputLabel htmlFor="category" value="Category" />
 
-                        <TextInput
-                            type="hidden"
-                            name="section_id"
-                            value={section_id}
-                        />
+                        <TextInput type="hidden" name="section_id" value={section_id} />
 
-                        <TextInput
-                            type="hidden"
-                            name="section_id"
-                            value={section_id}
-                        />
+                        <TextInput type="hidden" name="section_id" value={section_id} />
 
                         <SelectInput
                             name="category"
@@ -354,10 +440,24 @@ export default function Questions({ questions = [] }) {
                             className="border w-full p-2 mb-2"
                         >
                             <option value="">Select Category</option>
-                            {categories.map((category) => (
-                                <option key={category.id} value={category.id}>
-                                    {category.category}
-                                </option>
+                            {Object.entries(
+                                categories.reduce((acc, curr) => {
+                                    const existing = acc[curr.type];
+                                    if (!existing) {
+                                        acc[curr.type] = [curr];
+                                    } else {
+                                        existing.push(curr);
+                                    }
+                                    return acc;
+                                }, {}),
+                            ).map(([type, categories]) => (
+                                <optgroup key={type} label={type}>
+                                    {categories.map((category) => (
+                                        <option key={category.category_id} value={category.category_id}>
+                                            {category.category}
+                                        </option>
+                                    ))}
+                                </optgroup>
                             ))}
                         </SelectInput>
                         <InputLabel htmlFor="question" value="Question" />
@@ -419,22 +519,6 @@ export default function Questions({ questions = [] }) {
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-semibold mb-5">Edit Question</DialogTitle>
                         </DialogHeader>
-                        <InputLabel htmlFor="game_type" value="Game Type" />
-
-                        <SelectInput
-                            name="game_type"
-                            value={data.game_type}
-                            onChange={handleChange}
-                            className="border w-full p-2 mb-2"
-                        >
-                            <option value="">Select Game Type</option>
-                            {gameTypes.map((type) => (
-                                <option key={type.id} value={type.id}>
-                                    {type.type}
-                                </option>
-                            ))}
-                        </SelectInput>
-                        <InputLabel htmlFor="category" value="Category" />
 
                         <SelectInput
                             name="category"
@@ -500,6 +584,75 @@ export default function Questions({ questions = [] }) {
                     </form>
                 </DialogContent>
             </Dialog>
+            {/* Manage Category */}
+            <Dialog
+                open={isModalManageCategoryOpen}
+                onOpenChange={toggleModalManageCategory}
+                className="fixed inset-0 overflow-y-auto"
+            >
+                <DialogContent className="overflow-y-auto max-h-[95vh] max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-semibold mb-5 text-yellow-500">
+                            Manage Categories
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="bg-yellow-50 flex flex-col sm:flex-row justify-between items-center p-5 rounded-3xl">
+                        <div className="text-xl font-semibold text-yellow-500">Create New </div>
+                        <button
+                            onClick={toggleModalCategory}
+                            className="bg-yellow-500 font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
+                        >
+                            Add
+                        </button>
+                    </div>
+                    <input
+                        type="search"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Search Category..."
+                        className="w-full my-2 text-lg bg-white text-gray-700 bg-transparent border border-gray-300 rounded-xl mb-7 focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                    <div className="bg-gray-100 rounded-2xl space-y-2 p-4 overflow-y-auto max-h-[40vh]">
+                        <div className="sm:grid grid-cols-1 gap-4">
+                            {Object.entries(
+                                categories_data.reduce((map, category) => {
+                                    const key = category.type;
+                                    map[key] = map[key] || [];
+                                    map[key].push(category);
+                                    return map;
+                                }, {}),
+                            ).map(([key, categories]) => (
+                                <div key={key}>
+                                    <h2 className="text-lg font-semibold px-3 py-2 bg-gray-200 text-gray-600 rounded-t-xl">
+                                        {key}
+                                    </h2>
+                                    {categories.map((category) => (
+                                        <div
+                                            key={category.id}
+                                            className="bg-white text-gray-600 p-3 rounded-b-xl flex justify-between"
+                                        >
+                                            <span>
+                                                <p>{}</p>
+                                                <h3 className="text-lg">{category.category}</h3>
+                                            </span>
+                                            <div>
+                                                <button
+                                                    className="bg-danger text-white p-1 rounded-full hover:scale-110 transition duration-200 ease-in-out"
+                                                    onClick={() => handleDeleteCategory(category.category_id)}
+                                                >
+                                                    <IoClose />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Add Category */}
             <Dialog
                 open={isModalCategoryOpen}
                 onOpenChange={toggleModalCategory}
@@ -508,8 +661,26 @@ export default function Questions({ questions = [] }) {
                 <DialogContent className="overflow-y-auto max-h-[80vh] max-w-lg">
                     <form onSubmit={handleSubmitCategory} className="">
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-semibold mb-5">Add Category</DialogTitle>
+                            <DialogTitle className="text-2xl font-semibold mb-5 text-yellow-500">
+                                Add Category
+                            </DialogTitle>
                         </DialogHeader>
+                        <InputLabel htmlFor="game_type" value="Game Type" />
+
+                        <SelectInput
+                            name="game_type"
+                            value={data.game_type}
+                            onChange={handleChange}
+                            className="border w-full p-2 mb-2"
+                        >
+                            <option value="">Select Game Type</option>
+                            {gameTypes.map((type) => (
+                                <option key={type.id} value={type.id}>
+                                    {type.type}
+                                </option>
+                            ))}
+                        </SelectInput>
+
                         <InputLabel htmlFor="category" value="Category Name" />
                         <TextInput
                             type="text"
@@ -531,6 +702,58 @@ export default function Questions({ questions = [] }) {
                             </PrimaryButton>
                         </div>
                     </form>
+                </DialogContent>
+            </Dialog>
+            {/* Manage Game type */}
+            <Dialog
+                open={isModalManageGameTypeOpen}
+                onOpenChange={toggleModalManageGameType}
+                className="fixed inset-0 overflow-y-auto"
+            >
+                <DialogContent className="overflow-y-auto max-h-[95vh] max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-semibold mb-5 text-green-500">
+                            Manage Game Types
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="bg-green-50 flex flex-col sm:flex-row justify-between items-center p-5 rounded-3xl">
+                        <div className="text-xl font-semibold text-green-500">Create New </div>
+                        <button
+                            onClick={toggleModalGameType}
+                            className="bg-green-500 font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
+                        >
+                            Add
+                        </button>
+                    </div>
+                    <input
+                        type="search"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Search Category..."
+                        className="w-full my-2 text-lg bg-white text-gray-700 bg-transparent border border-gray-300 rounded-xl mb-7 focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                    <div className="bg-gray-100 rounded-2xl space-y-2 p-4 overflow-y-auto max-h-[40vh]">
+                        <div className="sm:grid grid-cols-1 gap-2">
+                            {gameTypes_data.map((type) => (
+                                <div key={type.id}>
+                                    <div className="bg-white text-gray-600 p-3 rounded-xl flex justify-between">
+                                        <span>
+                                            <p>{}</p>
+                                            <h3 className="text-lg">{type.type}</h3>
+                                        </span>
+                                        <div>
+                                            <button
+                                                className="bg-danger text-white p-1 rounded-full hover:scale-110 transition duration-200 ease-in-out"
+                                                onClick={() => handleDeleteGameType(type.game_type_id)}
+                                            >
+                                                <IoClose />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </DialogContent>
             </Dialog>
             <Dialog
