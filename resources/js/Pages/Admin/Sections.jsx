@@ -8,7 +8,7 @@ import {
     DialogFooter,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head } from '@inertiajs/react';
 import Avatar from '@/Components/Avatar';
 import { IoClose } from 'react-icons/io5';
@@ -19,102 +19,260 @@ import DangerButton from '@/Components/DangerButton';
 import { Checkbox } from '@/components/ui/checkbox';
 import Swal from 'sweetalert2';
 import SelectInput from '@/Components/SelectInput';
+import { usePage } from "@inertiajs/react";
+import axios from 'axios';
 
-const allTeachers = [
-    // Teacher list na wala pang section
-    {
-        id: 1,
-        name: 'John Doe',
-    },
-    {
-        id: 2,
-        name: 'Jane Doe',
-    },
-    {
-        id: 3,
-        name: 'Bob Smith',
-    },
-];
+// const allTeachers = [
 
-const section_list = [
-    {
-        section_id: 1,
-        section_name: 'Section 1',
-        name: 'Junnie S. Zins',
-    },
-    {
-        section_id: 2,
-        section_name: 'Section 2',
-        name: 'Junnie S. Zins',
-    },
-];
+//     {
+//         id: 1,
+//         name: 'John Doe',
+//     },
+//     {
+//         id: 2,
+//         name: 'Jane Doe',
+//     },
+//     {
+//         id: 3,
+//         name: 'Bob Smith',
+//     },
+// ];
+
+// const section_list = [
+//     {
+//         section_id: 1,
+//         section_name: 'Section 1',
+//         name: 'Junnie S. Zins',
+//     },
+//     {
+//         section_id: 2,
+//         section_name: 'Section 2',
+//         name: 'Junnie S. Zins',
+//     },
+// ];
+
 const Sections = () => {
+    const { unassignedTeachers, assignedTeachers } = usePage().props;
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenTeacher, setIsOpenTeacher] = useState(false);
     const [sectionName, setSectionName] = useState('');
 
     const [selectedTeacher, setSelectedTeacher] = useState('');
 
+    const [selectedSectionId, setSelectedSectionId] = useState(null);
+
+    const allTeachers = unassignedTeachers.map((teacher) => ({
+        id: teacher.id,
+        name: teacher.name,
+    }));
+
+    const section_list = assignedTeachers.map((teacher) => ({
+        id: teacher.id,
+        section_id: teacher.section_id,
+        section_name: teacher.section_name,
+        name: teacher.name,
+    }));
+
     const handleAddSection = () => {
         setIsOpen(true);
     };
 
-    const handleSubmit = () => {
-        setIsOpen(false);
+    const handleSubmit = async () => {
+        try {
+            const response = await fetch("/save_section", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                },
+                body: JSON.stringify({ section_name: sectionName }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to create section");
+            }
+
+            Swal.fire({
+                title: "Success!",
+                text: data.message,
+                icon: "success",
+                confirmButtonColor: "#d33",
+            }).then(() => {
+                window.location.reload();
+            });
+
+            setIsOpen(false);
+            setSectionName("");
+        } catch (error) {
+            console.error(error);
+            setIsOpen(false);
+
+            Swal.fire({
+                title: "Error",
+                text: error.message.includes("Section name already exists")
+                    ? "Section name already exists"
+                    : "Error saving section",
+                icon: "error",
+                confirmButtonColor: "#d33",
+            }).then(() => {
+                setIsOpen(true);
+            });
+        }
     };
 
-    const handleAssignTeacher = () => {
+    useEffect(() => {
+        setSelectedSectionId(selectedSectionId);
+        // console.log("Selected Section ID:", selectedSectionId);
+    }, [selectedSectionId]);
+
+    const handleAssignTeacher = (sectionId) => {
+        setSelectedSectionId(sectionId);
         setIsOpenTeacher(true);
     };
 
-    const handleRemoveAssigned = () => {
+    const handleRemoveAssigned = (Id) => {
+        setIsOpenTeacher(false);
         Swal.fire({
-            title: 'Remove Assigned Teacher?',
-            text: 'Are you sure you want to remove the teacher from the section?',
-            icon: 'warning',
+            title: "Remove Assigned Teacher?",
+            text: "Are you sure you want to remove the teacher from the section?",
+            icon: "warning",
             showCancelButton: true,
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No',
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire('Deleted!', 'The teacher has been removed from the section.', 'success');
+                fetch("/remove-assigned-teacher", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+                    },
+                    body: JSON.stringify({ teacher_id: Id }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            Swal.fire("Deleted!", "The teacher has been removed from the section.", "success")
+                                .then(() => {
+                                    window.location.reload();
+                                });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error removing teacher:", error);
+                        Swal.fire("Error", "Failed to remove teacher.", "error");
+                    });
             }
         });
     };
-    const handleDeleteSection = () => {
+
+    const handleDeleteSection = (sectionId, id) => {
         Swal.fire({
-            title: 'Delete Section',
-            text: 'Are you sure you want to delete the section? This action is permanent.',
-            icon: 'error',
+            title: "Delete Section",
+            text: "Are you sure you want to delete this section? This action is permanent.",
+            icon: "warning",
             showCancelButton: true,
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No',
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
             allowOutsideClick: false,
-        }).then((result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
-                Swal.fire('Deleted!', 'The section has been deleted.', 'success');
+                try {
+                    const response = await fetch(`/delete_section`, {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                        },
+                        body: JSON.stringify({ sectionId, id }),
+                    });
+
+                    if (!response.ok) throw new Error("Failed to delete section");
+
+                    const data = await response.json();
+
+                    Swal.fire({
+                        title: "Updated!",
+                        text: "The section has been deactivated.",
+                        icon: "success",
+                        confirmButtonColor: "#d33",
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } catch (error) {
+                    console.error(error);
+                    Swal.fire({
+                        title: "Error",
+                        text: "Failed to delete section",
+                        icon: "error",
+                        confirmButtonColor: "#d33",
+                    });
+                }
             }
         });
     };
 
     const handleSubmitTeacher = () => {
+        if (!selectedTeacher || !selectedSectionId) {
+            setIsOpenTeacher(false);
+            Swal.fire("Error", "Please select a teacher before assigning.", "error");
+            return;
+        }
+
+        setIsOpenTeacher(false);
         Swal.fire({
-            title: 'Assign Teacher',
-            text: 'Are you sure you want to assign the teacher to the section?',
-            icon: 'warning',
+            title: "Assign Teacher",
+            text: "Are you sure you want to assign the teacher to the section?",
+            icon: "warning",
             showCancelButton: true,
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No',
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
-                setIsOpenTeacher(false);
-                setSelectedTeacher('');
-                Swal.fire('Assigned!', 'The teacher has been assigned to the section.', 'success');
+                console.log("Assigning teacher:", {
+                    teacher_id: selectedTeacher,
+                    section_id: selectedSectionId
+                });
+
+                fetch("/assign-teacher", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                    },
+                    body: JSON.stringify({
+                        teacher_id: selectedTeacher,
+                        section_id: selectedSectionId,
+                    }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            Swal.fire("Assigned!", "The teacher has been assigned to the section.", "success")
+                                .then(() => {
+                                    window.location.reload();
+                                });
+                            setIsOpenTeacher(false);
+                            setSelectedTeacher("");
+                            setSelectedSectionId(null);
+                        } else {
+                            throw new Error("Failed to assign teacher.");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error assigning teacher:", error);
+                        Swal.fire("Error", "Failed to assign teacher.", "error");
+                    });
             }
         });
     };
+
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Sections</h2>}>
             <Head title="Questions" />
@@ -154,7 +312,7 @@ const Sections = () => {
                                                         </h1>
                                                     </span>
                                                     <div
-                                                        onClick={handleDeleteSection}
+                                                        onClick={() => handleDeleteSection(section.section_id, section.id)}
                                                         className="bg-danger   text-white px-2 sm:px-4 mx-2 sm:mx-4 font-medium  py-1 sm:py-2 text-xs sm:text-sm  rounded-full  hover:scale-110 transition duration-200 ease-in-out cursor-pointer"
                                                     >
                                                         Delete Section
@@ -172,7 +330,7 @@ const Sections = () => {
                                                                 No teacher assigned to this section
                                                             </p>
                                                             <button
-                                                                onClick={handleAssignTeacher}
+                                                                onClick={() => handleAssignTeacher(section.section_id)}
                                                                 className="bg-primary text-white px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium rounded-full hover:scale-110 transition duration-200 ease-in-out cursor-pointer"
                                                             >
                                                                 Assign Teacher

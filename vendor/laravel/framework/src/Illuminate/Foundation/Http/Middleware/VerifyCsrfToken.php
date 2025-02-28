@@ -62,7 +62,11 @@ class VerifyCsrfToken
         '/update_is_correct',
         '/math-journey/exit_jam',
         '/send-otp',
-        '/verify-otp'
+        '/verify-otp',
+        '/save_section',
+        '/delete_section',
+        '/assign-teacher',
+        '/remove-assigned-teacher'
     ];
 
     /**

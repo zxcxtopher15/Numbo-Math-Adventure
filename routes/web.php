@@ -9,6 +9,7 @@ use App\Http\Controllers\OtpController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\MathJamController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SectionController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
@@ -59,9 +60,12 @@ Route::middleware('auth')->group(function () {
 Route::get('/get_ordered_questions', [MathJamController::class, 'getOrderedQuestions']);
 
 Route::group(['middleware' => 'administrator'], function () {
-    Route::get('/section_list', function () {
-        return Inertia::render('Admin/Sections');
-    })->name('admin.sections');
+    Route::get('/section_list', [SectionController::class, 'index'])->name('admin.sections');
+
+    Route::post('/save_section', [SectionController::class, 'store']);
+    Route::delete('/delete_section', [SectionController::class, 'destroy']);
+    Route::post('/assign-teacher', [SectionController::class, 'assignTeacher'])->name('assign.teacher');
+    Route::post('/remove-assigned-teacher', [SectionController::class, 'unassignTeacher'])->name('unassign.teacher');
 });
 
 Route::group(['middleware' => 'teacher'], function () {
