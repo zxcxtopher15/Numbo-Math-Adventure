@@ -178,6 +178,34 @@ const JoinJam = () => {
     };
 
     useEffect(() => {
+        const checkSectionJam = async () => {
+            if (!studentId) return;
+
+            try {
+                const response = await fetch(
+                    `/math-journey/check-section-jam?student_id=${studentId}`,
+                );
+                const data = await response.json();
+
+                if (!data.math_jam) {
+                    sessionStorage.removeItem('jamCode');
+                    setJamCode('');
+                    return;
+                }
+
+                sessionStorage.setItem('jamCode', data.math_jam.math_jam_code);
+                setJamCode(data.math_jam.math_jam_code);
+
+                console.log(jamCode);
+            } catch (err) {
+                console.error('Error checking status:', err);
+            }
+        };
+
+        checkSectionJam();
+    }, [studentId]);
+
+    useEffect(() => {
         if (!studentId) return;
 
         const checkStatus = async () => {
@@ -190,8 +218,6 @@ const JoinJam = () => {
                 const data = await response.json();
 
                 if (data.error) {
-                    sessionStorage.removeItem('jamCode');
-                    setJamCode('');
                     return;
                 }
 
@@ -467,27 +493,22 @@ const JoinJam = () => {
                             </div>
                         ) : (
                             <>
-                                <div className="mb-4">
-                                    <label htmlFor="jamCode" className="block text-sm font-medium text-gray-700">
-                                        Math Journey Code
-                                    </label>
-                                    <TextInput
-                                        type="text"
-                                        id="jamCode"
-                                        value={jamCode}
-                                        onChange={(e) => {
-                                            const value = e.target.value.replace(/\D/g, "");
-                                            if (value.length <= 4) {
-                                                setJamCode(value);
-                                            }
-                                        }}
-                                        className="w-full mt-1 p-2 border rounded"
-                                        placeholder="Enter Math Journey Code"
-                                        maxLength={4}
-                                        inputMode="numeric"
-                                        pattern="\d{4}"
-                                    />
-                                </div>
+                                <TextInput
+                                    type="text"
+                                    id="jamCode"
+                                    value={jamCode}
+                                    onChange={(e) => {
+                                        const value = e.target.value.replace(/\D/g, "");
+                                        if (value.length <= 4) {
+                                            setJamCode(value);
+                                        }
+                                    }}
+                                    className="hidden"
+                                    placeholder="Enter Math Journey Code"
+                                    maxLength={4}
+                                    inputMode="numeric"
+                                    pattern="\d{4}"
+                                />
 
                                 <div className="flex justify-between my-7">
                                     <Link href="/dashboard" passHref>
@@ -503,7 +524,7 @@ const JoinJam = () => {
                                     <PrimaryButton
                                         onClick={handleJoinJam}
                                         className="w-fit"
-                                        disabled={loading || status === 'joined'}
+                                        disabled={!jamCode || loading || status === 'joined'}
                                     >
                                         {loading ? 'Joining...' : 'Join'}
                                     </PrimaryButton>

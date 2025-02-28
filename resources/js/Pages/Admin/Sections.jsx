@@ -303,7 +303,7 @@ const Sections = () => {
                                                         <Avatar
                                                             className={'w-10 sm:w-20 h-10 sm:h-20'}
                                                             rounded={true}
-                                                            name={section.section_name}
+                                                            name={section.name ? section.name : section.section_name}
                                                             color="fff"
                                                             background="87CEEB"
                                                         />

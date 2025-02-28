@@ -110,6 +110,7 @@ Route::group(['middleware' => 'student'], function () {
 
     Route::post('/math-journey/join', [MathJamController::class, 'joinJam']);
     Route::get('/math-journey/check-status', [MathJamController::class, 'checkStatus']);
+    Route::get('/math-journey/check-section-jam', [MathJamController::class, 'checkSectionJam']);
     Route::post('/math-journey/disconnect', [MathJamController::class, 'disconnect']);
     Route::post('/math-journey/reconnect', [MathJamController::class, 'reconnect']);
     Route::get('/math-journey/jam-stream-updates', [MathJamController::class, 'jamStreamUpdates']);

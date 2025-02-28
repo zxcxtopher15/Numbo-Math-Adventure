@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AuditTrail;
 use App\Models\MathJam;
+use App\Models\AuditTrail;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\OrderedQuestion;
 use App\Models\MathJamParticipant;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
 
 class MathJamController extends Controller
@@ -163,6 +164,20 @@ class MathJamController extends Controller
             return response()->json(['message' => 'Invalid Math Journey Code'], 200);
         }
 
+        $teacher = User::find($mathJam->teacher_id);
+        if (!$teacher) {
+            return response()->json(['message' => 'Math Journey teacher not found.'], 200);
+        }
+
+        $student = User::find($validated['student_id']);
+        if (!$student) {
+            return response()->json(['message' => 'Student not found.'], 200);
+        }
+
+        if ($teacher->section_id !== $student->section_id) {
+            return response()->json(['message' => 'You are not allowed to join this Math Journey.'], 200);
+        }
+
         switch ($mathJam->status) {
             case 'started':
                 return response()->json(['message' => 'The Math Journey has already started.'], 200);
@@ -257,6 +272,39 @@ class MathJamController extends Controller
         ]);
     }
 
+    public function checkSectionJam(Request $request)
+    {
+        $validated = $request->validate([
+            'student_id' => 'required|exists:users,id'
+        ]);
+
+        $student = User::where('id', $validated['student_id'])->first();
+
+        if (!$student || !$student->section_id) {
+            return response()->json(['message' => 'No section found for this student', 'error' => true], 200);
+        }
+
+        $sectionId = $student->section_id;
+
+        $teacher = User::where('section_id', $sectionId)
+            ->where('user_type', 'Teacher')
+            ->where('status', 0)
+            ->first();
+
+        if (!$teacher) {
+            return response()->json(['message' => 'No teacher assigned to this section', 'error' => true], 200);
+        }
+
+        $mathJam = MathJam::where('teacher_id', $teacher->id)
+            ->where('status', 'waiting')
+            ->first();
+
+        return response()->json([
+            'math_jam' => $mathJam,
+            'error' => false
+        ]);
+    }
+
     public function disconnect(Request $request)
     {
         $validated = $request->validate([
@@ -274,8 +322,8 @@ class MathJamController extends Controller
             ->first();
 
         $mathJam = MathJam::where('math_jam_code', $validated['math_jam_code'])
-        ->whereNotIn('status', ['cancelled', 'ended'])
-        ->get();
+            ->whereNotIn('status', ['cancelled', 'ended'])
+            ->get();
 
         if (!$participant) {
             return response()->json(['message' => 'No active participation found', 'error' => true], 200);

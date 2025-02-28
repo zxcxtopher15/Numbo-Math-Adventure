@@ -29,8 +29,15 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        $credentials = $request->only('email', 'password');
 
+        $user = \App\Models\User::where('email', $credentials['email'])->first();
+
+        if ($user && $user->status == 1) {
+            return redirect()->back()->withErrors(['email' => 'Your account is disabled. Please contact admin.']);
+        }
+
+        $request->authenticate();
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard', absolute: false));
