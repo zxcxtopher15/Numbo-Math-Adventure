@@ -1,22 +1,11 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription,
-    DialogFooter,
-    DialogTrigger,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import React, { useState } from 'react';
 import { Head } from '@inertiajs/react';
 import Avatar from '@/Components/Avatar';
 import { IoClose } from 'react-icons/io5';
-import TextInput from '@/Components/TextInput';
-import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
-import { Checkbox } from '@/components/ui/checkbox';
 import Swal from 'sweetalert2';
 
 const sectionData = {
@@ -129,14 +118,6 @@ const Sections = () => {
         setSelectedStudents(selectedStudents.length === allStudents.length ? [] : allStudents.map((user) => user.id));
     };
 
-    const handleAddSection = () => {
-        setIsOpen(true);
-    };
-
-    const handleSubmit = () => {
-        setIsOpen(false);
-    };
-
     const handleAddStudent = () => {
         setIsOpenStudent(true);
     };
@@ -175,20 +156,6 @@ const Sections = () => {
             }
         });
     };
-    const handleArchive = () => {
-        Swal.fire({
-            title: 'Archive Section',
-            text: 'Are you sure you want to archive the section? This action is permanent.',
-            icon: 'error',
-            showCancelButton: true,
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire('Archived!', 'The section has been archived.', 'success');
-            }
-        });
-    };
 
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Sections</h2>}>
@@ -198,21 +165,6 @@ const Sections = () => {
                     <div className="p-4 space-y-4">
                         <div className="bg-blue-50 border border-4 flex flex-col sm:flex-row justify-between border-blue-300 p-5 rounded-3xl">
                             <div className="text-2xl font-semibold text-primary"> Section</div>
-                            {!sectionData ? ( // pag may active na section achive lalabas dito
-                                <button
-                                    className="bg-red-600 font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
-                                    onClick={handleArchive}
-                                >
-                                    Archive this Section
-                                </button>
-                            ) : (
-                                <button
-                                    className="bg-primary font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
-                                    onClick={handleAddSection}
-                                >
-                                    Add Section
-                                </button>
-                            )}
                         </div>
                         {sectionData ? (
                             <div className="p-4 border rounded-3xl">
@@ -269,67 +221,6 @@ const Sections = () => {
                         )}
                     </div>
                 </div>
-                <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                    <DialogContent className="overflow-y-auto max-h-[80vh] max-w-lg">
-                        <DialogHeader>
-                            <DialogTitle className="text-primary text-2xl">Add Section</DialogTitle>
-                            <DialogDescription>
-                                Please enter the required information to add a new section
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                            <div className="space-y-2">
-                                <InputLabel htmlFor="sectionName" className="block text-lg font-medium text-gray-700">
-                                    Section Name
-                                </InputLabel>
-                                <TextInput
-                                    type="text"
-                                    id="sectionName"
-                                    value={sectionName}
-                                    onChange={(e) => setSectionName(e.target.value)}
-                                    className="w-full"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <InputLabel htmlFor="startDate" className="block text-lg font-medium text-gray-700">
-                                    Start Date
-                                </InputLabel>
-                                <TextInput
-                                    type="date"
-                                    id="startDate"
-                                    value={startDate}
-                                    className="w-full"
-                                    onChange={(e) => setStartDate(e.target.value)}
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <InputLabel htmlFor="endDate" className="block text-lg font-medium text-gray-700">
-                                    End Date
-                                </InputLabel>
-                                <TextInput
-                                    type="date"
-                                    id="endDate"
-                                    value={endDate}
-                                    className="w-full"
-                                    onChange={(e) => setEndDate(e.target.value)}
-                                />
-                            </div>
-                        </div>
-
-                        <DialogFooter>
-                            <div className="flex items-center justify-end space-x-2">
-                                <DangerButton type="button" className="py-2 px-4" onClick={() => setIsOpen(false)}>
-                                    Cancel
-                                </DangerButton>
-
-                                <PrimaryButton type="button" className="py-2 px-4" onClick={handleSubmit}>
-                                    Create
-                                </PrimaryButton>
-                            </div>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
 
                 <Dialog open={isOpenStudent} onOpenChange={setIsOpenStudent}>
                     <DialogContent className=" max-w-3xl">
