@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Settings2, LayoutDashboard, Dices, HelpCircle, LayoutList, SquareLibrary } from 'lucide-react';
+import { Settings2, LayoutDashboard, Dices, HelpCircle, LayoutList, Users, FileSearch } from 'lucide-react';
 import { Plus } from 'lucide-react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import {
@@ -32,41 +32,47 @@ export function AppSidebar(props) {
             },
             ...(userType === 'Teacher' || userType === 'Student'
                 ? [
-                    {
-                        title: 'Math Journey ',
-                        url: userType === 'Teacher' ? '/math-journey' : '/math-journey-join',
-                        icon: Dices,
-                        isActive:
-                            window.location.pathname === '/math-journey' ||
-                            window.location.pathname === '/math-journey-join',
-                    },
-                ]
+                      {
+                          title: 'Math Journey ',
+                          url: userType === 'Teacher' ? '/math-journey' : '/math-journey-join',
+                          icon: Dices,
+                          isActive:
+                              window.location.pathname === '/math-journey' ||
+                              window.location.pathname === '/math-journey-join',
+                      },
+                  ]
                 : []),
             ...(userType !== 'Administrator'
                 ? [
-                    {
-                        title: 'Modules',
-                        url: 'view_modules',
-                        icon: Settings2,
-                        isActive: window.location.pathname === '/view_modules',
-                    },
-                ]
+                      {
+                          title: 'Modules',
+                          url: 'view_modules',
+                          icon: Settings2,
+                          isActive: window.location.pathname === '/view_modules',
+                      },
+                  ]
                 : []),
             ...(userType == 'Administrator'
                 ? [
-                    {
-                        title: 'Sections',
-                        url: '/section_list',
-                        icon: LayoutList,
-                        isActive: window.location.pathname === '/section_list',
-                    },
-                    {
-                        title: 'Audit Trail',
-                        url: '/audit_trail',
-                        icon: LayoutList,
-                        isActive: window.location.pathname === '/audit_trail',
-                    },
-                ]
+                      {
+                          title: 'Manage Users',
+                          url: '/user_management',
+                          icon: Users,
+                          isActive: window.location.pathname === '/user_management',
+                      },
+                      {
+                          title: 'Sections',
+                          url: '/section_list',
+                          icon: LayoutList,
+                          isActive: window.location.pathname === '/section_list',
+                      },
+                      {
+                          title: 'Audit Trail',
+                          url: '/audit_trail',
+                          icon: FileSearch,
+                          isActive: window.location.pathname === '/audit_trail',
+                      },
+                  ]
                 : []),
         ],
     };

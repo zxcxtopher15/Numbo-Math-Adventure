@@ -256,7 +256,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex flex-col items-center justify-center relative z-1">
                         <img src="/images/logo.png" alt="" className="h-32" />
-                        {userType !== 'Parent' && (
+                        {userType !== 'Parent' && userType !== 'Administrator' && (
                             <Link href={userType === 'Teacher' ? '/math-journey' : 'math-journey-join'}>
                                 <div className="border-2 border-gray-50 rounded-2xl px-4 py-1 font-semibold text-white transition duration-300 ease-in-out hover:scale-105 hover:bg-primary">
                                     Math Journey{' '}

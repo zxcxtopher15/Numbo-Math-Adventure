@@ -55,7 +55,7 @@ const AuditTrail = () => {
                             <input
                                 type="text"
                                 placeholder="Search..."
-                                className="p-2 border border-gray-300 rounded-xl lg:w-1/2 w-full "
+                                className="p-2 border border-gray-300 rounded-3xl lg:w-1/2 w-full "
                                 onChange={(e) => setFilterText(e.target.value)}
                             />
                         </div>

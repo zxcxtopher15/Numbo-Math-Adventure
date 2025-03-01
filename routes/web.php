@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AuditTrailController;
+use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Models\AuditTrail;
 use App\Http\Controllers\GameTypeController;
@@ -72,6 +73,11 @@ Route::group(['middleware' => 'administrator'], function () {
 
 
     Route::get('/audit_trail', [AuditTrailController::class, 'index'])->name('admin.audit_trail');
+    Route::get('/user_management', [UserManagementController::class, 'index'])->name('admin.user_management');
+    Route::post('/approve_users', [UserManagementController::class, 'approveUsers'])->name('approve.users');
+    Route::post('/reject_users', [UserManagementController::class, 'rejectUsers'])->name('reject.users');
+    Route::post('/restore_users', [UserManagementController::class, 'restoreUsers'])->name('restore.users');
+    Route::delete('/delete_users', [UserManagementController::class, 'destroy'])->name('delete.destroy');
 });
 
 Route::group(['middleware' => 'teacher'], function () {
