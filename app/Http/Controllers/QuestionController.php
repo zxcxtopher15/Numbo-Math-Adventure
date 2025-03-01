@@ -7,6 +7,7 @@ use Inertia\Response;
 use App\Models\Section;
 use App\Models\Question;
 use App\Models\AuditTrail;
+use App\Models\GameType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,8 +21,19 @@ class QuestionController extends Controller
             ->where('section_id', $sectionId)
             ->get();
 
+        $gameTypes = GameType::where('status', 0)
+            ->where('section_id', Auth::user()->section_id)
+            ->get()
+            ->map(function ($gameType) {
+                return [
+                    'game_type_id' => $gameType->id,
+                    'type' => $gameType->game_type_name,
+                ];
+            })->toArray();
+
         return Inertia::render('Teacher/Questions', [
-            'questions' => $questions
+            'questions' => $questions,
+            'gameTypes' => $gameTypes
         ]);
     }
 
@@ -38,7 +50,7 @@ class QuestionController extends Controller
         Question::create($request->all());
 
         $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
-        
+
         AuditTrail::create([
             'user_id' => Auth::user()->id,
             'action' => 'Added Question: ' . $request->question . ' for Section ' . $section_name,
@@ -117,7 +129,7 @@ class QuestionController extends Controller
         $question->save();
 
         $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
-        
+
         AuditTrail::create([
             'user_id' => Auth::user()->id,
             'action' => 'Remove Question: ' . $question->question . ' for Section ' . $section_name,

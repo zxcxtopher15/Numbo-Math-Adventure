@@ -14,6 +14,7 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AuditTrailController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Models\AuditTrail;
+use App\Http\Controllers\GameTypeController;
 
 Route::get('/', [AuthenticatedSessionController::class, 'create'])
     ->name('login');
@@ -106,6 +107,7 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::get('/sections', [SectionController::class, 'teacher_index']);
     Route::post('/remove-student-section', [SectionController::class, 'removeFromSection']);
     Route::post('/add-student-section', [SectionController::class, 'addToSection']);
+    Route::post('/game-type/store', [GameTypeController::class, 'store']);
 });
 
 Route::group(['middleware' => 'student'], function () {

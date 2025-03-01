@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { IoClose } from 'react-icons/io5';
 export default function Questions({ questions = [] }) {
     const { auth } = usePage().props;
+    const { gameTypes } = usePage().props;
     const section_id = auth?.user?.section_id;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalCategoryOpen, setIsModalCategoryOpen] = useState(false);
@@ -25,6 +26,7 @@ export default function Questions({ questions = [] }) {
     const [isModalGameTypeOpen, setIsModalGameTypeOpen] = useState(false);
     const [selectedQuestion, setSelectedQuestion] = useState(null);
     const [search, setSearch] = useState('');
+    const [gameType, setGameType] = useState("");
 
     const { data, setData, post, reset } = useForm({
         section_id: section_id,
@@ -60,8 +62,9 @@ export default function Questions({ questions = [] }) {
     const handleChangeCategory = (e) => {
         setData(e.target.name, e.target.value);
     };
-    const handleChangeGameType = (e) => {
-        setData(e.target.name, e.target.value);
+
+    const handleChangeGameType = (event) => {
+        setGameType(event.target.value);
     };
 
     const handleChoiceChange = (index, value) => {
@@ -176,10 +179,82 @@ export default function Questions({ questions = [] }) {
 
     const handleSubmitCategory = () => { };
 
-    const handleSubmitGameType = () => { };
+    const handleSubmitGameType = async (event) => {
+        event.preventDefault();
 
-    const handleDeleteGameType = (game_type_id) => {
-        console.log(game_type_id);
+        setIsModalManageGameTypeOpen(false);
+        setIsModalGameTypeOpen(false);
+
+        try {
+            const response = await axios.post("/game-type/store", {
+                game_type: gameType,
+            });
+
+            if (response.data.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Success!",
+                    text: "Game Type added successfully!",
+                    confirmButtonColor: "#3085d6",
+                }).then(() => {
+                    setIsModalManageGameTypeOpen(true);
+                });
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 422) {
+                const errorMessage = Object.values(error.response.data.errors).flat().join("\n");
+                Swal.fire({
+                    icon: "error",
+                    title: "Validation Error!",
+                    text: errorMessage,
+                    confirmButtonColor: "#d33",
+                }).then(() => {
+                    setIsModalGameTypeOpen(true);
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Failed!",
+                    text: "Failed to add Game Type.",
+                    confirmButtonColor: "#d33",
+                }).then(() => {
+                    setIsModalGameTypeOpen(true);
+                });
+            }
+        }
+    };
+
+    const handleDeleteGameType = async (game_type_id) => {
+        event.preventDefault();
+
+        setIsModalManageGameTypeOpen(false);
+
+        try {
+            const response = await axios.post("/game-type/destroy", {
+                game_type_id: game_type_id,
+            });
+
+            if (response.data.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Success!",
+                    text: "Game Type deleted successfully!",
+                    confirmButtonColor: "#3085d6",
+                }).then(() => {
+                    setIsModalManageGameTypeOpen(true);
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Failed!",
+                text: "Failed to delete Game Type.",
+                confirmButtonColor: "#d33",
+            }).then(() => {
+                setIsModalManageGameTypeOpen(true);
+            });
+
+        }
     };
 
     const handleEditQuestion = (question) => {
@@ -187,14 +262,6 @@ export default function Questions({ questions = [] }) {
         toggleEditQuestionModal();
         console.log(selectedQuestion);
     };
-
-    // Dummy data
-    const gameTypes = [
-        { game_type_id: 1, type: 'Addition' },
-        { game_type_id: 2, type: 'Subtraction' },
-        { game_type_id: 3, type: 'Multiplication' },
-        { game_type_id: 4, type: 'Mixed' },
-    ];
 
     const gameTypes_data = gameTypes.filter((type) => type.type.toLowerCase().includes(search.toLowerCase()));
 
@@ -427,8 +494,6 @@ export default function Questions({ questions = [] }) {
 
                         <TextInput type="hidden" name="section_id" value={section_id} />
 
-                        <TextInput type="hidden" name="section_id" value={section_id} />
-
                         <SelectInput
                             name="category"
                             value={data.category}
@@ -618,7 +683,7 @@ export default function Questions({ questions = [] }) {
                                             className="bg-white text-gray-600 p-3 rounded-b-xl flex justify-between"
                                         >
                                             <span>
-                                                <p>{}</p>
+                                                <p>{ }</p>
                                                 <h3 className="text-lg">{category.category}</h3>
                                             </span>
                                             <div>
@@ -724,7 +789,7 @@ export default function Questions({ questions = [] }) {
                                 <div key={type.id}>
                                     <div className="bg-white text-gray-600 p-3 rounded-xl flex justify-between">
                                         <span>
-                                            <p>{}</p>
+                                            <p>{ }</p>
                                             <h3 className="text-lg">{type.type}</h3>
                                         </span>
                                         <div>
@@ -756,6 +821,7 @@ export default function Questions({ questions = [] }) {
                         <TextInput
                             type="text"
                             name="gameType"
+                            value={gameType ? gameType : ''}
                             onChange={handleChangeGameType}
                             className="border w-full p-2 "
                         />

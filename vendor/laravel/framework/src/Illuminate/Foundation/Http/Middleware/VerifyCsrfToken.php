@@ -68,7 +68,8 @@ class VerifyCsrfToken
         '/assign-teacher',
         '/remove-assigned-teacher',
         '/remove-student-section',
-        '/add-from-section'
+        '/add-from-section',
+        '/game-type/store'
     ];
 
     /**
