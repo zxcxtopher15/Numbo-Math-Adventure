@@ -11,7 +11,9 @@ use App\Http\Controllers\MathJamController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\AuditTrailController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Models\AuditTrail;
 
 Route::get('/', [AuthenticatedSessionController::class, 'create'])
     ->name('login');
@@ -66,6 +68,9 @@ Route::group(['middleware' => 'administrator'], function () {
     Route::delete('/delete_section', [SectionController::class, 'destroy']);
     Route::post('/assign-teacher', [SectionController::class, 'assignTeacher'])->name('assign.teacher');
     Route::post('/remove-assigned-teacher', [SectionController::class, 'unassignTeacher'])->name('unassign.teacher');
+
+
+    Route::get('/audit_trail', [AuditTrailController::class, 'index'])->name('admin.audit_trail');
 });
 
 Route::group(['middleware' => 'teacher'], function () {

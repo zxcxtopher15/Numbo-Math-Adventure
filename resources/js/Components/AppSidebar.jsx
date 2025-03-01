@@ -60,6 +60,12 @@ export function AppSidebar(props) {
                         icon: LayoutList,
                         isActive: window.location.pathname === '/section_list',
                     },
+                    {
+                        title: 'Audit Trail',
+                        url: '/audit_trail',
+                        icon: LayoutList,
+                        isActive: window.location.pathname === '/audit_trail',
+                    },
                 ]
                 : []),
         ],
