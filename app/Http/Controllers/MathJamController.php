@@ -955,19 +955,19 @@ class MathJamController extends Controller
 
         $topStudents = DB::table('users')
             ->leftJoin('math_jam_participants', 'users.id', '=', 'math_jam_participants.student_id')
-            ->leftJoin('math_jams', 'math_jam_participants.math_jam_id', '=', 'math_jams.id')
             ->select(
                 'users.id as student_id',
                 'users.name',
-                DB::raw('SUM(math_jam_participants.score) as total_score')
+                DB::raw('COUNT(math_jam_participants.id) as total_attempts'),
+                DB::raw('SUM(math_jam_participants.score) as total_score'),
+                DB::raw('COALESCE(SUM(math_jam_participants.score) / NULLIF(COUNT(math_jam_participants.id), 0), 0) as success_percentage')
             )
             ->where('users.user_type', 'Student')
             ->where('users.section_id', $sectionId)
             ->where('users.status', 0)
             ->where('math_jam_participants.created_at', '>=', $sevenDaysAgo)
             ->groupBy('users.id', 'users.name')
-            ->orderByDesc('total_score')
-            ->orderBy('users.id')  
+            ->orderByDesc('success_percentage')
             ->limit(5)
             ->get();
 
@@ -977,6 +977,9 @@ class MathJamController extends Controller
             $rankedStudents[] = [
                 'name' => $student->name,
                 'rank' => $rank++,
+                'total_attempts' => $student->total_attempts,
+                'total_score' => $student->total_score,
+                'success_percentage' => round($student->success_percentage * 100, 2) . '%'
             ];
         }
 
