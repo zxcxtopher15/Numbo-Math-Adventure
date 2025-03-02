@@ -230,7 +230,13 @@ export default function Dashboard() {
     const [userCounts, setUserCounts] = useState([]);
 
     useEffect(() => {
-        const endpoint = userType === 'Parent' ? '/parent-student-results' : '/student-results';
+        let endpoint = '/student-results';
+
+        if (userType === 'Parent') {
+            endpoint = '/parent-student-results';
+        } else if (userType === 'Administrator') {
+            endpoint = '/admin-student-results';
+        }
 
         axios
             .get(endpoint)
@@ -241,6 +247,7 @@ export default function Dashboard() {
                 console.error('Error fetching student results:', error);
             });
     }, [userType]);
+
     useEffect(() => {
         axios
             .get('/user_counts')
