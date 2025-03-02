@@ -967,31 +967,17 @@ class MathJamController extends Controller
             ->where('math_jam_participants.created_at', '>=', $sevenDaysAgo)
             ->groupBy('users.id', 'users.name')
             ->orderByDesc('total_score')
-            ->orderBy('users.id')
+            ->orderBy('users.id')  
             ->limit(5)
             ->get();
 
         $rankedStudents = [];
         $rank = 1;
-        $previousScore = null;
-        $currentRank = 1;
-
         foreach ($topStudents as $student) {
-            if ($previousScore !== null && $student->total_score == $previousScore) {
-                $rankedStudents[] = [
-                    'name' => $student->name,
-                    'rank' => $currentRank,
-                ];
-            } else {
-                $currentRank = $rank;
-                $rankedStudents[] = [
-                    'name' => $student->name,
-                    'rank' => $currentRank,
-                ];
-            }
-
-            $previousScore = $student->total_score;
-            $rank++;
+            $rankedStudents[] = [
+                'name' => $student->name,
+                'rank' => $rank++,
+            ];
         }
 
         return response()->json(['topStudentsData' => $rankedStudents]);
