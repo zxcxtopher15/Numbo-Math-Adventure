@@ -122,7 +122,10 @@ export default function Questions({ questions = [] }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         setIsModalOpen(false);
-        const trimmedChoices = data.choices.map((choice) => choice.trim());
+        const trimmedChoices = data.choices
+            .map((choice) => choice.trim())
+            .filter((choice) => choice !== '');
+
         const trimmedCorrectAnswer = data.correct_answer.trim();
 
         if (
@@ -196,9 +199,10 @@ export default function Questions({ questions = [] }) {
         e.preventDefault();
         setIsEditQuestionModalOpen(false);
 
-        console.log(formDataUpdate);
+        const trimmedChoices = formDataUpdate.choices
+            .map((choice) => choice.trim())
+            .filter((choice) => choice !== '');
 
-        const trimmedChoices = formDataUpdate.choices.map((choice) => choice.trim());
         const trimmedCorrectAnswer = formDataUpdate.correct_answer.trim();
 
         if (
@@ -854,7 +858,7 @@ export default function Questions({ questions = [] }) {
                                             className="bg-white text-gray-600 p-3 rounded-b-xl flex justify-between"
                                         >
                                             <span>
-                                                <p>{}</p>
+                                                <p>{ }</p>
                                                 <h3 className="text-lg">{category.category}</h3>
                                             </span>
                                             <div>
@@ -981,7 +985,7 @@ export default function Questions({ questions = [] }) {
                                 <div key={type.id}>
                                     <div className="bg-white text-gray-600 p-3 rounded-xl flex justify-between">
                                         <span>
-                                            <p>{}</p>
+                                            <p>{ }</p>
                                             <h3 className="text-lg">{type.type}</h3>
                                         </span>
                                         <div>
