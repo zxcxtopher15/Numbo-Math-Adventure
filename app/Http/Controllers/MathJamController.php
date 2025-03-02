@@ -670,6 +670,8 @@ class MathJamController extends Controller
             )
             ->where('users.user_type', 'Student')
             ->where('users.section_id', $sectionId)
+            ->where('users.status', 0)
+            ->orderBy('math_jam_participants.created_at', 'desc')
             ->get();
 
         $formattedData = [];
@@ -833,6 +835,8 @@ class MathJamController extends Controller
                 'math_jam_participants.created_at as date'
             )
             ->where('users.user_type', 'Student')
+            ->orderBy('math_jam_participants.created_at', 'desc')
+            ->where('users.status', 0)
             ->get();
 
         $formattedData = [];
