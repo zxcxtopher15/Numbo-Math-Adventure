@@ -249,6 +249,8 @@ export default function Dashboard() {
             });
     }, [userType]);
 
+    console.log(studentsData);
+
     useEffect(() => {
         axios
             .get('/top-student-results')

@@ -979,6 +979,8 @@ class MathJamController extends Controller
             ];
         }
 
+        echo '<pre>'; print_r($topStudents); exit;
+
         return response()->json(['topStudentsData' => $rankedStudents]);
     }
 }
