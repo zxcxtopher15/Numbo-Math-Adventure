@@ -13,7 +13,7 @@ class UserManagementController extends Controller
 {
     public function index(): Response
     {
-        $users = User::where('status', 0)->orderBy('created_at')->get();
+        $users = User::where('status', 0)->where('user_type', '!=', 'Administrator')->orderBy('created_at')->get();
         $allRequests = User::where('status', 2)->orderBy('created_at')->get();
         $allRejects = User::where('status', 3)->orderBy('created_at')->get();
         $allDisabled = User::where('status', 1)->orderBy('created_at')->get();
