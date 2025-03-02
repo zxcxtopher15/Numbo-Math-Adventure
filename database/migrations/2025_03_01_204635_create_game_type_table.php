@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('game_type', function (Blueprint $table) {
             $table->id();
+            $table->integer('section_id');
             $table->string('game_type_name');
+            $table->text('description');
             $table->tinyInteger('status')->default(0);
             $table->timestamps();
         });

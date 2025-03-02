@@ -8,5 +8,5 @@ class GameType extends Model
 {
     protected $table = 'game_type';
 
-    protected $fillable = ['section_id', 'game_type_name', 'status',];
+    protected $fillable = ['section_id', 'game_type_name', 'description', 'status',];
 }

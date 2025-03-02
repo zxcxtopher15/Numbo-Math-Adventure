@@ -15,7 +15,7 @@ import Categories from '@/Components/Categories';
 import BoardContainer_Journey from '../Jam/BoardContainer_Journey';
 
 const CreateJam = () => {
-    const { auth } = usePage().props;
+    const { auth, categories } = usePage().props;
     const [numQuestions, setNumQuestions] = useState(5);
     const [timeLimit, setTimeLimit] = useState(30);
     const [category, setCategory] = useState('');
@@ -684,6 +684,14 @@ const CreateJam = () => {
             score: participant.score,
         }));
 
+    const groupedCategories = categories.reduce((acc, category) => {
+        if (!acc[category.type]) {
+            acc[category.type] = [];
+        }
+        acc[category.type].push(category);
+        return acc;
+    }, {});
+
     return (
         <>
             <Head title="Math Journey" />
@@ -835,11 +843,11 @@ const CreateJam = () => {
                                                             value={category}
                                                             onChange={(e) => setCategory(e.target.value)}
                                                         >
-                                                            {Object.entries(Categories).map(([type, options]) => (
+                                                            {Object.entries(groupedCategories).map(([type, options]) => (
                                                                 <optgroup key={type} label={type}>
                                                                     {options.map((cat) => (
-                                                                        <option key={cat} value={cat}>
-                                                                            {cat}
+                                                                        <option key={cat.category_id} value={cat.category}>
+                                                                            {cat.category}
                                                                         </option>
                                                                     ))}
                                                                 </optgroup>

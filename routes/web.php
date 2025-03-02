@@ -1,6 +1,9 @@
 <?php
 
 use Inertia\Inertia;
+use App\Models\Category;
+use App\Models\GameType;
+use App\Models\AuditTrail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -10,12 +13,12 @@ use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\MathJamController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SectionController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\GameTypeController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AuditTrailController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Models\AuditTrail;
-use App\Http\Controllers\GameTypeController;
 
 Route::get('/', [AuthenticatedSessionController::class, 'create'])
     ->name('login');
@@ -42,7 +45,64 @@ Route::post('/math-journey/update_has_answer', [MathJamController::class, 'updat
 Route::post('/math-journey/update_answers', [MathJamController::class, 'update_answers']);
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    $gameTypes = GameType::where('game_type.status', 0)
+        ->where('game_type.section_id', Auth::user()->section_id)
+        ->leftJoin('category as C', 'game_type.id', '=', 'C.game_type_id')
+        ->select(
+            'game_type.id as id',
+            'game_type.game_type_name as title',
+            'game_type.description',
+            'C.id as category_id',
+            'C.category_name as category_title',
+            'C.description as category_description',
+            'C.example as category_sample'
+        )
+        ->get();
+
+    $colors = [
+        ['gradient' => 'from-[#CDDA1E] to-[#50DE65]', 'text' => 'text-[#50DE65]'],
+        ['gradient' => 'from-[#EC4899] to-[#FBBF24]', 'text' => 'text-[#FBBF24]'],
+        ['gradient' => 'from-[#EC4899] to-[#8B5CF6]', 'text' => 'text-[#8B5CF6]'],
+        ['gradient' => 'from-[#34D399] to-[#6366F1]', 'text' => 'text-[#6366F1]'],
+    ];
+
+
+    $formattedData = $gameTypes->groupBy('id')->values()->map(function ($items, $index) use ($colors) {
+        $gameType = $items->first();
+        $color = $colors[$index % count($colors)];
+
+        $categories = $items->map(function ($item) {
+            if (!$item->category_id) return null;
+            return [
+                'id' => $item->category_id,
+                'title' => $item->category_title ?? '',
+                'description' => $item->category_description ?? '',
+                'sample' => $item->category_sample ?? '',
+            ];
+        })->filter()->values();
+
+        if ($categories->isEmpty()) {
+            return null;
+        }
+
+        $categories->prepend([
+            'id' => 0,
+            'title' => 'Custom Game',
+            'description' => 'Design your own challenges.',
+            'sample' => 'Create a set of custom problems.',
+        ]);
+
+        return [
+            'id' => $gameType->id,
+            'title' => $gameType->title,
+            'description' => $gameType->description,
+            'gradient' => $color['gradient'],
+            'textColor' => $color['text'],
+            'items' => $categories,
+        ];
+    })->filter()->values();
+
+    return Inertia::render('Dashboard', ['data' => $formattedData]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/student-results', [MathJamController::class, 'getStudentResults']);
@@ -82,7 +142,22 @@ Route::group(['middleware' => 'administrator'], function () {
 
 Route::group(['middleware' => 'teacher'], function () {
     Route::get('/math-journey', function () {
-        return Inertia::render('Teacher/CreateJam');
+        $categories = Category::where('category.status', 0)
+            ->where('category.section_id', Auth::user()->section_id)
+            ->where('game_type.status', 0)
+            ->leftJoin('game_type', 'game_type.id', '=', 'category.game_type_id')
+            ->select(
+                'category.id as category_id',
+                'category.category_name as category',
+                'game_type.game_type_name as type',
+                'category.game_type_id as game_type_id'
+            )
+            ->get()
+            ->toArray();
+
+        return Inertia::render('Teacher/CreateJam', [
+            'categories' => $categories
+        ]);
     })->name('math.journey');
 
     Route::post('/math-journey/create', [MathJamController::class, 'create']);
@@ -108,12 +183,17 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::post('/math-journey/update-pause-status', [MathJamController::class, 'updatePauseStatus']);
     Route::post('/math-journey/update_current_question', [MathJamController::class, 'update_current_question']);
     Route::delete('/questions/{id}', [QuestionController::class, 'destroy'])->name('questions.destroy');
+    Route::get('/questions/{id}', [QuestionController::class, 'getQuestion'])->name('questions.get');
+    Route::put('/questions/{id}', [QuestionController::class, 'updateQuestion'])->name('questions.update');
     Route::post('/math-journey/update_score', [MathJamController::class, 'update_score']);
 
     Route::get('/sections', [SectionController::class, 'teacher_index']);
     Route::post('/remove-student-section', [SectionController::class, 'removeFromSection']);
     Route::post('/add-student-section', [SectionController::class, 'addToSection']);
-    Route::post('/game-type/store', [GameTypeController::class, 'store']);
+    Route::post('/game-type/store', [GameTypeController::class, 'store'])->name('gametype.store');
+    Route::post('/game-type/destroy', [GameTypeController::class, 'destroy']);
+    Route::post('/category/store', [CategoryController::class, 'store']);
+    Route::post('/category/destroy', [CategoryController::class, 'destroy']);
 });
 
 Route::group(['middleware' => 'student'], function () {

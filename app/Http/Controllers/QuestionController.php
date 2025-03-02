@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Section;
+use App\Models\Category;
+use App\Models\GameType;
 use App\Models\Question;
 use App\Models\AuditTrail;
-use App\Models\GameType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class QuestionController extends Controller
 {
@@ -17,12 +19,15 @@ class QuestionController extends Controller
     {
         $sectionId = Auth::user()->section_id;
 
-        $questions = Question::where('status', 0)
-            ->where('section_id', $sectionId)
+        $questions = Question::where('questions.status', 0)
+            ->where('questions.section_id', $sectionId)
+            ->join('category', 'category.category_name', '=', 'questions.category')
+            ->where('category.status', 0)
+            ->select('questions.*')
             ->get();
 
         $gameTypes = GameType::where('status', 0)
-            ->where('section_id', Auth::user()->section_id)
+            ->where('section_id', $sectionId)
             ->get()
             ->map(function ($gameType) {
                 return [
@@ -31,9 +36,23 @@ class QuestionController extends Controller
                 ];
             })->toArray();
 
+        $categories = Category::where('category.status', 0)
+            ->where('category.section_id', $sectionId)
+            ->where('game_type.status', 0)
+            ->leftJoin('game_type', 'game_type.id', '=', 'category.game_type_id')
+            ->select(
+                'category.id as category_id',
+                'category.category_name as category',
+                'game_type.game_type_name as type',
+                'category.game_type_id as game_type_id'
+            )
+            ->get()
+            ->toArray();
+
         return Inertia::render('Teacher/Questions', [
             'questions' => $questions,
-            'gameTypes' => $gameTypes
+            'gameTypes' => $gameTypes,
+            'categories' => $categories
         ]);
     }
 
@@ -137,5 +156,59 @@ class QuestionController extends Controller
         ]);
 
         return response()->json(['message' => 'Question status updated successfully.']);
+    }
+
+    public function getQuestion($id)
+    {
+        $question = Question::find($id);
+
+        if (!$question) {
+            return response()->json(["message" => "Question not found"], 404);
+        }
+
+        return response()->json($question);
+    }
+
+    public function updateQuestion(Request $request, $id)
+    {
+        $question = Question::find($id);
+        if (!$question) {
+            return response()->json(['message' => 'Question not found.'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'section_id'      => 'required|exists:sections,id',
+            'category'        => 'required|string',
+            'question'        => 'required|string',
+            'choices'         => 'required|array|max:4',
+            'correct_answer'  => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+
+        $question_edited = $question->question !== $request->question;
+
+        $question->update([
+            'category'       => $request->category,
+            'question'       => $request->question,
+            'choices'        => $request->choices,
+            'correct_answer' => $request->correct_answer,
+        ]);
+
+        $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
+
+        $action_message = $question_edited
+            ? 'Update Question: ' . $question->question . ' for Section ' . $section_name . ' to ' . $request->question
+            : 'Updated Question: ' . $question->question . ' for Section ' . $section_name;
+
+        AuditTrail::create([
+            'user_id'    => Auth::user()->id,
+            'action'     => $action_message,
+            'created_at' => now(),
+        ]);
+
+        return response()->json(['message' => 'Question updated successfully.'], 200);
     }
 }
