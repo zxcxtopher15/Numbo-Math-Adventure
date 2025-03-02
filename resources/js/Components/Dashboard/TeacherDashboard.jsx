@@ -1,5 +1,5 @@
 import Avatar from '@/Components/Avatar';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaClock, FaQuestion } from 'react-icons/fa';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Pie, Line } from 'react-chartjs-2';
@@ -20,6 +20,7 @@ ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineEleme
 
 export function TeacherDashboard(result) {
     const [search, setSearch] = useState('');
+    const [topStudentsData, setTopStudentsData] = useState([]);
 
     const raw_students_data = result.data;
     const students_data = result.data.filter((student) => student.name.toLowerCase().includes(search.toLowerCase()));
@@ -115,28 +116,45 @@ export function TeacherDashboard(result) {
         },
     };
 
-    const topStudentsData = [
-        {
-            name: 'Monica Lopez',
-            rank: 1,
-        },
-        {
-            name: 'John Doe',
-            rank: 2,
-        },
-        {
-            name: 'Jane Doe',
-            rank: 3,
-        },
-        {
-            name: 'John Smith',
-            rank: 4,
-        },
-        {
-            name: 'Bob Johnson',
-            rank: 5,
-        },
-    ];
+    useEffect(() => {
+        axios
+            .get('/top-student-results')
+            .then((response) => {
+                console.log("Received response:", response.data);
+
+                if (response.data.topStudentsData) {
+                    setTopStudentsData(response.data.topStudentsData);
+                } else {
+                    console.error("Unexpected API response format:", response.data);
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching student results:', error);
+            });
+    }, []);
+
+    // const topStudentsData = [
+    //     {
+    //         name: 'Monica Lopez',
+    //         rank: 1,
+    //     },
+    //     {
+    //         name: 'John Doe',
+    //         rank: 2,
+    //     },
+    //     {
+    //         name: 'Jane Doe',
+    //         rank: 3,
+    //     },
+    //     {
+    //         name: 'John Smith',
+    //         rank: 4,
+    //     },
+    //     {
+    //         name: 'Bob Johnson',
+    //         rank: 5,
+    //     },
+    // ];
     return (
         <div className="py-12">
             <div className="mx-auto max-w-[100rem] sm:px-6 lg:px-8">
@@ -245,16 +263,16 @@ export function TeacherDashboard(result) {
                                                 <h1 className="rounded-2xl text-warning font-bold text-3xl">
                                                     {student.scores.length > 0 && student.scores[0].category
                                                         ? (
-                                                              (student.scores.reduce(
-                                                                  (acc, score) => acc + score.score,
-                                                                  0,
-                                                              ) /
-                                                                  student.scores.reduce(
-                                                                      (acc, score) => acc + score.num_questions,
-                                                                      0,
-                                                                  )) *
-                                                              100
-                                                          ).toFixed(1) + '%'
+                                                            (student.scores.reduce(
+                                                                (acc, score) => acc + score.score,
+                                                                0,
+                                                            ) /
+                                                                student.scores.reduce(
+                                                                    (acc, score) => acc + score.num_questions,
+                                                                    0,
+                                                                )) *
+                                                            100
+                                                        ).toFixed(1) + '%'
                                                         : 'N/a'}
                                                 </h1>
                                             </div>
@@ -313,12 +331,11 @@ export function TeacherDashboard(result) {
                                                                             <div className="flex bg-gray-100 rounded-xl px-5 items-center flex-col sm:w-max w-full">
                                                                                 <p>score</p>
                                                                                 <p
-                                                                                    className={`font-semibold ${
-                                                                                        score.score <=
+                                                                                    className={`font-semibold ${score.score <=
                                                                                         score.num_questions * 0.4
-                                                                                            ? 'text-red-600'
-                                                                                            : 'text-green-600'
-                                                                                    }`}
+                                                                                        ? 'text-red-600'
+                                                                                        : 'text-green-600'
+                                                                                        }`}
                                                                                 >
                                                                                     {score.score} /{' '}
                                                                                     {score.num_questions}
@@ -363,11 +380,10 @@ export function TeacherDashboard(result) {
                                                             <div className="flex bg-white rounded-xl px-5 items-center flex-col sm:w-max w-full">
                                                                 <p>score</p>
                                                                 <p
-                                                                    className={`font-semibold ${
-                                                                        score.score <= score.num_questions * 0.4
-                                                                            ? 'text-red-600'
-                                                                            : 'text-green-600'
-                                                                    }`}
+                                                                    className={`font-semibold ${score.score <= score.num_questions * 0.4
+                                                                        ? 'text-red-600'
+                                                                        : 'text-green-600'
+                                                                        }`}
                                                                 >
                                                                     {score.score} / {score.num_questions}
                                                                 </p>

@@ -947,4 +947,38 @@ class MathJamController extends Controller
 
         return response()->json(['results' => array_values($formattedData)]);
     }
+
+    public function getTopStudents()
+    {
+        $sectionId = Auth::user()->section_id;
+        $sevenDaysAgo = now()->subDays(7);
+
+        $topStudents = DB::table('users')
+            ->leftJoin('math_jam_participants', 'users.id', '=', 'math_jam_participants.student_id')
+            ->leftJoin('math_jams', 'math_jam_participants.math_jam_id', '=', 'math_jams.id')
+            ->select(
+                'users.id as student_id',
+                'users.name',
+                DB::raw('SUM(math_jam_participants.score) as total_score')
+            )
+            ->where('users.user_type', 'Student')
+            ->where('users.section_id', $sectionId)
+            ->where('users.status', 0)
+            ->where('math_jam_participants.created_at', '>=', $sevenDaysAgo)
+            ->groupBy('users.id', 'users.name')
+            ->orderByDesc('total_score')
+            ->limit(5)
+            ->get();
+
+        $rankedStudents = [];
+        $rank = 1;
+        foreach ($topStudents as $student) {
+            $rankedStudents[] = [
+                'name' => $student->name,
+                'rank' => $rank++,
+            ];
+        }
+
+        return response()->json(['topStudentsData' => $rankedStudents]);
+    }
 }
