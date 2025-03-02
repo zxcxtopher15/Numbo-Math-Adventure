@@ -993,7 +993,6 @@ class MathJamController extends Controller
             $rankedStudents[] = [
                 'name' => $student->name,
                 'rank' => $rank++,
-                'total_attempts' => $student->total_attempts,
                 'total_score' => $student->total_score,
                 'success_percentage' => round($student->success_percentage * 100, 2) . '%'
             ];
