@@ -15,7 +15,7 @@ import {
     Legend,
 } from 'chart.js';
 import getCategoryType from '../ui/getCategoryType';
-
+import Confetti from 'react-confetti';
 ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export function TeacherDashboard(result) {
@@ -114,10 +114,33 @@ export function TeacherDashboard(result) {
             },
         },
     };
+
+    const topStudentsData = [
+        {
+            name: 'Monica Lopez',
+            rank: 1,
+        },
+        {
+            name: 'John Doe',
+            rank: 2,
+        },
+        {
+            name: 'Jane Doe',
+            rank: 3,
+        },
+        {
+            name: 'John Smith',
+            rank: 4,
+        },
+        {
+            name: 'Bob Johnson',
+            rank: 5,
+        },
+    ];
     return (
         <div className="py-12">
             <div className="mx-auto max-w-[100rem] sm:px-6 lg:px-8">
-                <div className="sm:p-4 p-0 space-y-5">
+                <div className="sm:p-4 p-0 space-y-7">
                     <div className="grid lg:grid-cols-2 md:grid-cols-1 grid-cols-1 text-white gap-5 mb-14">
                         {/* Overall Student Performance */}
                         <div className="bg-gradient-to-tl from-[#fdbdbd] to-[#92e0ff] rounded-2xl p-8 grid md:grid-cols-5 grid-cols-1">
@@ -137,6 +160,55 @@ export function TeacherDashboard(result) {
                         <div className="bg-gradient-to-r from-fuchsia-600 to-purple-600 rounded-2xl p-8">
                             <h2 className="text-lg font-semibold text-white mb-3">Overall Skill Analysis</h2>
                             <Line className="w-full text-white p-5 rounded-2xl" data={lineData} options={options} />
+                        </div>
+                    </div>
+                    <div className="relative">
+                        <img
+                            src="/images/assets/shapes/medal.svg"
+                            alt=""
+                            className="absolute -top-5 -right-10 h-32 w-32 z-10"
+                        />
+                        <div className="bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-2xl lg:px-6 px-2 py-8 pb-10 relative overflow-hidden">
+                            <h3 className="lg:text-3xl text-xl font-bold text-white mb-6">Top Students of the Week</h3>
+                            {topStudentsData && topStudentsData.length > 0 ? (
+                                <>
+                                    <Confetti numberOfPieces={200} gravity={0.05} />
+                                    <div className="grid lg:grid-cols-1 md:grid-cols-1 grid-cols-1 gap-2 grid-flow-row bg-white rounded-2xl border p-4">
+                                        {topStudentsData.map((student, index) => (
+                                            <div key={index} className=" flex justify-between  border-b pb-2">
+                                                <div className="flex items-center gap-4">
+                                                    <Avatar name={student.name} className="w-14 h-14"></Avatar>
+                                                    <h2 className="font-semibold text-xl text-gray-600">
+                                                        {student.name}
+                                                    </h2>
+                                                </div>
+                                                <span className="flex flex-col items-center bg-gray-100 p-2 rounded-2xl">
+                                                    <p className="font-semibold text-xs text-gray-500">Ranking</p>
+                                                    <h2 className="text-3xl font-bold text-warning">{student.rank}</h2>
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <Confetti numberOfPieces={30} gravity={0.02} />
+                                    <div className="bg-white py-12 rounded-2xl flex flex-col items-center justify-center">
+                                        <img
+                                            src="/images/assets/background/students_result.svg"
+                                            alt="Students"
+                                            className="w-96 h-w-96"
+                                        />
+                                        <h1 className="text-3xl font-bold text-warning mt-5">
+                                            Top Students of the Week
+                                        </h1>
+                                        <p className="max-w-md text-center">
+                                            As soon as students start their math journey, the top students will be
+                                            displayed here.
+                                        </p>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                     {/* Students Listr */}
