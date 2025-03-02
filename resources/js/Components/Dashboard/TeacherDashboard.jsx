@@ -141,7 +141,7 @@ export function TeacherDashboard(result) {
         <div className="py-12">
             <div className="mx-auto max-w-[100rem] sm:px-6 lg:px-8">
                 <div className="sm:p-4 p-0 space-y-7">
-                    <div className="grid lg:grid-cols-2 md:grid-cols-1 grid-cols-1 text-white gap-5 mb-14">
+                    <div className="grid lg:grid-cols-2 md:grid-cols-1 grid-cols-1 text-white gap-5 mb-4">
                         {/* Overall Student Performance */}
                         <div className="bg-gradient-to-tl from-[#fdbdbd] to-[#92e0ff] rounded-2xl p-8 grid md:grid-cols-5 grid-cols-1">
                             <div className="flex flex-col justify-center col-span-3">
@@ -182,7 +182,7 @@ export function TeacherDashboard(result) {
                                                         {student.name}
                                                     </h2>
                                                 </div>
-                                                <span className="flex flex-col items-center bg-gray-100 p-2 rounded-2xl">
+                                                <span className="flex flex-col items-center bg-gray-100 p-2 px-5 rounded-2xl">
                                                     <p className="font-semibold text-xs text-gray-500">Ranking</p>
                                                     <h2 className="text-3xl font-bold text-warning">{student.rank}</h2>
                                                 </span>
