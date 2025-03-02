@@ -973,9 +973,9 @@ class MathJamController extends Controller
             ->select(
                 'users.id as student_id',
                 'users.name',
-                DB::raw('COUNT(math_jam_participants.id) as total_attempts'),
+                DB::raw('SUM(math_jams.num_questions) as total_questions'),
                 DB::raw('SUM(math_jam_participants.score) as total_score'),
-                DB::raw('COALESCE(SUM(math_jam_participants.score) / NULLIF(COUNT(math_jam_participants.id), 0), 0) as success_percentage')
+                DB::raw('COALESCE(SUM(math_jam_participants.score) / NULLIF(SUM(math_jams.num_questions), 0), 0) as success_percentage')
             )
             ->where('users.user_type', 'Student')
             ->where('users.section_id', $sectionId)
