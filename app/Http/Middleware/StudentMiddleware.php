@@ -17,13 +17,20 @@ class StudentMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check()) {
-            if (Auth::user()->user_type == 'Student') {
-                return $next($request);
+            $user = Auth::user();
+            
+            if ($user->user_type == 'Student') {
+                if ($user->section_id != 0) {
+                    return $next($request);
+                } else {
+                    Auth::logout();
+                    return redirect(url('login'))->withErrors(['error' => 'Your account is not assigned to any section.']);
+                }
             } else {
                 return redirect(url('dashboard'));
             }
         } else {
             return redirect(url('dashboard'));
-        };
+        }
     }
 }
