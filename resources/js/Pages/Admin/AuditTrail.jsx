@@ -18,13 +18,16 @@ const AuditTrail = () => {
             sortable: false,
             width: '70px',
         },
-        { name: 'Name', selector: (row) => row.name, sortable: true },
-        { name: 'User Type', selector: (row) => row.user_type, sortable: true },
-        { name: 'Action', selector: (row) => row.action, sortable: true },
+        { name: 'Name', selector: (row) => row.name, sortable: true, wrap: true },
+        { name: 'User Type', selector: (row) => row.user_type, sortable: true, wrap: true },
+        { name: 'Action', selector: (row) => row.action, sortable: true, wrap: true },
         {
             name: 'Date',
-            selector: (row) => format(new Date(row.created_at), 'MMMM do, yyyy, h:mm a'),
+            selector: (row) => (
+                <div className="whitespace-pre-wrap">{format(new Date(row.created_at), 'MMMM do, yyyy, h:mm a')}</div>
+            ),
             sortable: true,
+            wrap: true,
         },
     ];
 
