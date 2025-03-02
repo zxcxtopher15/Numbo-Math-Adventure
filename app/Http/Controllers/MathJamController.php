@@ -970,6 +970,7 @@ class MathJamController extends Controller
 
         $topStudents = DB::table('users')
             ->leftJoin('math_jam_participants', 'users.id', '=', 'math_jam_participants.student_id')
+            ->leftJoin('math_jams', 'math_jam_participants.math_jam_id', '=', 'math_jams.id')
             ->select(
                 'users.id as student_id',
                 'users.name',
