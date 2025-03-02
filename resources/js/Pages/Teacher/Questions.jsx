@@ -590,7 +590,7 @@ export default function Questions({ questions = [] }) {
                                                     className="flex items-center bg-white rounded-xl shadow-lg p-4 relative"
                                                 >
                                                     <div className="absolute top-4 right-4">
-                                                        <div className="flex gap-3">
+                                                        <div className="flex flex-col gap-3">
                                                             <div
                                                                 onClick={() => handleEditQuestion(q.id)}
                                                                 className="cursor-pointer bg-green-400 text-white font-medium text-xs p-1 px-4 rounded-lg"
@@ -644,77 +644,81 @@ export default function Questions({ questions = [] }) {
             </div>
 
             <Dialog open={isModalOpen} onOpenChange={toggleModal} className="fixed inset-0 overflow-y-auto">
-                <DialogContent className="overflow-y-auto max-h-[80vh] max-w-lg">
-                    <form onSubmit={handleSubmit} className="">
-                        <DialogHeader>
-                            <DialogTitle className="text-2xl font-semibold mb-5">Add New Question</DialogTitle>
-                        </DialogHeader>
+                <DialogContent className="overflow-y-auto max-h-[80vh] max-w-lg p-0">
+                    <form onSubmit={handleSubmit}>
+                        <div className="p-6">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-semibold mb-5">Add New Question</DialogTitle>
+                            </DialogHeader>
 
-                        <InputLabel htmlFor="category" value="Category" />
+                            <InputLabel htmlFor="category" value="Category" />
 
-                        <TextInput type="hidden" name="section_id" value={section_id} />
+                            <TextInput type="hidden" name="section_id" value={section_id} />
 
-                        <SelectInput
-                            name="category"
-                            value={data.category}
-                            onChange={handleChange}
-                            className="border w-full p-2 mb-2"
-                        >
-                            <option value="">Select Category</option>
-                            {Object.entries(groupedCategories).map(([type, options]) => (
-                                <optgroup key={type} label={type}>
-                                    {options.map((cat) => (
-                                        <option key={cat.category_id} value={cat.category}>
-                                            {cat.category}
-                                        </option>
-                                    ))}
-                                </optgroup>
-                            ))}
-                        </SelectInput>
-
-                        <InputLabel htmlFor="question" value="Question" />
-                        <TextInput
-                            type="text"
-                            name="question"
-                            value={data.question}
-                            onChange={handleChange}
-                            className="border w-full p-2 mb-2"
-                            maxLength={250}
-                        />
-                        <h1 className="text-lg my-5 font-semibold text-primary">Choices</h1>
-
-                        {data.choices.map((choice, index) => (
-                            <div key={index} className="mb-2">
-                                <InputLabel htmlFor="choices" value={`Choice ${String.fromCharCode(65 + index)}`} />
-                                <TextInput
-                                    type="text"
-                                    value={choice}
-                                    onChange={(e) => handleChoiceChange(index, e.target.value)}
-                                    className="border w-full p-2"
-                                />
-                            </div>
-                        ))}
-                        <InputLabel htmlFor="correct_answer" value="Correct Answer" />
-
-                        <TextInput
-                            type="text"
-                            name="correct_answer"
-                            value={data.correct_answer}
-                            onChange={handleChange}
-                            className="border w-full p-2 "
-                        />
-                        <div className="bg-white sticky bottom-0 p-4  flex justify-end space-x-4">
-                            <DangerButton
-                                type="button"
-                                onClick={toggleModal}
-                                className="bg-gray-500 text-white px-4 py-2 rounded"
+                            <SelectInput
+                                name="category"
+                                value={data.category}
+                                onChange={handleChange}
+                                className="border w-full p-2 mb-2"
                             >
-                                Cancel
-                            </DangerButton>
+                                <option value="">Select Category</option>
+                                {Object.entries(groupedCategories).map(([type, options]) => (
+                                    <optgroup key={type} label={type}>
+                                        {options.map((cat) => (
+                                            <option key={cat.category_id} value={cat.category}>
+                                                {cat.category}
+                                            </option>
+                                        ))}
+                                    </optgroup>
+                                ))}
+                            </SelectInput>
 
-                            <PrimaryButton type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-                                Save
-                            </PrimaryButton>
+                            <InputLabel htmlFor="question" value="Question" />
+                            <TextInput
+                                type="text"
+                                name="question"
+                                value={data.question}
+                                onChange={handleChange}
+                                className="border w-full p-2 mb-2"
+                                maxLength={250}
+                            />
+                            <h1 className="text-lg my-5 font-semibold text-primary">Choices</h1>
+
+                            {data.choices.map((choice, index) => (
+                                <div key={index} className="mb-2">
+                                    <InputLabel htmlFor="choices" value={`Choice ${String.fromCharCode(65 + index)}`} />
+                                    <TextInput
+                                        type="text"
+                                        value={choice}
+                                        onChange={(e) => handleChoiceChange(index, e.target.value)}
+                                        className="border w-full p-2"
+                                    />
+                                </div>
+                            ))}
+                            <InputLabel htmlFor="correct_answer" value="Correct Answer" />
+
+                            <TextInput
+                                type="text"
+                                name="correct_answer"
+                                value={data.correct_answer}
+                                onChange={handleChange}
+                                className="border w-full p-2 "
+                            />
+                        </div>
+                        <div className=" sticky bottom-0 bg-white h-max ">
+                            <div className="h-full flex justify-end space-x-4 p-6">
+                                <DangerButton
+                                    type="button"
+                                    onClick={toggleModal}
+                                    className="bg-gray-500 text-white px-4 py-2 rounded"
+                                >
+                                    Cancel
+                                </DangerButton>
+
+                                <PrimaryButton type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+                                    Save
+                                </PrimaryButton>
+                            </div>
                         </div>
                     </form>
                 </DialogContent>
@@ -726,67 +730,68 @@ export default function Questions({ questions = [] }) {
                 onOpenChange={toggleEditQuestionModal}
                 className="fixed inset-0 overflow-y-auto"
             >
-                <DialogContent className="overflow-y-auto max-h-[80vh] max-w-lg">
+                <DialogContent className="overflow-y-auto max-h-[80vh] max-w-lg p-0">
                     <form onSubmit={handleSubmitUpdate}>
-                        <DialogHeader>
-                            <DialogTitle className="text-2xl font-semibold mb-5">Edit Question</DialogTitle>
-                        </DialogHeader>
+                        <div className="p-6">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-semibold mb-5">Edit Question</DialogTitle>
+                            </DialogHeader>
 
-                        {/* Category Selection */}
-                        <SelectInput
-                            name="category"
-                            value={formDataUpdate.category}
-                            onChange={handleChangeUpdate}
-                            className="border w-full p-2 mb-2"
-                        >
-                            <option value="">Select Category</option>
-                            {categories.map((category) => (
-                                <option key={category.category} value={category.category}>
-                                    {category.category}
-                                </option>
+                            {/* Category Selection */}
+                            <SelectInput
+                                name="category"
+                                value={formDataUpdate.category}
+                                onChange={handleChangeUpdate}
+                                className="border w-full p-2 mb-2"
+                            >
+                                <option value="">Select Category</option>
+                                {categories.map((category) => (
+                                    <option key={category.category} value={category.category}>
+                                        {category.category}
+                                    </option>
+                                ))}
+                            </SelectInput>
+
+                            {/* Question Input */}
+                            <InputLabel htmlFor="question" value="Question" />
+                            <TextInput
+                                type="text"
+                                name="question"
+                                value={formDataUpdate.question}
+                                onChange={handleChangeUpdate}
+                                className="border w-full p-2 mb-2"
+                                maxLength={250}
+                            />
+
+                            {/* Choices Section */}
+                            <h1 className="text-lg my-5 font-semibold text-primary">Choices</h1>
+                            {formDataUpdate.choices.map((choice, index) => (
+                                <div key={index} className="mb-2">
+                                    <InputLabel
+                                        htmlFor={`choice-${index}`}
+                                        value={`Choice ${String.fromCharCode(65 + index)}`}
+                                    />
+                                    <TextInput
+                                        type="text"
+                                        value={choice}
+                                        onChange={(e) => handleChoiceChangeUpdate(index, e.target.value)}
+                                        className="border w-full p-2"
+                                    />
+                                </div>
                             ))}
-                        </SelectInput>
 
-                        {/* Question Input */}
-                        <InputLabel htmlFor="question" value="Question" />
-                        <TextInput
-                            type="text"
-                            name="question"
-                            value={formDataUpdate.question}
-                            onChange={handleChangeUpdate}
-                            className="border w-full p-2 mb-2"
-                            maxLength={250}
-                        />
-
-                        {/* Choices Section */}
-                        <h1 className="text-lg my-5 font-semibold text-primary">Choices</h1>
-                        {formDataUpdate.choices.map((choice, index) => (
-                            <div key={index} className="mb-2">
-                                <InputLabel
-                                    htmlFor={`choice-${index}`}
-                                    value={`Choice ${String.fromCharCode(65 + index)}`}
-                                />
-                                <TextInput
-                                    type="text"
-                                    value={choice}
-                                    onChange={(e) => handleChoiceChangeUpdate(index, e.target.value)}
-                                    className="border w-full p-2"
-                                />
-                            </div>
-                        ))}
-
-                        {/* Correct Answer Input */}
-                        <InputLabel htmlFor="correct_answer" value="Correct Answer" />
-                        <TextInput
-                            type="text"
-                            name="correct_answer"
-                            value={formDataUpdate.correct_answer}
-                            onChange={handleChangeUpdate}
-                            className="border w-full p-2"
-                        />
-
+                            {/* Correct Answer Input */}
+                            <InputLabel htmlFor="correct_answer" value="Correct Answer" />
+                            <TextInput
+                                type="text"
+                                name="correct_answer"
+                                value={formDataUpdate.correct_answer}
+                                onChange={handleChangeUpdate}
+                                className="border w-full p-2"
+                            />
+                        </div>
                         {/* Footer Buttons */}
-                        <div className="bg-white sticky bottom-0 p-4 flex justify-end space-x-4">
+                        <div className="bg-white sticky bottom-0 p-6 flex justify-end space-x-4">
                             <DangerButton
                                 type="button"
                                 onClick={toggleEditQuestionModal}
@@ -875,56 +880,58 @@ export default function Questions({ questions = [] }) {
                 onOpenChange={toggleModalCategory}
                 className="fixed inset-0 overflow-y-auto"
             >
-                <DialogContent className="overflow-y-auto max-h-[80vh] max-w-lg">
+                <DialogContent className="overflow-y-auto max-h-[80vh] max-w-lg p-0">
                     <form onSubmit={handleSubmitCategory} className="">
-                        <DialogHeader>
-                            <DialogTitle className="text-2xl font-semibold mb-5 text-yellow-500">
-                                Add Category
-                            </DialogTitle>
-                        </DialogHeader>
-                        <InputLabel htmlFor="game_type" value="Game Type" />
+                        <div className="p-6">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-semibold mb-5 text-yellow-500">
+                                    Add Category
+                                </DialogTitle>
+                            </DialogHeader>
+                            <InputLabel htmlFor="game_type" value="Game Type" />
 
-                        <SelectInput
-                            name="gameType"
-                            value={formDataCategory.gameType}
-                            onChange={handleChangeCategory}
-                            className="border w-full p-2 mb-2"
-                        >
-                            <option value="">Select Game Type</option>
-                            {gameTypes.map((type) => (
-                                <option key={type.game_type_id} value={type.game_type_id}>
-                                    {type.type}
-                                </option>
-                            ))}
-                        </SelectInput>
+                            <SelectInput
+                                name="gameType"
+                                value={formDataCategory.gameType}
+                                onChange={handleChangeCategory}
+                                className="border w-full p-2 mb-2"
+                            >
+                                <option value="">Select Game Type</option>
+                                {gameTypes.map((type) => (
+                                    <option key={type.game_type_id} value={type.game_type_id}>
+                                        {type.type}
+                                    </option>
+                                ))}
+                            </SelectInput>
 
-                        <InputLabel htmlFor="category" value="Category Name" />
-                        <TextInput
-                            type="text"
-                            value={formDataCategory.category}
-                            name="category"
-                            onChange={handleChangeCategory}
-                            className="border w-full p-2 mb-4"
-                        />
+                            <InputLabel htmlFor="category" value="Category Name" />
+                            <TextInput
+                                type="text"
+                                value={formDataCategory.category}
+                                name="category"
+                                onChange={handleChangeCategory}
+                                className="border w-full p-2 mb-4"
+                            />
 
-                        <InputLabel htmlFor="description" value="Description" />
-                        <Textarea
-                            type="text"
-                            value={formDataCategory.description}
-                            name="description"
-                            onChange={handleChangeCategory}
-                            className="border w-full p-4 mb-4 rounded-2xl h-14 min-h-[120px] bg-gray-50 border-gray-300 shadow-sm focus:border-warning focus:ring-warning "
-                        />
+                            <InputLabel htmlFor="description" value="Description" />
+                            <Textarea
+                                type="text"
+                                value={formDataCategory.description}
+                                name="description"
+                                onChange={handleChangeCategory}
+                                className="border w-full p-4 mb-4 rounded-2xl h-14 min-h-[120px] bg-gray-50 border-gray-300 shadow-sm focus:border-warning focus:ring-warning "
+                            />
 
-                        <InputLabel htmlFor="sample" value="Example" />
-                        <TextInput
-                            type="text"
-                            value={formDataCategory.example}
-                            name="example"
-                            onChange={handleChangeCategory}
-                            className="border w-full p-2 "
-                        />
-                        <div className="bg-white sticky bottom-0 p-4  flex justify-end space-x-4">
+                            <InputLabel htmlFor="sample" value="Example" />
+                            <TextInput
+                                type="text"
+                                value={formDataCategory.example}
+                                name="example"
+                                onChange={handleChangeCategory}
+                                className="border w-full p-2 "
+                            />
+                        </div>
+                        <div className="bg-white sticky bottom-0 p-6  flex justify-end space-x-4">
                             <DangerButton
                                 type="button"
                                 onClick={toggleModalCategory}
