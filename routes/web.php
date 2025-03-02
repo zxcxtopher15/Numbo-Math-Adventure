@@ -119,6 +119,7 @@ Route::get('/dashboard', function () {
 Route::get('/student-results', [MathJamController::class, 'getStudentResults']);
 Route::get('/parent-student-results', [MathJamController::class, 'getStudentResultsParent']);
 
+
 Route::get('/view_modules', function () {
     if (Auth::check() && Auth::user()->user_type === 'Administrator') {
         return redirect()->route('dashboard');
@@ -142,13 +143,17 @@ Route::group(['middleware' => 'administrator'], function () {
     Route::post('/assign-teacher', [SectionController::class, 'assignTeacher'])->name('assign.teacher');
     Route::post('/remove-assigned-teacher', [SectionController::class, 'unassignTeacher'])->name('unassign.teacher');
 
-
     Route::get('/audit_trail', [AuditTrailController::class, 'index'])->name('admin.audit_trail');
     Route::get('/user_management', [UserManagementController::class, 'index'])->name('admin.user_management');
     Route::post('/approve_users', [UserManagementController::class, 'approveUsers'])->name('approve.users');
     Route::post('/reject_users', [UserManagementController::class, 'rejectUsers'])->name('reject.users');
     Route::post('/restore_users', [UserManagementController::class, 'restoreUsers'])->name('restore.users');
+    Route::post('/disable_user/{id}', [UserManagementController::class, 'disableUser'])->name('disable.user');
+    Route::post('/enable_users', [UserManagementController::class, 'enableUsers'])->name('enable.users');
+
     Route::delete('/delete_users', [UserManagementController::class, 'destroy'])->name('delete.destroy');
+
+    Route::get('/user_counts', [UserManagementController::class, 'userCounts']);
 });
 
 Route::group(['middleware' => 'teacher'], function () {

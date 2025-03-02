@@ -12,14 +12,16 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 
 const UserManagement = () => {
-    const { users, allRequests, allRejects } = usePage().props;
+    const { users, allRequests, allRejects, allDisabled } = usePage().props;
     const [filterText, setFilterText] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [selectedRequests, setSelectedRequests] = useState([]);
     const [selectedRejects, setSelectedRejects] = useState([]);
+    const [selectedDisabled, setSelectedDisabled] = useState([]);
     const [isOpenRequest, setIsOpenRequest] = useState(false);
     const [isOpenReject, setIsOpenReject] = useState(false);
+    const [isOpenDisabled, setIsOpenDisabled] = useState(false);
 
     console.log(allRejects);
 
@@ -37,6 +39,51 @@ const UserManagement = () => {
             name: 'Date',
             selector: (row) => format(new Date(row.created_at), 'MMMM do, yyyy, h:mm a'),
             sortable: true,
+        },
+        {
+            name: 'Actions',
+            cell: (row) => (
+                <div className="flex items-center justify-end gap-2">
+                    <PrimaryButton
+                        type="button"
+                        className="py-1 px-2 h-7 font-semibold text-xs"
+                        onClick={() => {
+                            Swal.fire({
+                                title: 'Are you sure?',
+                                text: "You won't be able to revert this!",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Yes, disable it!',
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    axios
+                                        .post(`/disable_user/${row.id}`)
+                                        .then((response) => {
+                                            if (response.data.message) {
+                                                Swal.fire('Disabled!', 'The user has been disabled.', 'success').then(
+                                                    () => {
+                                                        window.location.reload();
+                                                    },
+                                                );
+                                            }
+                                        })
+                                        .catch((error) => {
+                                            console.error('Error disabling user:', error);
+                                            Swal.fire('Error', 'Failed to disable user.', 'error');
+                                        });
+                                }
+                            });
+                        }}
+                    >
+                        Disable
+                    </PrimaryButton>
+                </div>
+            ),
+            ignoreRowClick: true,
+            allowOverflow: true,
+            button: true,
         },
     ];
 
@@ -69,6 +116,13 @@ const UserManagement = () => {
             setSelectedRejects([]);
         }
     };
+    const handleSelectAllDisabled = (e) => {
+        if (e.target.checked) {
+            setSelectedDisabled(allDisabled.map((disabled) => disabled.id));
+        } else {
+            setSelectedDisabled([]);
+        }
+    };
 
     const handleRequestCheckboxChange = (id) => {
         setSelectedRequests((prevSelected) =>
@@ -78,6 +132,11 @@ const UserManagement = () => {
 
     const handleRejectCheckboxChange = (id) => {
         setSelectedRejects((prevSelected) =>
+            prevSelected.includes(id) ? prevSelected.filter((requestId) => requestId !== id) : [...prevSelected, id],
+        );
+    };
+    const handleDisabledCheckboxChange = (id) => {
+        setSelectedDisabled((prevSelected) =>
             prevSelected.includes(id) ? prevSelected.filter((requestId) => requestId !== id) : [...prevSelected, id],
         );
     };
@@ -227,11 +286,82 @@ const UserManagement = () => {
             }
         });
     };
+    const handleEnableUsers = () => {
+        setIsOpenRequest(false);
+        setIsOpenReject(false);
+        setIsOpenDisabled(false);
+        Swal.fire({
+            title: 'Enable Selected Users?',
+            text: 'Are you sure you want to enable the selected user accounts?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+            allowOutsideClick: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios
+                    .post('/enable_users', { user_ids: selectedDisabled })
+                    .then((response) => {
+                        if (response.data.message) {
+                            Swal.fire('Enabled!', 'The selected users have been enabled.', 'success').then(() => {
+                                window.location.reload();
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error enabling users:', error);
+                        Swal.fire('Error', 'Failed to enable users.', 'error');
+                    });
+            }
+        });
+    };
+    const handleDeleteDisabled = () => {
+        setIsOpenRequest(false);
+        setIsOpenReject(false);
+        setIsOpenDisabled(false);
+        Swal.fire({
+            title: 'Delete Disabled Users?',
+            text: 'Are you sure you want to delete the disabled user accounts?',
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+            allowOutsideClick: false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios
+                    .delete('/delete_users', { data: { user_ids: selectedDisabled } })
+                    .then((response) => {
+                        if (response.data.message) {
+                            Swal.fire('Deleted!', 'The disabled users have been deleted.', 'success').then(() => {
+                                window.location.reload();
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error deleting disabled users:', error);
+                        Swal.fire('Error', 'Failed to delete disabled users.', 'error');
+                    });
+            }
+        });
+    };
 
     return (
         <AuthenticatedLayout>
             <Head title="Questions" />
-            <div className="py-12">
+            <div className="py-12 h-d relative">
+                <div className="fixed bottom-0 right-0 mb-4 mr-4">
+                    <button
+                        className={`bg-gray-600 font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl ${
+                            allDisabled.length === 0 ? 'opacity-80 cursor-not-allowed' : ''
+                        }`}
+                        onClick={() => setIsOpenDisabled(true)}
+                        disabled={allDisabled.length === 0}
+                    >
+                        Disabled Users
+                    </button>
+                </div>
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8"></div>
                 <div className="p-4">
                     <div className="bg-blue-50  border-4 flex flex-col gap-3 items-center sm:flex-row justify-between border-blue-300 p-5 rounded-3xl mb-4">
@@ -503,6 +633,99 @@ const UserManagement = () => {
                                 disabled={selectedRejects.length === 0}
                             >
                                 Approve Users
+                            </PrimaryButton>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={isOpenDisabled} onOpenChange={setIsOpenDisabled}>
+                <DialogContent className="max-w-5xl">
+                    <DialogHeader>
+                        <DialogTitle className="text-yellow-600 text-2xl">Disabled User Accounts</DialogTitle>
+                        <DialogDescription>Review the user accounts that have been disabled</DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <div className="overflow-x-auto">
+                                <p className="mt-4 text-end">Selected: {selectedDisabled.length}</p>
+                                <div className="max-h-[50vh] overflow-y-scroll">
+                                    <table className="table-auto w-full">
+                                        <thead className="bg-gray-100 sticky top-0">
+                                            <tr>
+                                                <th className="text-start px-6 py-3 border-b border-gray-200 w-1">
+                                                    <input
+                                                        type="checkbox"
+                                                        onChange={handleSelectAllDisabled}
+                                                        className="rounded-sm"
+                                                        checked={selectedDisabled.length === allDisabled.length}
+                                                    />
+                                                </th>
+                                                <th className="py-3 px-6 text-start border-b border-gray-200 text-gray-800">
+                                                    User Name
+                                                </th>
+                                                <th className="py-3 px-6 text-start border-b border-gray-200 text-gray-800">
+                                                    Email
+                                                </th>
+                                                <th className="py-3 px-6 text-start border-b border-gray-200 text-gray-800">
+                                                    User Type
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {allDisabled.map((disabled) => (
+                                                <tr key={disabled.id} className="border-b">
+                                                    <td className="px-6 py-4 border-b border-gray-200">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedDisabled.includes(disabled.id)}
+                                                            className="rounded-sm w-4 h-4"
+                                                            onChange={() => handleDisabledCheckboxChange(disabled.id)}
+                                                        />
+                                                    </td>
+                                                    <td className="px-6 py-4 border-b border-gray-200">
+                                                        <div className="flex gap-4 items-center justify-start">
+                                                            <Avatar name={disabled.name} className={'w-12 h-12'} />
+
+                                                            {disabled.name}
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 border-b border-gray-200">
+                                                        <div className="flex gap-4 items-center justify-start">
+                                                            {disabled.email}
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 border-b border-gray-200">
+                                                        <div className="flex gap-4 items-center justify-start">
+                                                            {disabled.user_type}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-between bg-white p-4 space-x-2">
+                        <DangerButton
+                            type="button"
+                            className="py-2 px-4 "
+                            onClick={handleDeleteDisabled}
+                            disabled={selectedDisabled.length === 0}
+                        >
+                            Delete
+                        </DangerButton>
+                        <div className="space-x-2">
+                            <PrimaryButton
+                                type="button"
+                                className="py-2 px-4"
+                                onClick={handleEnableUsers}
+                                disabled={selectedDisabled.length === 0}
+                            >
+                                Enable Users
                             </PrimaryButton>
                         </div>
                     </div>

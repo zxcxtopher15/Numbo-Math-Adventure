@@ -21,6 +21,7 @@ import axios from 'axios';
 import { StudentDashboard } from '@/Components/Dashboard/StudentDashboard';
 import { TeacherDashboard } from '@/Components/Dashboard/TeacherDashboard';
 import { ParentDashboard } from '@/Components/Dashboard/ParentDashboard';
+import { AdminDashboard } from '@/Components/Dashboard/AdminDashboard';
 import { useState, useEffect } from 'react';
 
 // const data = [
@@ -226,6 +227,7 @@ export default function Dashboard() {
     const { auth, data } = usePage().props;
     const userType = auth?.user?.user_type;
     const [studentsData, setStudentsData] = useState([]);
+    const [userCounts, setUserCounts] = useState([]);
 
     useEffect(() => {
         const endpoint = userType === 'Parent' ? '/parent-student-results' : '/student-results';
@@ -239,39 +241,52 @@ export default function Dashboard() {
                 console.error('Error fetching student results:', error);
             });
     }, [userType]);
-    console.log('Students Data:', studentsData);
+    useEffect(() => {
+        axios
+            .get('/user_counts')
+            .then((response) => {
+                setUserCounts(response.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching user count results:', error);
+            });
+    }, []);
+
+    console.log(userCounts);
 
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Dashboard</h2>}>
             <Head title="Dashboard" />
-            <div className="pt-12 sm:px-6 lg:px-11 max-w-[100rem] mx-auto">
-                <div className="grid lg:grid-cols-2 gap-4 bg-gradient-to-br from-[#6366F1] to-[#34D399] rounded-2xl min-h-96">
-                    <div className="w-full relative">
-                        <SvgAsset
-                            movement="sm"
-                            value="/images/assets/background/students_jam.svg"
-                            className="sm:h-[45rem] absolute sm:-top-40 top-0 left-0 z-0 "
-                            draggable={false}
-                        />
-                    </div>
-                    <div className="flex flex-col items-center justify-center relative z-1">
-                        <img src="/images/logo.png" alt="" className="h-32" />
-                        {userType !== 'Parent' && userType !== 'Administrator' && (
-                            <Link href={userType === 'Teacher' ? '/math-journey' : 'math-journey-join'}>
-                                <div className="border-2 border-gray-50 rounded-2xl px-4 py-1 font-semibold text-white transition duration-300 ease-in-out hover:scale-105 hover:bg-primary">
-                                    Math Journey{' '}
-                                </div>
-                            </Link>
-                        )}
+            {userType !== 'Administrator' && (
+                <div className="pt-12 sm:px-6 lg:px-11 max-w-[100rem] mx-auto">
+                    <div className="grid lg:grid-cols-2 gap-4 bg-gradient-to-br from-[#6366F1] to-[#34D399] rounded-2xl min-h-96">
+                        <div className="w-full relative">
+                            <SvgAsset
+                                movement="sm"
+                                value="/images/assets/background/students_jam.svg"
+                                className="sm:h-[45rem] absolute sm:-top-40 top-0 left-0 z-0 "
+                                draggable={false}
+                            />
+                        </div>
+                        <div className="flex flex-col items-center justify-center relative z-1">
+                            <img src="/images/logo.png" alt="" className="h-32" />
+                            {userType !== 'Parent' && userType !== 'Administrator' && (
+                                <Link href={userType === 'Teacher' ? '/math-journey' : 'math-journey-join'}>
+                                    <div className="border-2 border-gray-50 rounded-2xl px-4 py-1 font-semibold text-white transition duration-300 ease-in-out hover:scale-105 hover:bg-primary">
+                                        Math Journey{' '}
+                                    </div>
+                                </Link>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
             {userType === 'Student' ? (
                 <StudentDashboard data={data} />
             ) : userType === 'Teacher' ? (
                 <TeacherDashboard data={studentsData} />
             ) : userType === 'Administrator' ? (
-                <ParentDashboard data={studentsData} />
+                <AdminDashboard data={studentsData} userCounts={userCounts} />
             ) : (
                 <ParentDashboard data={studentsData} />
             )}
