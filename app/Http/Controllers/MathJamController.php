@@ -829,6 +829,8 @@ class MathJamController extends Controller
         $rawData = DB::table('users')
             ->leftJoin('math_jam_participants', 'users.id', '=', 'math_jam_participants.student_id')
             ->leftJoin('math_jams', 'math_jam_participants.math_jam_id', '=', 'math_jams.id')
+            ->leftJoin('category', 'math_jams.category', '=', 'category.category_name')
+            ->leftJoin('game_type', 'category.game_type_id', '=', 'game_type.id')
             ->whereIn('users.id', $studentIds)
             ->select(
                 'users.id as student_id',
@@ -837,7 +839,8 @@ class MathJamController extends Controller
                 'math_jams.category',
                 'math_jam_participants.score',
                 'math_jams.num_questions',
-                'math_jam_participants.created_at as date'
+                'math_jam_participants.created_at as date',
+                'game_type.game_type_name'
             )
             ->where('users.user_type', 'Student')
             ->orderBy('math_jam_participants.created_at', 'desc')
@@ -860,6 +863,7 @@ class MathJamController extends Controller
             if ($entry->score !== null) {
                 $formattedData[$studentId]['scores'][] = [
                     'math_journey_for' => $entry->math_journey_for,
+                    'game_type' => $entry->game_type_name,
                     'category' => $entry->category,
                     'score' => $entry->score,
                     'num_questions' => $entry->num_questions,
@@ -868,6 +872,7 @@ class MathJamController extends Controller
             } else {
                 $formattedData[$studentId]['scores'][] = [
                     'math_journey_for' => null,
+                    'game_type' => null,
                     'category' => null,
                     'score' => null,
                     'num_questions' => null,
@@ -904,6 +909,8 @@ class MathJamController extends Controller
         $rawData = DB::table('users')
             ->leftJoin('math_jam_participants', 'users.id', '=', 'math_jam_participants.student_id')
             ->leftJoin('math_jams', 'math_jam_participants.math_jam_id', '=', 'math_jams.id')
+            ->leftJoin('category', 'math_jams.category', '=', 'category.category_name')
+            ->leftJoin('game_type', 'category.game_type_id', '=', 'game_type.id')
             ->select(
                 'users.id as student_id',
                 'users.name',
@@ -911,7 +918,8 @@ class MathJamController extends Controller
                 'math_jams.category',
                 'math_jam_participants.score',
                 'math_jams.num_questions',
-                'math_jam_participants.created_at as date'
+                'math_jam_participants.created_at as date',
+                'game_type.game_type_name'
             )
             ->where('users.user_type', 'Student')
             ->where('users.status', 0)
@@ -934,6 +942,7 @@ class MathJamController extends Controller
             if ($entry->score !== null) {
                 $formattedData[$studentId]['scores'][] = [
                     'math_journey_for' => $entry->math_journey_for,
+                    'game_type' => $entry->game_type_name,
                     'category' => $entry->category,
                     'score' => $entry->score,
                     'num_questions' => $entry->num_questions,
@@ -942,6 +951,7 @@ class MathJamController extends Controller
             } else {
                 $formattedData[$studentId]['scores'][] = [
                     'math_journey_for' => null,
+                    'game_type' => null,
                     'category' => null,
                     'score' => null,
                     'num_questions' => null,

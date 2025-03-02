@@ -171,16 +171,16 @@ export function ParentDashboard(result) {
                                                 <h1 className="rounded-2xl text-warning font-bold text-3xl">
                                                     {student.scores.length > 0 && student.scores[0].category
                                                         ? (
-                                                              (student.scores.reduce(
-                                                                  (acc, score) => acc + score.score,
-                                                                  0,
-                                                              ) /
-                                                                  student.scores.reduce(
-                                                                      (acc, score) => acc + score.num_questions,
-                                                                      0,
-                                                                  )) *
-                                                              100
-                                                          ).toFixed(1) + '%'
+                                                            (student.scores.reduce(
+                                                                (acc, score) => acc + score.score,
+                                                                0,
+                                                            ) /
+                                                                student.scores.reduce(
+                                                                    (acc, score) => acc + score.num_questions,
+                                                                    0,
+                                                                )) *
+                                                            100
+                                                        ).toFixed(1) + '%'
                                                         : 'N/a'}
                                                 </h1>
                                             </div>
@@ -211,9 +211,8 @@ export function ParentDashboard(result) {
                                                                                 </p>
                                                                                 <div className="flex flex-col">
                                                                                     <p className="font-medium">
-                                                                                        {getCategoryType(
-                                                                                            score.category,
-                                                                                        ) +
+                                                                                        {score.game_type
+                                                                                            +
                                                                                             ' -  ' +
                                                                                             score.category}
                                                                                     </p>
@@ -238,12 +237,11 @@ export function ParentDashboard(result) {
                                                                             <div className="flex bg-gray-100 rounded-xl px-5 items-center flex-col sm:w-max w-full">
                                                                                 <p>score</p>
                                                                                 <p
-                                                                                    className={`font-semibold ${
-                                                                                        score.score <=
-                                                                                        score.num_questions * 0.4
+                                                                                    className={`font-semibold ${score.score <=
+                                                                                            score.num_questions * 0.4
                                                                                             ? 'text-red-600'
                                                                                             : 'text-green-600'
-                                                                                    }`}
+                                                                                        }`}
                                                                                 >
                                                                                     {score.score} /{' '}
                                                                                     {score.num_questions}
@@ -266,7 +264,8 @@ export function ParentDashboard(result) {
                                                                 <p className="font-semibold">{index + 1}.</p>
                                                                 <div className="flex flex-col">
                                                                     <p className="font-medium">
-                                                                        {getCategoryType(score.category) +
+                                                                        {score.game_type
+                                                                            +
                                                                             ' -  ' +
                                                                             score.category}
                                                                     </p>
@@ -288,11 +287,10 @@ export function ParentDashboard(result) {
                                                             <div className="flex bg-white rounded-xl px-5 items-center flex-col sm:w-max w-full">
                                                                 <p>score</p>
                                                                 <p
-                                                                    className={`font-semibold ${
-                                                                        score.score <= score.num_questions * 0.4
+                                                                    className={`font-semibold ${score.score <= score.num_questions * 0.4
                                                                             ? 'text-red-600'
                                                                             : 'text-green-600'
-                                                                    }`}
+                                                                        }`}
                                                                 >
                                                                     {score.score} / {score.num_questions}
                                                                 </p>
