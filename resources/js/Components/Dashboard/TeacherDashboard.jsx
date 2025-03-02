@@ -288,9 +288,7 @@ export function TeacherDashboard({ data: result, topStudentsData }) {
                                                                                 </p>
                                                                                 <div className="flex flex-col">
                                                                                     <p className="font-medium">
-                                                                                        {getCategoryType(
-                                                                                            score.category,
-                                                                                        ) +
+                                                                                        {score.game_type +
                                                                                             ' -  ' +
                                                                                             score.category}
                                                                                     </p>
