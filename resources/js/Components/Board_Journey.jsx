@@ -205,18 +205,12 @@ export function Board_Journey({ data }) {
     }, []);
 
     useEffect(() => {
-        const updateAnswersCalled = useRef(false);
-        const updateScoreCalled = useRef(false);
-        const hasShownSwal = useRef(false);
-
         const updateAnswers = async () => {
             if (updateAnswersCalled.current) return;
 
             updateAnswersCalled.current = true;
 
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-            if (!baseUrl) return;
-
             const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
 
             try {
@@ -268,12 +262,11 @@ export function Board_Journey({ data }) {
                 console.error("Error updating score:", err.message);
             }
 
-            // Deleting question after updating score
             if (currentQuestion < data.length) {
                 const currentQuestionId = data[currentQuestion].question_data.id;
 
                 try {
-                    const response = await fetch(`/ordered-questions/${currentQuestionId}/${existingJam?.math_jam_id}`, {
+                    const response = await fetch(`/ordered-questions/${currentQuestionId}/${existingJam.math_jam_id}`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
