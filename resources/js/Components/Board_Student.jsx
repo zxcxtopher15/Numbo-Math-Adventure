@@ -355,6 +355,34 @@ export function Board_Student({ data }) {
             };
         });
 
+        if (correct && studentId && existingJam) {
+            const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+            if (!baseUrl) return;
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            const apiUrl = `${baseUrl}/math-journey/update_is_correct`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        student_id: studentId,
+                        math_jam_code: existingJam.math_jam_code,
+                    }),
+                });
+
+                const result = await response.json();
+                console.log('Score updated:', result);
+            } catch (err) {
+                console.error('Error during update:', err);
+            }
+        }
+
         if (studentId && existingJam) {
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
             if (!baseUrl) return;
@@ -379,34 +407,6 @@ export function Board_Student({ data }) {
 
                 const result = await response.json();
                 console.log('Has Answer updated:', result);
-            } catch (err) {
-                console.error('Error during update:', err);
-            }
-        }
-
-        if (correct && studentId && existingJam) {
-            const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-            if (!baseUrl) return;
-
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-            const apiUrl = `${baseUrl}/math-journey/update_is_correct`;
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                    },
-                    body: JSON.stringify({
-                        student_id: studentId,
-                        math_jam_code: existingJam.math_jam_code,
-                    }),
-                });
-
-                const result = await response.json();
-                console.log('Score updated:', result);
             } catch (err) {
                 console.error('Error during update:', err);
             }
