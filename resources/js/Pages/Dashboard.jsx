@@ -229,8 +229,6 @@ export default function Dashboard() {
     const [studentsData, setStudentsData] = useState([]);
     const [userCounts, setUserCounts] = useState([]);
 
-    console.log(studentsData);
-
     useEffect(() => {
         let endpoint = '/student-results';
 
