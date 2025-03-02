@@ -24,8 +24,6 @@ class UserManagementController extends Controller
             'allRejects' => $allRejects,
             'allDisabled' => $allDisabled
         ]);
-
-
     }
 
     public function approveUsers(Request $request)
