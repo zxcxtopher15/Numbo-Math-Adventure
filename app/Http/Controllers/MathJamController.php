@@ -893,4 +893,58 @@ class MathJamController extends Controller
 
         return response()->json(['score' => $score], 200);
     }
+
+    public function getStudentResultsAdministrator()
+    {
+        $rawData = DB::table('users')
+            ->leftJoin('math_jam_participants', 'users.id', '=', 'math_jam_participants.student_id')
+            ->leftJoin('math_jams', 'math_jam_participants.math_jam_id', '=', 'math_jams.id')
+            ->select(
+                'users.id as student_id',
+                'users.name',
+                'math_jams.math_journey_for',
+                'math_jams.category',
+                'math_jam_participants.score',
+                'math_jams.num_questions',
+                'math_jam_participants.created_at as date'
+            )
+            ->where('users.user_type', 'Student')
+            ->where('users.status', 0)
+            ->orderBy('math_jam_participants.created_at', 'desc')
+            ->get();
+
+        $formattedData = [];
+
+        foreach ($rawData as $entry) {
+            $studentId = $entry->student_id;
+
+            if (!isset($formattedData[$studentId])) {
+                $formattedData[$studentId] = [
+                    'student_id' => $studentId,
+                    'name' => $entry->name,
+                    'scores' => [],
+                ];
+            }
+
+            if ($entry->score !== null) {
+                $formattedData[$studentId]['scores'][] = [
+                    'math_journey_for' => $entry->math_journey_for,
+                    'category' => $entry->category,
+                    'score' => $entry->score,
+                    'num_questions' => $entry->num_questions,
+                    'date' => $entry->date,
+                ];
+            } else {
+                $formattedData[$studentId]['scores'][] = [
+                    'math_journey_for' => null,
+                    'category' => null,
+                    'score' => null,
+                    'num_questions' => null,
+                    'date' => null,
+                ];
+            }
+        }
+
+        return response()->json(['results' => array_values($formattedData)]);
+    }
 }
