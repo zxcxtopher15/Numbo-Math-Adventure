@@ -40,7 +40,7 @@ class AuthenticatedSessionController extends Controller
         if ($user && $user->section_id == 0 && $user->user_type != 'Administrator') {
             if ($user->user_type == 'Student') {
                 return redirect()->back()->withErrors(['email' => "You can't login yet. No section assigned! Please contact your teacher."]);
-            } else {
+            } else if ($user->user_type == 'Teacher') {
                 return redirect()->back()->withErrors(['email' => "You can't login yet. No section assigned! Please contact admin."]);
             }
         }

@@ -228,6 +228,7 @@ export default function Dashboard() {
     const userType = auth?.user?.user_type;
     const [studentsData, setStudentsData] = useState([]);
     const [userCounts, setUserCounts] = useState([]);
+    const [topStudentsData, setTopStudentsData] = useState([]);
 
     useEffect(() => {
         let endpoint = '/student-results';
@@ -242,6 +243,21 @@ export default function Dashboard() {
             .get(endpoint)
             .then((response) => {
                 setStudentsData(response.data.results);
+            })
+            .catch((error) => {
+                console.error('Error fetching student results:', error);
+            });
+    }, [userType]);
+
+    useEffect(() => {
+        axios
+            .get('/top-student-results')
+            .then((response) => {
+                if (response.data.topStudentsData) {
+                    setTopStudentsData(response.data.topStudentsData);
+                } else {
+                    console.error("Unexpected API response format:", response.data);
+                }
             })
             .catch((error) => {
                 console.error('Error fetching student results:', error);
@@ -289,7 +305,7 @@ export default function Dashboard() {
             {userType === 'Student' ? (
                 <StudentDashboard data={data} />
             ) : userType === 'Teacher' ? (
-                <TeacherDashboard data={studentsData} />
+                <TeacherDashboard data={studentsData} topStudentsData={topStudentsData} />
             ) : userType === 'Administrator' ? (
                 <AdminDashboard data={studentsData} userCounts={userCounts} />
             ) : (

@@ -18,12 +18,11 @@ import getCategoryType from '../ui/getCategoryType';
 import Confetti from 'react-confetti';
 ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-export function TeacherDashboard(result) {
+export function TeacherDashboard({ data: result, topStudentsData }) {
     const [search, setSearch] = useState('');
-    const [topStudentsData, setTopStudentsData] = useState([]);
 
-    const raw_students_data = result.data;
-    const students_data = result.data.filter((student) => student.name.toLowerCase().includes(search.toLowerCase()));
+    const raw_students_data = result;
+    const students_data = result.filter((student) => student.name.toLowerCase().includes(search.toLowerCase()));
 
     const overallCorrectAverage = (() => {
         let totalCorrect = 0;
@@ -116,22 +115,7 @@ export function TeacherDashboard(result) {
         },
     };
 
-    useEffect(() => {
-        axios
-            .get('/top-student-results')
-            .then((response) => {
-                console.log("Received response:", response.data);
-
-                if (response.data.topStudentsData) {
-                    setTopStudentsData(response.data.topStudentsData);
-                } else {
-                    console.error("Unexpected API response format:", response.data);
-                }
-            })
-            .catch((error) => {
-                console.error('Error fetching student results:', error);
-            });
-    }, []);
+    
 
     // const topStudentsData = [
     //     {
