@@ -118,6 +118,7 @@ Route::get('/dashboard', function () {
 
 Route::get('/student-results', [MathJamController::class, 'getStudentResults']);
 Route::get('/parent-student-results', [MathJamController::class, 'getStudentResultsParent']);
+Route::get('/admin-student-results', [MathJamController::class, 'getStudentResultsAdministrator']);
 
 
 Route::get('/view_modules', function () {
