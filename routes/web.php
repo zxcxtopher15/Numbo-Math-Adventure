@@ -45,6 +45,11 @@ Route::post('/math-journey/update_has_answer', [MathJamController::class, 'updat
 Route::post('/math-journey/update_answers', [MathJamController::class, 'update_answers']);
 
 Route::get('/dashboard', function () {
+    if (!Auth::check() || !in_array(Auth::user()->user_type, ['Teacher', 'Student']) || Auth::user()->section_id == 0) {
+        Auth::logout();
+        return redirect(url('login'))->withErrors(['error' => 'Your account is not assigned to any section.']);
+    }
+
     $gameTypes = GameType::where('game_type.status', 0)
         ->where('game_type.section_id', Auth::user()->section_id)
         ->where('game_type.status', 0)
