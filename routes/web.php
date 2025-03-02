@@ -47,6 +47,8 @@ Route::post('/math-journey/update_answers', [MathJamController::class, 'update_a
 Route::get('/dashboard', function () {
     $gameTypes = GameType::where('game_type.status', 0)
         ->where('game_type.section_id', Auth::user()->section_id)
+        ->where('game_type.status', 0)
+        ->where('C.status', 0)
         ->leftJoin('category as C', 'game_type.id', '=', 'C.game_type_id')
         ->select(
             'game_type.id as id',
