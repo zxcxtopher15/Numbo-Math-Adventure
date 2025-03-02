@@ -744,12 +744,12 @@ const CreateJam = () => {
                                             {existingJam ? (
                                                 <>
                                                     <div className="mb-4 p-4 bg-blue-100 text-gray-600 rounded-3xl h-max flex flex-col gap-2">
-                                                        <p className="font-semibold">
+                                                        {/* <p className="font-semibold">
                                                             Code:{' '}
                                                             <span className="font-normal">
                                                                 {existingJam.math_jam_code}
                                                             </span>
-                                                        </p>
+                                                        </p> */}
                                                         <p className="font-semibold">
                                                             Questions:{' '}
                                                             <span className="font-normal">
