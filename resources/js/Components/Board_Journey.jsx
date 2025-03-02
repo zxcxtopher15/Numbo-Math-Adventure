@@ -207,10 +207,9 @@ export function Board_Journey({ data }) {
     useEffect(() => {
         const updateAnswers = async () => {
             if (updateAnswersCalled.current) return;
-
             updateAnswersCalled.current = true;
 
-            const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+            const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content') || "";
             const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
 
             try {
@@ -227,6 +226,8 @@ export function Board_Journey({ data }) {
                 console.log("Has Answer updated:", response.data);
             } catch (err) {
                 console.error("Error during update:", err.response?.data || err.message);
+            } finally {
+                updateAnswersCalled.current = false;
             }
         };
 
@@ -235,8 +236,11 @@ export function Board_Journey({ data }) {
 
             updateScoreCalled.current = true;
 
-            const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-            if (!baseUrl) return;
+            const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content') || "";
+            if (!baseUrl) {
+                console.warn("Base URL not found");
+                return;
+            }
 
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
             const apiUrl = `${baseUrl}/math-journey/update_score`;
@@ -260,6 +264,8 @@ export function Board_Journey({ data }) {
                 console.log("Score updated successfully");
             } catch (err) {
                 console.error("Error updating score:", err.message);
+            } finally {
+                updateScoreCalled.current = false;
             }
 
             if (currentQuestion < data.length) {
@@ -289,6 +295,9 @@ export function Board_Journey({ data }) {
             const allAnswered = joinedParticipants.every(participant => participant.has_answer === 1);
             const isCorrect = joinedParticipants.every(participant => participant.is_correct === 1);
 
+            console.log("All answered:", allAnswered);
+            console.log("Is correct:", isCorrect);
+
             if (allAnswered) {
                 if (isCorrect) {
                     updateScore();
@@ -314,7 +323,6 @@ export function Board_Journey({ data }) {
                 });
             }
         }
-
     }, [participants, existingJam]);
 
     useEffect(() => {
