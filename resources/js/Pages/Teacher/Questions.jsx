@@ -128,7 +128,7 @@ export default function Questions({ questions = [] }) {
         if (
             !data.category.trim() ||
             !data.question.trim() ||
-            trimmedChoices.some((choice) => choice === '') ||
+            trimmedChoices.length === 0 ||
             trimmedCorrectAnswer === ''
         ) {
             Swal.fire({
@@ -204,7 +204,7 @@ export default function Questions({ questions = [] }) {
         if (
             !formDataUpdate.category.trim() ||
             !formDataUpdate.question.trim() ||
-            trimmedChoices.some((choice) => choice === '') ||
+            trimmedChoices.length === 0 ||
             trimmedCorrectAnswer === ''
         ) {
             Swal.fire({
