@@ -104,6 +104,7 @@ class QuestionController extends Controller
         foreach ($categories as $category) {
             $categoryQuestions[$category] = Question::where('category', $category)
                 ->where('status', 0)
+                ->where('section_id', $sectionId)
                 ->inRandomOrder()
                 ->limit($questionsPerCategory)
                 ->get();
