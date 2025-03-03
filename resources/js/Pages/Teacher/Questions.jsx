@@ -195,8 +195,6 @@ export default function Questions({ questions = [] }) {
         });
     };
 
-    console.log(questions);
-
     const handleSubmitUpdate = async (e) => {
         e.preventDefault();
         setIsEditQuestionModalOpen(false);
