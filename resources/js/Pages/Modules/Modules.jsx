@@ -18,13 +18,19 @@ import { useEffect } from 'react';
 export default function Modules({ }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [editModuleData, setEditModuleData] = useState(null);
 
     const { data, setData, reset } = useForm({
         module_name: '',
         module_desc: '',
         file: [],
     });
+
+    const [editModuleData, setEditModuleData] = useState({
+        module_name: "",
+        module_desc: "",
+        module_file_desc: "",
+    });
+
     const [modulesData, setModuleData] = useState([]);
     const { auth } = usePage().props;
     const userType = auth?.user?.user_type;
@@ -63,8 +69,19 @@ export default function Modules({ }) {
 
     const handleChange = (e) => setData(e.target.name, e.target.value);
 
+    const handleEditChange = (e) => {
+        const { name, value } = e.target;
+        setEditModuleData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+    
+
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        setIsModalOpen(false);
 
         const formData = new FormData();
         formData.append('section_id', section_id);
@@ -82,11 +99,41 @@ export default function Modules({ }) {
             },
         })
             .then(response => {
-                reset();
-                toggleModal();
-                window.location.reload();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Module submitted successfully!',
+                    confirmButtonColor: '#d33'
+                }).then(() => {
+                    reset();
+                    window.location.reload();
+                });
             })
             .catch(error => {
+                if (error.response && error.response.data.errors) {
+                    let errorMessages = Object.values(error.response.data.errors)
+                        .map(err => err.join('\n'))
+                        .join('\n');
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Submission Failed',
+                        text: errorMessages,
+                        confirmButtonColor: '#d33'
+                    }).then(() => {
+                        setIsModalOpen(true);
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong. Please try again later.',
+                        confirmButtonColor: '#d33'
+                    }).then(() => {
+                        setIsModalOpen(true);
+                    });
+                }
+
                 console.error("There was an error submitting the form:", error);
             });
     };
@@ -110,6 +157,7 @@ export default function Modules({ }) {
     const handleUpdate = (e) => {
         e.preventDefault();
 
+        setIsEditModalOpen(false);
         const formData = new FormData();
         formData.append('section_id', section_id);
         formData.append('module_name', editModuleData.module_name);
@@ -126,11 +174,41 @@ export default function Modules({ }) {
             },
         })
             .then(response => {
-                reset();
-                toggleEditModal();
-                window.location.reload();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Updated Successfully',
+                    text: 'The module has been updated!',
+                    confirmButtonColor: '#d33'
+                }).then(() => {
+                    reset();
+                    window.location.reload();
+                });
             })
             .catch(error => {
+                if (error.response && error.response.data.errors) {
+                    let errorMessages = Object.values(error.response.data.errors)
+                        .map(err => err.join('\n'))
+                        .join('\n');
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Update Failed',
+                        text: errorMessages,
+                        confirmButtonColor: '#d33'
+                    }).then(() => {
+                        setIsEditModalOpen(true);
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong. Please try again later.',
+                        confirmButtonColor: '#d33'
+                    }).then(() => {
+                        setIsEditModalOpen(true);
+                    });
+                }
+
                 console.error("There was an error updating the module:", error);
             });
     };
@@ -426,7 +504,7 @@ export default function Modules({ }) {
                             type="text"
                             name="module_name"
                             value={editModuleData ? editModuleData.module_name : ''}
-                            onChange={handleChange}
+                            onChange={handleEditChange}
                             className="border w-full p-2 mb-2"
                         />
                         <InputLabel htmlFor="module_desc" value="Description" />
@@ -434,7 +512,7 @@ export default function Modules({ }) {
                             type="text"
                             name="module_desc"
                             value={editModuleData ? editModuleData.module_desc : ''}
-                            onChange={handleChange}
+                            onChange={handleEditChange}
                             className="border w-full p-2 mb-2"
                         />
                         <InputLabel htmlFor="module_file_desc" value="File Description" />
@@ -442,7 +520,7 @@ export default function Modules({ }) {
                             type="text"
                             name="module_file_desc"
                             value={editModuleData ? editModuleData.module_file_desc : ''}
-                            onChange={handleChange}
+                            onChange={handleEditChange}
                             className="border w-full p-2 mb-2"
                         />
                         <InputLabel htmlFor="module_file" value="Module File" />

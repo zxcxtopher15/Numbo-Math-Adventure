@@ -18,7 +18,7 @@ class ModuleController extends Controller
             'module_desc' => 'required|string|max:255',
             'module_file_desc' => 'required|string|max:255',
             'module_file' => 'required|array',
-            'module_file.*' => 'mimes:jpeg,png,jpg,pdf,doc,docx,xls,xlsx,txt|max:10240',
+            'module_file.*' => 'mimes:jpeg,png,jpg,pdf,doc,docx,xls,xlsx,txt',
         ]);
 
         $filePaths = [];
@@ -46,7 +46,7 @@ class ModuleController extends Controller
         ]);
 
         $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
-        
+
         AuditTrail::create([
             'user_id' => Auth::user()->id,
             'action' => 'Added Module: ' . $request->mdule_name . ' for Section ' . $section_name,
@@ -117,7 +117,7 @@ class ModuleController extends Controller
         ]);
 
         $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
-        
+
         AuditTrail::create([
             'user_id' => Auth::user()->id,
             'action' => 'Update Module: ' . $module->mdule_name . ' for Section ' . $section_name,
@@ -136,7 +136,7 @@ class ModuleController extends Controller
         $module->delete();
 
         $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
-        
+
         AuditTrail::create([
             'user_id' => Auth::user()->id,
             'action' => 'Delete Module: ' . $module->module_name . ' for Section ' . $section_name,
@@ -182,7 +182,7 @@ class ModuleController extends Controller
         $module->save();
 
         $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
-        
+
         AuditTrail::create([
             'user_id' => Auth::user()->id,
             'action' => 'Deleted module file: "' . $deletedFileName . '"' . ' for Section ' . $section_name,
