@@ -195,6 +195,8 @@ export default function Questions({ questions = [] }) {
         });
     };
 
+    console.log(questions);
+
     const handleSubmitUpdate = async (e) => {
         e.preventDefault();
         setIsEditQuestionModalOpen(false);
@@ -305,7 +307,7 @@ export default function Questions({ questions = [] }) {
                         Swal.fire({
                             icon: 'success',
                             title: 'Success',
-                            text: `Game type ${updatedStatus === 1 ? 'published' : 'unpublished'} successfully!`,
+                            text: `Game type ${updatedStatus === 1 ? 'unpublished' : 'published'} successfully!`,
                         }).then(() => window.location.reload());
                     }
                 } catch (error) {
