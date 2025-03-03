@@ -29,6 +29,7 @@ class GameTypeController extends Controller
             'section_id' => Auth::user()->section_id,
             'game_type_name' => $request->game_type,
             'description' => $request->description,
+            'status' => 1,
         ]);
 
         $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
@@ -58,14 +59,13 @@ class GameTypeController extends Controller
                 ], 404);
             }
 
-            $gameType->status = 1;
-            $gameType->save();
+            $gameType->delete();
 
             $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
 
             AuditTrail::create([
                 'user_id' => Auth::user()->id,
-                'action' => 'Remove Game Type: ' . $gameType->game_type_name . ' for Section ' . $section_name,
+                'action' => 'Deleted Game Type: ' . $gameType->game_type_name . ' for Section ' . $section_name,
                 'created_at' => now()
             ]);
 
@@ -77,6 +77,28 @@ class GameTypeController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete Game Type.'
+            ], 500);
+        }
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        try {
+            $gameType = GameType::findOrFail($id);
+
+            $gameType->status = $request->status;
+            $gameType->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Game type status updated successfully!',
+                'status' => $gameType->status
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update game type status.',
+                'error' => $e->getMessage()
             ], 500);
         }
     }

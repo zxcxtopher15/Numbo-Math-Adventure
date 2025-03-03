@@ -26,19 +26,18 @@ class QuestionController extends Controller
             ->select('questions.*')
             ->get();
 
-        $gameTypes = GameType::where('status', 0)
-            ->where('section_id', $sectionId)
+        $gameTypes = GameType::where('section_id', $sectionId)
             ->get()
             ->map(function ($gameType) {
                 return [
                     'game_type_id' => $gameType->id,
                     'type' => $gameType->game_type_name,
+                    'status' => $gameType->status,
                 ];
             })->toArray();
 
         $categories = Category::where('category.status', 0)
             ->where('category.section_id', $sectionId)
-            ->where('game_type.status', 0)
             ->leftJoin('game_type', 'game_type.id', '=', 'category.game_type_id')
             ->select(
                 'category.id as category_id',
