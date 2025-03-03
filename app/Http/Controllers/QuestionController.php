@@ -25,7 +25,7 @@ class QuestionController extends Controller
             ->where('category.status', 0)
             ->select('questions.*')
             ->get()
-            ->groupBy('questions.id');
+            ->groupBy('category_name');
 
         $gameTypes = GameType::where('section_id', $sectionId)
             ->get()
