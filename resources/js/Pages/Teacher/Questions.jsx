@@ -640,11 +640,10 @@ export default function Questions({ questions = [] }) {
                                 <div key={gameType.type} className="mb-8 relative">
                                     <div className={`bg-gradient-to-r ${gradient} sm:p-6 p-3 rounded-3xl text-gray-600 relative`}>
                                         <div className="flex items-center justify-between">
-                                            <h1 className="text-2xl font-semibold text-white">{gameType.type}</h1>
-
                                             <div className="cursor-pointer text-white" onClick={() => toggleSection(gameType.type)}>
                                                 {isExpanded ? <FaChevronUp size={20} /> : <FaChevronDown size={20} />}
                                             </div>
+                                            <h1 className="text-2xl font-semibold text-white">{gameType.type}</h1>
                                             <button
                                                 onClick={() => handlePublish(gameType)}
                                                 className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg"
