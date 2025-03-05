@@ -3,7 +3,7 @@ import { Head, useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import Categories from '@/Components/Categories.jsx';
 import { BiDotsHorizontal } from 'react-icons/bi';
-import { FaTrashAlt, FaEdit } from 'react-icons/fa';
+import { FaTrashAlt, FaEdit, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from '@/components/ui/menubar';
 import Swal from 'sweetalert2';
 import TextInput from '@/Components/TextInput';
@@ -28,10 +28,18 @@ export default function Questions({ questions = [] }) {
     const [isModalGameTypeOpen, setIsModalGameTypeOpen] = useState(false);
     const [selectedQuestion, setSelectedQuestion] = useState(null);
     const [search, setSearch] = useState('');
+    const [expandedSections, setExpandedSections] = useState({});
     const [formDataGameType, setFormDataGameType] = useState({
         gameType: '',
         description: '',
     });
+
+    const toggleSection = (type) => {
+        setExpandedSections((prev) => ({
+            ...prev,
+            [type]: !prev[type],
+        }));
+    };
 
     const [formDataCategory, setFormDataCategory] = useState({
         gameType: '',
@@ -617,82 +625,95 @@ export default function Questions({ questions = [] }) {
                         {gameTypes.map((gameType, index) => {
                             const gradient = gradientColors[index % gradientColors.length];
                             const correctColor = correctColors[index % correctColors.length];
+                            const isExpanded = expandedSections[gameType.type];
+
+                            // Filter Questions for this Game Type
+                            const filteredQuestions = questions.filter(
+                                (q) =>
+                                    groupedCategories[gameType.type] &&
+                                    groupedCategories[gameType.type]
+                                        .map((item) => item.category)
+                                        .includes(q.category)
+                            );
 
                             return (
-                                <div
-                                    key={gameType.type}
-                                    className="mb-8 relative"
-                                >
-                                    <button
-                                        onClick={() => handlePublish(gameType)}
-                                        className="absolute top-4 right-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg"
-                                    >
-                                        {gameType.status === 0 ? "Unpublish" : "Publish"}
-                                    </button>
+                                <div key={gameType.type} className="mb-8 relative">
+                                    <div className={`bg-gradient-to-r ${gradient} sm:p-6 p-3 rounded-3xl text-gray-600 relative`}>
+                                        <div className="flex items-center justify-between">
+                                            <h1 className="text-2xl font-semibold text-white">{gameType.type}</h1>
 
-                                    <div className={`bg-gradient-to-r ${gradient} sm:p-6 p-3 rounded-3xl text-gray-600`}>
-                                        <h1 className="text-2xl font-semibold mb-4 text-white">{gameType.type}</h1>
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 sm:gap-4 gap-2">
-                                            {questions
-                                                .filter(
-                                                    (q) =>
-                                                        groupedCategories[gameType.type] &&
-                                                        groupedCategories[gameType.type]
-                                                            .map((item) => item.category)
-                                                            .includes(q.category),
-                                                )
-                                                .map((q) => (
-                                                    <div
-                                                        key={`${q.id}-${Math.random().toString(36).substr(2, 9)}`}
-                                                        className="flex items-center bg-white rounded-xl shadow-lg p-4 relative"
-                                                    >
-                                                        <div className="absolute top-4 right-4">
-                                                            <div className="flex flex-col gap-3">
-                                                                <div
-                                                                    onClick={() => handleEditQuestion(q.id)}
-                                                                    className="cursor-pointer bg-green-400 text-white font-medium text-xs p-1 px-4 rounded-lg"
-                                                                >
-                                                                    <FaEdit />
-                                                                </div>
-                                                                <div
-                                                                    onClick={() => handleDelete(q.id)}
-                                                                    className="cursor-pointer bg-red-400 text-white font-medium text-xs p-1 px-4 rounded-lg"
-                                                                >
-                                                                    <FaTrashAlt />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="flex-1">
-                                                            <div className="text-2xl font-semibold max-w-[86%]">{q.question}</div>
-                                                            <div className="text-sm mt-2">Category: {q.category}</div>
-                                                            <div className="bg-gray-100 rounded-2xl">
-                                                                <div className="text-sm text-gray-700 font-medium mt-2 flex gap-3">
-                                                                    {q.choices
-                                                                        .filter((choice) => choice !== null && choice !== '')
-                                                                        .map((choice, i) => (
-                                                                            <div
-                                                                                key={`${q.id}-${choice}`}
-                                                                                className={`bg-gray-200 p-2 rounded-lg w-full ${choice === q.correct_answer ? correctColor + ' text-white' : ''
-                                                                                    }`}
-                                                                            >
-                                                                                {choice}
-                                                                                {i < q.choices.length - 1 && ' '}
-                                                                            </div>
-                                                                        ))}
-                                                                </div>
-                                                            </div>
-
-                                                            <div></div>
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                            <div className="cursor-pointer text-white" onClick={() => toggleSection(gameType.type)}>
+                                                {isExpanded ? <FaChevronUp size={20} /> : <FaChevronDown size={20} />}
+                                            </div>
+                                            <button
+                                                onClick={() => handlePublish(gameType)}
+                                                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg"
+                                            >
+                                                {gameType.status === 0 ? "Unpublish" : "Publish"}
+                                            </button>
                                         </div>
+
+                                        {isExpanded && (
+                                            <div className="grid grid-cols-1 lg:grid-cols-2 sm:gap-4 gap-2 mt-4">
+                                                {filteredQuestions.length > 0 ? (
+                                                    filteredQuestions.map((q) => (
+                                                        <div
+                                                            key={`${q.id}-${Math.random().toString(36).substr(2, 9)}`}
+                                                            className="flex items-center bg-white rounded-xl shadow-lg p-4 relative"
+                                                        >
+                                                            <div className="absolute top-4 right-4">
+                                                                <div className="flex flex-col gap-3">
+                                                                    <div
+                                                                        onClick={() => handleEditQuestion(q.id)}
+                                                                        className="cursor-pointer bg-green-400 text-white font-medium text-xs p-1 px-4 rounded-lg"
+                                                                    >
+                                                                        <FaEdit />
+                                                                    </div>
+                                                                    <div
+                                                                        onClick={() => handleDelete(q.id)}
+                                                                        className="cursor-pointer bg-red-400 text-white font-medium text-xs p-1 px-4 rounded-lg"
+                                                                    >
+                                                                        <FaTrashAlt />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="flex-1">
+                                                                <div className="text-2xl font-semibold max-w-[86%]">
+                                                                    {q.question}
+                                                                </div>
+                                                                <div className="text-sm mt-2">
+                                                                    Category: {q.category}
+                                                                </div>
+                                                                <div className="bg-gray-100 rounded-2xl">
+                                                                    <div className="text-sm text-gray-700 font-medium mt-2 flex gap-3">
+                                                                        {q.choices
+                                                                            .filter((choice) => choice !== null && choice !== '')
+                                                                            .map((choice, i) => (
+                                                                                <div
+                                                                                    key={`${q.id}-${choice}`}
+                                                                                    className={`bg-gray-200 p-2 rounded-lg w-full ${choice === q.correct_answer ? correctColor + ' text-white' : ''}`}
+                                                                                >
+                                                                                    {choice}
+                                                                                    {i < q.choices.length - 1 && ' '}
+                                                                                </div>
+                                                                            ))}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="text-white text-center text-lg font-semibold p-4 col-span-2">
+                                                        No Questions Available
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             );
                         })}
-
                     </div>
                 </div>
             </div>
