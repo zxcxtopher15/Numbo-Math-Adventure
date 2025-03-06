@@ -20,7 +20,7 @@ class DeletedMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Your Account Has Been Disabled')
+        return $this->subject('Your Account Has Been Deleted')
             ->markdown('emails.deleted')
             ->with(['user' => $this->user]);
     }
