@@ -67,7 +67,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
             return null;
         }
 
-        const apiUrl = `${baseUrl}/math-journey/get-score?student_id=${studentId}&math_jam_id=${mathJamId}`;
+        const apiUrl = `${baseUrl}/math-practice/get-score?student_id=${studentId}&math_jam_id=${mathJamId}`;
 
         try {
             const response = await fetch(apiUrl, {
@@ -110,7 +110,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
             return;
         }
 
-        const apiUrl = `${baseUrl}/math-journey/update-status`;
+        const apiUrl = `${baseUrl}/math-practice/update-status`;
 
         try {
             const response = await fetch(apiUrl, {
@@ -215,7 +215,7 @@ export function Board_Student({ data }) {
 
         if (!existingJam) return;
 
-        const sseUrl = `${baseUrl}/math-journey/jam-stream-updates?math_jam_code=${existingJam.math_jam_code}`;
+        const sseUrl = `${baseUrl}/math-practice/jam-stream-updates?math_jam_code=${existingJam.math_jam_code}`;
         let eventSource;
 
         const connectSSE = () => {
@@ -246,24 +246,24 @@ export function Board_Student({ data }) {
 
                     Swal.fire({
                         icon: mathjam.status === 'cancelled' ? 'error' : 'info',
-                        title: mathjam.status === 'cancelled' ? 'Math Journey Cancelled' : 'Math Journey Ended',
+                        title: mathjam.status === 'cancelled' ? 'Math Practice Cancelled' : 'Math Practice Ended',
                         text:
                             mathjam.status === 'cancelled'
-                                ? 'The Math Journey session has been cancelled.'
-                                : 'The Math Journey session has ended. Thank you for participating!',
+                                ? 'The Math Practice session has been cancelled.'
+                                : 'The Math Practice session has ended. Thank you for participating!',
                         confirmButtonColor: '#d33',
                         allowOutsideClick: false,
                     }).then(() => {
                         if (!hasReloaded.current) {
                             hasReloaded.current = true;
-                            window.location.href = "/math-journey-join";
+                            window.location.href = "/math-practice-join";
                         }
                     });
 
                     return;
                 } else if (mathjam.status === 'disconnected') {
                     localStorage.setItem('existingJam', JSON.stringify(mathjam));
-                    window.location.href = "/math-journey-join";
+                    window.location.href = "/math-practice-join";
                 }
 
                 if (mathjam.current_question_id) {
@@ -361,7 +361,7 @@ export function Board_Student({ data }) {
 
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-            const apiUrl = `${baseUrl}/math-journey/update_is_correct`;
+            const apiUrl = `${baseUrl}/math-practice/update_is_correct`;
 
             try {
                 const response = await fetch(apiUrl, {
@@ -389,7 +389,7 @@ export function Board_Student({ data }) {
 
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-            const apiUrl1 = `${baseUrl}/math-journey/update_has_answer`;
+            const apiUrl1 = `${baseUrl}/math-practice/update_has_answer`;
 
             try {
                 const response = await fetch(apiUrl1, {
@@ -516,7 +516,7 @@ export function Board_Student({ data }) {
 
 
     return isGameFinished ? (
-        <TotalResult totalQuestions={existingJam.num_questions} gameState={gameState} totalTimeSpent={totalTimeSpent} gameTitle={existingJam.math_journey_for} category={existingJam.category} />
+        <TotalResult totalQuestions={existingJam.num_questions} gameState={gameState} totalTimeSpent={totalTimeSpent} gameTitle={existingJam.math_practice_for} category={existingJam.category} />
     ) : (
         <>
             <div className="w-full h-full bg-white rounded-3xl p-6">

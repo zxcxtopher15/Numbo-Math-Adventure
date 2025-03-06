@@ -37,7 +37,7 @@ const CreateJam = () => {
                 return;
             }
 
-            const apiUrl = `${baseUrl}/math-journey/check-existing?teacher_id=${auth.user.id}`;
+            const apiUrl = `${baseUrl}/math-practice/check-existing?teacher_id=${auth.user.id}`;
 
             try {
                 const response = await fetch(apiUrl);
@@ -99,7 +99,7 @@ const CreateJam = () => {
 
     useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-        const sseUrl = `${baseUrl}/math-journey/stream-participants?teacher_id=${auth.user.id}`;
+        const sseUrl = `${baseUrl}/math-practice/stream-participants?teacher_id=${auth.user.id}`;
 
         let eventSource;
 
@@ -161,7 +161,7 @@ const CreateJam = () => {
 
     const handleCreateJam = async () => {
         if (existingJam) {
-            alert('You already have an ongoing Math Journey. Please finish it before creating a new one.');
+            alert('You already have an ongoing Math Practice. Please finish it before creating a new one.');
             return;
         }
 
@@ -172,7 +172,7 @@ const CreateJam = () => {
             return;
         }
 
-        const apiUrl = `${baseUrl}/math-journey/create`;
+        const apiUrl = `${baseUrl}/math-practice/create`;
 
         try {
             const response = await fetch(apiUrl, {
@@ -187,7 +187,7 @@ const CreateJam = () => {
                     teacher_id: auth.user.id,
                     num_questions: parseInt(numQuestions, 10),
                     time_limit: parseInt(timeLimit, 10),
-                    math_journey_for: journeyFor,
+                    math_practice_for: journeyFor,
                     category,
                     show_scores: showScores ? 1 : 0,
                 }),
@@ -198,7 +198,7 @@ const CreateJam = () => {
             if (response.ok) {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Math Journey created successfully!',
+                    title: 'Math Practice created successfully!',
                 }).then(() => {
                     setExistingJam(data.jam);
                     localStorage.setItem('existingJam', JSON.stringify(data.jam));
@@ -206,7 +206,7 @@ const CreateJam = () => {
             } else {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Failed to create Math Journey',
+                    title: 'Failed to create Math Practice',
                     text: data.message || 'An unknown error occurred',
                 });
                 console.error('Error details:', data);
@@ -224,7 +224,7 @@ const CreateJam = () => {
     const handleCancelJam = async () => {
         const confirmed = await Swal.fire({
             title: 'Are you sure?',
-            text: 'Are you sure you want to cancel this Math Journey?',
+            text: 'Are you sure you want to cancel this Math Practice?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -239,7 +239,7 @@ const CreateJam = () => {
                 return;
             }
 
-            const apiUrl = `${baseUrl}/math-journey/cancel`;
+            const apiUrl = `${baseUrl}/math-practice/cancel`;
 
             try {
                 const response = await fetch(apiUrl, {
@@ -257,14 +257,14 @@ const CreateJam = () => {
                 if (response.ok) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Math Journey cancelled',
-                        text: 'The Math Journey has been cancelled successfully.',
+                        title: 'Math Practice cancelled',
+                        text: 'The Math Practice has been cancelled successfully.',
                     });
                     setExistingJam(null);
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Failed to cancel the Math Journey',
+                        title: 'Failed to cancel the Math Practice',
                         text: data.message || 'An unknown error occurred',
                     });
                     console.error('Error details:', data);
@@ -288,7 +288,7 @@ const CreateJam = () => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
 
-        const apiUrl = `${baseUrl}/math-journey/disconnect_jam`;
+        const apiUrl = `${baseUrl}/math-practice/disconnect_jam`;
 
         try {
             await fetch(apiUrl, {
@@ -353,7 +353,7 @@ const CreateJam = () => {
 
                     if (formattedQuestions.length > 0) {
                         updateCurrentQuestionId(formattedQuestions[0].question_data.id);
-                        window.location.href = "/math-journey/watch";
+                        window.location.href = "/math-practice/watch";
                     }
                 } else {
                     fetchNewQuestions();
@@ -390,7 +390,7 @@ const CreateJam = () => {
 
                     if (shuffledData.length > 0) {
                         updateCurrentQuestionId(shuffledData[0].question_data.id);
-                        window.location.href = "/math-journey/watch";
+                        window.location.href = "/math-practice/watch";
                     }
                 })
                 .catch((error) => {
@@ -435,7 +435,7 @@ const CreateJam = () => {
             if (!baseUrl) return;
 
             try {
-                const response = await fetch(`${baseUrl}/math-journey/update_current_question`, {
+                const response = await fetch(`${baseUrl}/math-practice/update_current_question`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -455,7 +455,7 @@ const CreateJam = () => {
         };
 
         await fetchOrderedQuestions(existingJam.math_jam_id);
-        const apiUrl = `${baseUrl}/math-journey/update-status`;
+        const apiUrl = `${baseUrl}/math-practice/update-status`;
 
         try {
             const response = await fetch(apiUrl, {
@@ -608,7 +608,7 @@ const CreateJam = () => {
             if (!baseUrl) return;
 
             try {
-                const response = await fetch(`${baseUrl}/math-journey/update_current_question`, {
+                const response = await fetch(`${baseUrl}/math-practice/update_current_question`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -635,7 +635,7 @@ const CreateJam = () => {
             return;
         }
 
-        const apiUrl = `${baseUrl}/math-journey/update-status`;
+        const apiUrl = `${baseUrl}/math-practice/update-status`;
 
         try {
             const response = await fetch(apiUrl, {
@@ -665,7 +665,7 @@ const CreateJam = () => {
                 }
 
                 if (status === "started") {
-                    window.location.href = '/math-journey/watch';
+                    window.location.href = '/math-practice/watch';
                 }
             } else {
                 console.error('Failed to update Math Jam status');
@@ -694,7 +694,7 @@ const CreateJam = () => {
 
     return (
         <>
-            <Head title="Math Journey" />
+            <Head title="Math Practice" />
             {showReconnectModal && (
                 <div className="fixed inset-0 z-50">
                     <div className="flex items-center justify-center p-2 h-full w-full bg-success bg-opacity-30">
@@ -763,9 +763,9 @@ const CreateJam = () => {
                                                             </span>
                                                         </p>
                                                         <p className="font-semibold">
-                                                            Math Journey For:{' '}
+                                                            Math Practice For:{' '}
                                                             <span className="font-normal">
-                                                                {existingJam.math_journey_for}
+                                                                {existingJam.math_practice_for}
                                                             </span>
                                                         </p>
                                                         <p className="font-semibold">
@@ -818,7 +818,7 @@ const CreateJam = () => {
                                                     </div>
 
                                                     <div className="mb-7">
-                                                        <InputLabel value="Math Journey For:" />
+                                                        <InputLabel value="Math Practice For:" />
                                                         <SelectInput
                                                             className="custom-class"
                                                             isFocused={true}

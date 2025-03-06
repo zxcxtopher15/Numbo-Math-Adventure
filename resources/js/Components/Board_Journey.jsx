@@ -93,7 +93,7 @@ function TotalResult({ participants, numQuestion, gameTitle, category }) {
             return;
         }
 
-        const apiUrl = `${baseUrl}/math-journey/update-status`;
+        const apiUrl = `${baseUrl}/math-practice/update-status`;
 
         try {
             const response = await fetch(apiUrl, {
@@ -124,7 +124,7 @@ function TotalResult({ participants, numQuestion, gameTitle, category }) {
 
             <div className="w-full h-full flex flex-col lg:flex-row items-center justify-between bg-white p-6 rounded-3xl shadow-lg box-border">
                 <div className="w-full lg:h-full h-max lg:w-1/2 justify-center items-end lg:px-10 lg:text-start text-center py-5 relative">
-                    <h1 className="lg:text-6xl text-5xl font-bold text-primary relative z-10">Math Journey Completed!</h1>
+                    <h1 className="lg:text-6xl text-5xl font-bold text-primary relative z-10">Math Practice Completed!</h1>
 
                     <div className="lg:flex hidden justify-center items-center h-full w-full ">
                         <SvgAsset
@@ -210,7 +210,7 @@ export function Board_Journey({ data }) {
             updateAnswersCalled.current = true;
 
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content') || "";
-            const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
+            const apiUrl1 = `${baseUrl}/math-practice/update_answers`;
 
             try {
                 const response = await axios.post(apiUrl1, {
@@ -243,7 +243,7 @@ export function Board_Journey({ data }) {
             }
 
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-            const apiUrl = `${baseUrl}/math-journey/update_score`;
+            const apiUrl = `${baseUrl}/math-practice/update_score`;
 
             try {
                 const response = await fetch(apiUrl, {
@@ -314,7 +314,7 @@ export function Board_Journey({ data }) {
                     text: 'There are no participants in the session.',
                     confirmButtonColor: '#d33',
                 }).then(() => {
-                    window.location.href = '/math-journey';
+                    window.location.href = '/math-practice';
                 });
             }
         }
@@ -326,7 +326,7 @@ export function Board_Journey({ data }) {
 
     useEffect(() => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
-        const sseUrl = `${baseUrl}/math-journey/stream-participants?teacher_id=${auth.user.id}`;
+        const sseUrl = `${baseUrl}/math-practice/stream-participants?teacher_id=${auth.user.id}`;
 
 
         let eventSource;
@@ -391,7 +391,7 @@ export function Board_Journey({ data }) {
             return;
         }
 
-        const apiUrl = `${baseUrl}/math-journey/update-pause-status`;
+        const apiUrl = `${baseUrl}/math-practice/update-pause-status`;
 
         try {
             const response = await fetch(apiUrl, {
@@ -426,7 +426,7 @@ export function Board_Journey({ data }) {
             return;
         }
 
-        const apiUrl = `${baseUrl}/math-journey/update-pause-status`;
+        const apiUrl = `${baseUrl}/math-practice/update-pause-status`;
 
         try {
             const response = await fetch(apiUrl, {
@@ -510,7 +510,7 @@ export function Board_Journey({ data }) {
         updateAnswersCalled.current = false;
         if (currentQuestion < data.length) {
             const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
-            const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
+            const apiUrl1 = `${baseUrl}/math-practice/update_answers`;
 
             try {
                 const response = await axios.post(apiUrl1, {
@@ -592,7 +592,7 @@ export function Board_Journey({ data }) {
         if (!baseUrl) return;
 
         try {
-            const response = await fetch(`${baseUrl}/math-journey/update_current_question`, {
+            const response = await fetch(`${baseUrl}/math-practice/update_current_question`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -643,7 +643,7 @@ export function Board_Journey({ data }) {
         return () => window.removeEventListener('resize', updateFontSize);
     }, [currentQuestion, data]);
     return isGameFinished ? (
-        <TotalResult participants={participants} numQuestion={existingJam.num_questions} gameTitle={existingJam.math_journey_for} category={existingJam.category} />
+        <TotalResult participants={participants} numQuestion={existingJam.num_questions} gameTitle={existingJam.math_practice_for} category={existingJam.category} />
     ) : (
         <>
             <div className="w-full h-full bg-white rounded-3xl p-6">

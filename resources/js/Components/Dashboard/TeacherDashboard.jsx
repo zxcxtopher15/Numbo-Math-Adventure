@@ -205,7 +205,7 @@ export function TeacherDashboard({ data: result, topStudentsData }) {
                                             Top Students of the Week
                                         </h1>
                                         <p className="max-w-md text-center">
-                                            As soon as students start their math journey, the top students will be
+                                            As soon as students start their math practice, the top students will be
                                             displayed here.
                                         </p>
                                     </div>
@@ -293,7 +293,7 @@ export function TeacherDashboard({ data: result, topStudentsData }) {
                                                                                             score.category}
                                                                                     </p>
                                                                                     <p className="text-xs bg-primary text-white px-2 rounded-2xl w-max">
-                                                                                        {score.math_journey_for}
+                                                                                        {score.math_practice_for}
                                                                                     </p>
                                                                                     <div className="text-xs mt-2 flex items-center gap-1">
                                                                                         <FaClock />
@@ -345,7 +345,7 @@ export function TeacherDashboard({ data: result, topStudentsData }) {
                                                                             score.category}
                                                                     </p>
                                                                     <p className="text-white text-xs bg-primary rounded-2xl px-2 w-max">
-                                                                        {score.math_journey_for}
+                                                                        {score.math_practice_for}
                                                                     </p>
                                                                     <div className="text-xs mt-2 flex items-center gap-1">
                                                                         <FaClock />

@@ -102,7 +102,7 @@ export default function Modules({ }) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Success',
-                    text: 'Module submitted successfully!',
+                    text: 'Announcement submitted successfully!',
                     confirmButtonColor: '#d33'
                 }).then(() => {
                     reset();
@@ -226,7 +226,7 @@ export default function Modules({ }) {
             if (result.isConfirmed) {
                 axios.delete(`/modules/${module}`)
                     .then((response) => {
-                        Swal.fire('Removed!', 'The Module has been removed.', 'success')
+                        Swal.fire('Removed!', 'The Announcement has been removed.', 'success')
                             .then(() => {
                                 window.location.reload();
                             });
@@ -283,7 +283,7 @@ export default function Modules({ }) {
             if (result.isConfirmed) {
                 axios.delete(`/modules/single/${id}/${index}`)
                     .then((response) => {
-                        Swal.fire('Removed!', 'The Module has been removed.', 'success')
+                        Swal.fire('Removed!', 'The Announcement has been removed.', 'success')
                             .then(() => {
                                 window.location.reload();
                             });
@@ -307,25 +307,25 @@ export default function Modules({ }) {
     };
 
     return (
-        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Modules</h2>}>
-            <Head title="Modules" />
+        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Announcement</h2>}>
+            <Head title="Announcements" />
 
             <div className="sm:py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="sm:p-4 py-5 space-y-4">
                         {userType === 'Teacher' ? (
                             <div className="bg-blue-50 border-4 flex flex-col sm:flex-row justify-between border-blue-300 p-5 rounded-3xl">
-                                <div className="text-2xl font-semibold text-primary">Add New Module</div>
+                                <div className="text-2xl font-semibold text-primary">Add New Announcement</div>
                                 <button
                                     onClick={toggleModal}
                                     className="bg-primary font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
                                 >
-                                    Add Module
+                                    Add Announcement
                                 </button>
                             </div>
                         ) : (
                             <div className="bg-blue-50 border-4 flex  flex-col sm:flex-row justify-between border-blue-300 p-5 rounded-3xl">
-                                <div className="text-2xl font-semibold text-primary">Modules List</div>
+                                <div className="text-2xl font-semibold text-primary">Announcement List</div>
                             </div>
                         )}
 
@@ -420,11 +420,11 @@ export default function Modules({ }) {
                     <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-4">
                         <DialogHeader>
                             <DialogTitle className="text-2xl text-primary font-semibold mb-5">
-                                Add New Module
+                                Add New Announcement
                             </DialogTitle>
                         </DialogHeader>
 
-                        <InputLabel htmlFor="module_name" value="Module Name" />
+                        <InputLabel htmlFor="module_name" value="Announcement Title" />
                         <TextInput
                             type="text"
                             name="module_name"
@@ -449,7 +449,7 @@ export default function Modules({ }) {
                             className="border w-full p-2 mb-2"
                         />
 
-                        <InputLabel htmlFor="module_file" value="Module File" />
+                        <InputLabel htmlFor="module_file" value="Announcement File" />
                         <div
                             {...getRootProps()}
                             className="border-2 border-dashed p-4 text-center cursor-pointer rounded-lg mb-4"
@@ -496,10 +496,10 @@ export default function Modules({ }) {
                 <DialogContent className="overflow-y-auto max-h-[80vh] max-w-lg">
                     <form onSubmit={handleUpdate} className="bg-white rounded-3xl p-4">
                         <DialogHeader>
-                            <DialogTitle className="text-2xl text-primary font-semibold mb-5">Edit Module</DialogTitle>
+                            <DialogTitle className="text-2xl text-primary font-semibold mb-5">Edit Announcement</DialogTitle>
                         </DialogHeader>
 
-                        <InputLabel htmlFor="module_name" value="Module Name" />
+                        <InputLabel htmlFor="module_name" value="Announcement Title" />
                         <TextInput
                             type="text"
                             name="module_name"
@@ -523,7 +523,7 @@ export default function Modules({ }) {
                             onChange={handleEditChange}
                             className="border w-full p-2 mb-2"
                         />
-                        <InputLabel htmlFor="module_file" value="Module File" />
+                        <InputLabel htmlFor="module_file" value="Announcement File" />
                         <div
                             {...getEditRootProps()}
                             className="border-2 border-dashed p-4 text-center cursor-pointer rounded-lg mb-4"

@@ -41,8 +41,8 @@ Route::post('/modules/update/{id}', [ModuleController::class, 'update'])->name('
 Route::delete('/modules/{id}', [ModuleController::class, 'destroy'])->name('modules.destroy');
 Route::get('/get_all_modules', [ModuleController::class, 'get_modules']);
 Route::delete('/modules/single/{id}/{index}', [ModuleController::class, 'destroy_single'])->name('modules.delete');
-Route::post('/math-journey/update_has_answer', [MathJamController::class, 'update_has_answer']);
-Route::post('/math-journey/update_answers', [MathJamController::class, 'update_answers']);
+Route::post('/math-practice/update_has_answer', [MathJamController::class, 'update_has_answer']);
+Route::post('/math-practice/update_answers', [MathJamController::class, 'update_answers']);
 
 Route::get('/dashboard', function () {
     if (Auth::check()) {
@@ -122,7 +122,7 @@ Route::get('/admin-student-results', [MathJamController::class, 'getStudentResul
 Route::get('/top-student-results', [MathJamController::class, 'getTopStudents']);
 
 
-Route::get('/view_modules', function () {
+Route::get('/view_announcements', function () {
     if (Auth::check() && Auth::user()->user_type === 'Administrator') {
         return redirect()->route('dashboard');
     }
@@ -159,7 +159,7 @@ Route::group(['middleware' => 'administrator'], function () {
 });
 
 Route::group(['middleware' => 'teacher'], function () {
-    Route::get('/math-journey', function () {
+    Route::get('/math-practice', function () {
         $categories = Category::where('category.status', 0)
             ->where('category.section_id', Auth::user()->section_id)
             ->where('game_type.status', 0)
@@ -178,10 +178,10 @@ Route::group(['middleware' => 'teacher'], function () {
         ]);
     })->name('math.journey');
 
-    Route::post('/math-journey/create', [MathJamController::class, 'create']);
-    Route::get('/math-journey/check-existing', [MathJamController::class, 'checkExistingJam']);
-    Route::get('/math-journey/stream-participants', [MathJamController::class, 'streamMathJamParticipants']);
-    Route::post('/math-journey/cancel', [MathJamController::class, 'cancelJam']);
+    Route::post('/math-practice/create', [MathJamController::class, 'create']);
+    Route::get('/math-practice/check-existing', [MathJamController::class, 'checkExistingJam']);
+    Route::get('/math-practice/stream-participants', [MathJamController::class, 'streamMathJamParticipants']);
+    Route::post('/math-practice/cancel', [MathJamController::class, 'cancelJam']);
 
     Route::get('/board', function () {
         return Inertia::render('Jam/BoardContainer', request()->all());
@@ -189,21 +189,21 @@ Route::group(['middleware' => 'teacher'], function () {
 
     Route::get('/questions', [QuestionController::class, 'index'])->name('questions');
     Route::post('/questions/store', [QuestionController::class, 'store'])->name('questions.store');
-    Route::get('/math-journey/watch', function () {
+    Route::get('/math-practice/watch', function () {
         return Inertia::render('Jam/BoardContainer_Journey', request()->all());
     })->name('journey.start');
 
     Route::get('/questions_list_teacher', [QuestionController::class, 'getQuestions']);
-    Route::post('/math-journey/update-status', [MathJamController::class, 'update_status']);
+    Route::post('/math-practice/update-status', [MathJamController::class, 'update_status']);
     Route::post('/save_ordered_questions', [MathJamController::class, 'saveOrderedQuestions']);
     Route::delete('/ordered-questions/{id}/{math_jam_id}', [MathJamController::class, 'destroy']);
-    Route::post('/math-journey/disconnect_jam', [MathJamController::class, 'disconnect_jam']);
-    Route::post('/math-journey/update-pause-status', [MathJamController::class, 'updatePauseStatus']);
-    Route::post('/math-journey/update_current_question', [MathJamController::class, 'update_current_question']);
+    Route::post('/math-practice/disconnect_jam', [MathJamController::class, 'disconnect_jam']);
+    Route::post('/math-practice/update-pause-status', [MathJamController::class, 'updatePauseStatus']);
+    Route::post('/math-practice/update_current_question', [MathJamController::class, 'update_current_question']);
     Route::delete('/questions/{id}', [QuestionController::class, 'destroy'])->name('questions.destroy');
     Route::get('/questions/{id}', [QuestionController::class, 'getQuestion'])->name('questions.get');
     Route::put('/questions/{id}', [QuestionController::class, 'updateQuestion'])->name('questions.update');
-    Route::post('/math-journey/update_score', [MathJamController::class, 'update_score']);
+    Route::post('/math-practice/update_score', [MathJamController::class, 'update_score']);
 
     Route::get('/sections', [SectionController::class, 'teacher_index']);
     Route::post('/remove-student-section', [SectionController::class, 'removeFromSection']);
@@ -216,16 +216,16 @@ Route::group(['middleware' => 'teacher'], function () {
 });
 
 Route::group(['middleware' => 'student'], function () {
-    Route::get('/math-journey-join', function () {
+    Route::get('/math-practice-join', function () {
         return Inertia::render('Student/JoinJam');
     });
 
-    Route::post('/math-journey/join', [MathJamController::class, 'joinJam']);
-    Route::get('/math-journey/check-status', [MathJamController::class, 'checkStatus']);
-    Route::get('/math-journey/check-section-jam', [MathJamController::class, 'checkSectionJam']);
-    Route::post('/math-journey/disconnect', [MathJamController::class, 'disconnect']);
-    Route::post('/math-journey/reconnect', [MathJamController::class, 'reconnect']);
-    Route::get('/math-journey/jam-stream-updates', [MathJamController::class, 'jamStreamUpdates']);
+    Route::post('/math-practice/join', [MathJamController::class, 'joinJam']);
+    Route::get('/math-practice/check-status', [MathJamController::class, 'checkStatus']);
+    Route::get('/math-practice/check-section-jam', [MathJamController::class, 'checkSectionJam']);
+    Route::post('/math-practice/disconnect', [MathJamController::class, 'disconnect']);
+    Route::post('/math-practice/reconnect', [MathJamController::class, 'reconnect']);
+    Route::get('/math-practice/jam-stream-updates', [MathJamController::class, 'jamStreamUpdates']);
 
     Route::get('/questions_list', [QuestionController::class, 'getQuestions']);
 
@@ -233,12 +233,12 @@ Route::group(['middleware' => 'student'], function () {
         return Inertia::render('Jam/BoardContainer', request()->all());
     })->name('jam.BoardContainer');
 
-    Route::get('/math-journey/play', function () {
+    Route::get('/math-practice/play', function () {
         return Inertia::render('Jam/BoardContainer_Student', request()->all());
     })->name('journey.play');
-    Route::post('/math-journey/update_is_correct', [MathJamController::class, 'update_is_correct']);
-    Route::post('/math-journey/exit_jam', [MathJamController::class, 'exit_jam']);
-    Route::get('/math-journey/get-score', [MathJamController::class, 'getScore']);
+    Route::post('/math-practice/update_is_correct', [MathJamController::class, 'update_is_correct']);
+    Route::post('/math-practice/exit_jam', [MathJamController::class, 'exit_jam']);
+    Route::get('/math-practice/get-score', [MathJamController::class, 'getScore']);
 });
 
 Route::group(['middleware' => 'parent'], function () {

@@ -162,7 +162,7 @@ const AddStudent = () => {
                                 Help Your Child Unlock Their Math Potential!
                             </h1>
                             <p className="sm:text-lg text-xs text-center max-w-md mx-auto px-4 text-gray-600 font-medium">
-                                Track your student's math journey from their first steps to their highest achievements.
+                                Track your student's math practice from their first steps to their highest achievements.
                             </p>
                         </div>
                     </div>

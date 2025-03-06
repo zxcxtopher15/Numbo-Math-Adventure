@@ -60,7 +60,7 @@ const JoinJam = () => {
             return;
         }
 
-        const apiUrl = `${baseUrl}/math-journey/join`;
+        const apiUrl = `${baseUrl}/math-practice/join`;
 
         try {
             const response = await fetch(apiUrl, {
@@ -92,11 +92,11 @@ const JoinJam = () => {
                 Swal.fire({
                     icon: 'error',
                     title: 'Join Jam Failed',
-                    text: data.message || 'Failed to join the Math Journey',
+                    text: data.message || 'Failed to join the Math Practice',
                 });
             }
         } catch (err) {
-            console.error('Error joining the Math Journey:', err);
+            console.error('Error joining the Math Practice:', err);
             Swal.fire({
                 icon: 'error',
                 title: 'An error occurred',
@@ -113,7 +113,7 @@ const JoinJam = () => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
 
-        const apiUrl = `${baseUrl}/math-journey/disconnect`;
+        const apiUrl = `${baseUrl}/math-practice/disconnect`;
 
         try {
             await fetch(apiUrl, {
@@ -158,7 +158,7 @@ const JoinJam = () => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
 
-        const apiUrl = `${baseUrl}/math-journey/exit_jam`;
+        const apiUrl = `${baseUrl}/math-practice/exit_jam`;
 
         try {
             await fetch(apiUrl, {
@@ -183,7 +183,7 @@ const JoinJam = () => {
 
             try {
                 const response = await fetch(
-                    `/math-journey/check-section-jam?student_id=${studentId}`,
+                    `/math-practice/check-section-jam?student_id=${studentId}`,
                 );
                 const data = await response.json();
 
@@ -213,7 +213,7 @@ const JoinJam = () => {
 
             try {
                 const response = await fetch(
-                    `/math-journey/check-status?student_id=${studentId}&math_jam_code=${jamCode}`,
+                    `/math-practice/check-status?student_id=${studentId}&math_jam_code=${jamCode}`,
                 );
                 const data = await response.json();
 
@@ -276,7 +276,7 @@ const JoinJam = () => {
             return;
         }
 
-        const apiUrl = `${baseUrl}/math-journey/reconnect`;
+        const apiUrl = `${baseUrl}/math-practice/reconnect`;
 
         try {
             const response = await fetch(apiUrl, {
@@ -300,13 +300,13 @@ const JoinJam = () => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Reconnected!',
-                    text: 'You have successfully rejoined the Math Journey.',
+                    text: 'You have successfully rejoined the Math Practice.',
                 });
             } else {
                 Swal.fire({
                     icon: 'error',
                     title: 'Reconnect Failed',
-                    text: data.message || 'Failed to reconnect to the Math Journey.',
+                    text: data.message || 'Failed to reconnect to the Math Practice.',
                 }).then(() => {
                     if (data.message.includes('Cancelled') || data.message.includes('Ended')) {
                         location.reload();
@@ -330,7 +330,7 @@ const JoinJam = () => {
 
         if (!jamCode || !studentId) return;
 
-        const sseUrl = `${baseUrl}/math-journey/jam-stream-updates?math_jam_code=${jamCode}`;
+        const sseUrl = `${baseUrl}/math-practice/jam-stream-updates?math_jam_code=${jamCode}`;
         let eventSource;
 
         const connectSSE = () => {
@@ -343,16 +343,16 @@ const JoinJam = () => {
                 if (data && data.status === 'started') {
                     localStorage.removeItem('disconnectedParticipant');
                     localStorage.setItem('existingJam', JSON.stringify(data));
-                    window.location.href = '/math-journey/play';
+                    window.location.href = '/math-practice/play';
                 } else if (data.status === 'cancelled' || data.status === 'ended') {
                     eventSource.close();
 
                     Swal.fire({
                         icon: data.status === 'cancelled' ? 'error' : 'info',
-                        title: data.status === 'cancelled' ? 'Math Journey Cancelled' : 'Math Journey Ended',
+                        title: data.status === 'cancelled' ? 'Math Practice Cancelled' : 'Math Practice Ended',
                         text: data.status === 'cancelled'
-                            ? 'The Math Journey session has been cancelled.'
-                            : 'The Math Journey session has ended. Thank you for participating!',
+                            ? 'The Math Practice session has been cancelled.'
+                            : 'The Math Practice session has ended. Thank you for participating!',
                         confirmButtonColor: '#d33',
                         allowOutsideClick: false,
                     }).then(() => {
@@ -427,14 +427,14 @@ const JoinJam = () => {
         }).then((result) => {
             if (result.isConfirmed) {
                 handleExitJam();
-                window.location.href = '/math-journey-join';
+                window.location.href = '/math-practice-join';
             }
         });
     };
 
     return (
         <>
-            <Head title="Math Journey" />
+            <Head title="Math Practice" />
             <BoardOverlay>
                 {loading ? <LoadingScreen time={2000} text="Loading..." /> : null}
                 <div className="w-full h-full  bg-white rounded-3xl sm:p-8 p-2 flex flex-col justify-center relative overflow-hidden box-border">
@@ -457,7 +457,7 @@ const JoinJam = () => {
                         draggable={false}
                     />
                     <div className="bg-gray-200 p-6 rounded-3xl max-w-[400px] h-max flex flex-col justify-between overflow-hidden relative z-10">
-                        <h2 className="text-primary text-xl font-semibold  mb-4">Join Math Journey</h2>
+                        <h2 className="text-primary text-xl font-semibold  mb-4">Join Math Practice</h2>
 
                         <div className="bg-white flex items-center justify-start gap-4 p-3 rounded-3xl mb-8">
                             {studentImg ? <Avatar image={studentImg} /> : <Avatar name={studentName} />}
@@ -504,7 +504,7 @@ const JoinJam = () => {
                                         }
                                     }}
                                     className="hidden"
-                                    placeholder="Enter Math Journey Code"
+                                    placeholder="Enter Math Practice Code"
                                     maxLength={4}
                                     inputMode="numeric"
                                     pattern="\d{4}"

@@ -26,7 +26,7 @@ export default function BoardContainer_Student({ }) {
                 const parsedJam = JSON.parse(storedJam);
                 if (parsedJam.status === 'disconnected') {
                     localStorage.removeItem('disconnectedParticipant');
-                    window.location.replace("/math-journey-join");
+                    window.location.replace("/math-practice-join");
                 }
             }
         };
@@ -87,7 +87,7 @@ export default function BoardContainer_Student({ }) {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
 
-        const apiUrl = `${baseUrl}/math-journey/disconnect`;
+        const apiUrl = `${baseUrl}/math-practice/disconnect`;
 
         const payload = JSON.stringify({
             student_id: studentId,
@@ -149,7 +149,7 @@ export default function BoardContainer_Student({ }) {
             return;
         }
 
-        const apiUrl = `${baseUrl}/math-journey/reconnect`;
+        const apiUrl = `${baseUrl}/math-practice/reconnect`;
 
         try {
             const response = await fetch(apiUrl, {

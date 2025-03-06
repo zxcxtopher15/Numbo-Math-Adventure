@@ -28,7 +28,7 @@ export default function BoardContainer_Journey({ auth }) {
                 if (parsedJam.status === 'disconnected') {
                     localStorage.removeItem('disconnectedHost');
                     setTimeout(() => {
-                        window.location.replace("/math-journey");
+                        window.location.replace("/math-practice");
                     }, 1000);
                 }
             }
@@ -132,7 +132,7 @@ export default function BoardContainer_Journey({ auth }) {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         if (!baseUrl) return;
 
-        const apiUrl = `${baseUrl}/math-journey/disconnect_jam`;
+        const apiUrl = `${baseUrl}/math-practice/disconnect_jam`;
 
         const payload = JSON.stringify({
             math_jam_id: parsedJam.math_jam_id,
@@ -152,7 +152,7 @@ export default function BoardContainer_Journey({ auth }) {
 
     const updateAnswers = async (jam) => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute("content");
-        const apiUrl1 = `${baseUrl}/math-journey/update_answers`;
+        const apiUrl1 = `${baseUrl}/math-practice/update_answers`;
 
         try {
             const response = await axios.post(apiUrl1, {

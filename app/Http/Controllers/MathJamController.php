@@ -21,7 +21,7 @@ class MathJamController extends Controller
         $request->validate([
             'num_questions' => 'required|integer|min:1',
             'time_limit' => 'required|integer|min:10',
-            'math_journey_for' => 'required|string',
+            'math_practice_for' => 'required|string',
             'category' => 'required|string',
             'show_scores' => 'required|boolean',
         ]);
@@ -51,7 +51,7 @@ class MathJamController extends Controller
 
         if ($existingJam) {
             return response()->json([
-                'message' => 'You already have an active Math Journey in progress.',
+                'message' => 'You already have an active Math Practice in progress.',
             ], 400);
         }
 
@@ -65,7 +65,7 @@ class MathJamController extends Controller
             'teacher_id' => $request->teacher_id,
             'num_questions' => $request->num_questions,
             'time_limit' => $request->time_limit,
-            'math_journey_for' => $request->math_journey_for,
+            'math_practice_for' => $request->math_practice_for,
             'category' => $request->category,
             'show_scores' => $request->show_scores,
             'status' => 'waiting',
@@ -75,12 +75,12 @@ class MathJamController extends Controller
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Created Math Journey for ' . $mathJam->math_journey_for . ' in ' . $section_name . ' section',
+            'action' => 'Created Math Practice for ' . $mathJam->math_practice_for . ' in ' . $section_name . ' section',
             'created_at' => now()
         ]);
 
         return response()->json([
-            'message' => 'Math Journey created successfully!',
+            'message' => 'Math Practice created successfully!',
             'jam' => $mathJam,
         ]);
     }
@@ -166,12 +166,12 @@ class MathJamController extends Controller
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Cancelled Math Journey for ' . $jam->math_journey_for . ' in ' . $section_name . ' section',
+            'action' => 'Cancelled Math Practice for ' . $jam->math_practice_for . ' in ' . $section_name . ' section',
             'created_at' => now()
         ]);
 
         return response()->json([
-            'message' => 'Math Journey has been cancelled.',
+            'message' => 'Math Practice has been cancelled.',
             'jam' => $jam,
         ]);
     }
@@ -186,12 +186,12 @@ class MathJamController extends Controller
         $mathJam = MathJam::where('math_jam_code', $validated['math_jam_code'])->first();
 
         if (!$mathJam) {
-            return response()->json(['message' => 'Invalid Math Journey Code'], 200);
+            return response()->json(['message' => 'Invalid Math Practice Code'], 200);
         }
 
         $teacher = User::find($mathJam->teacher_id);
         if (!$teacher) {
-            return response()->json(['message' => 'Math Journey teacher not found.'], 200);
+            return response()->json(['message' => 'Math Practice teacher not found.'], 200);
         }
 
         $student = User::find($validated['student_id']);
@@ -200,18 +200,18 @@ class MathJamController extends Controller
         }
 
         if ($teacher->section_id !== $student->section_id) {
-            return response()->json(['message' => 'You are not allowed to join this Math Journey.'], 200);
+            return response()->json(['message' => 'You are not allowed to join this Math Practice.'], 200);
         }
 
         switch ($mathJam->status) {
             case 'started':
-                return response()->json(['message' => 'The Math Journey has already started.'], 200);
+                return response()->json(['message' => 'The Math Practice has already started.'], 200);
 
             case 'cancelled':
-                return response()->json(['message' => 'The Math Journey has been cancelled.'], 200);
+                return response()->json(['message' => 'The Math Practice has been cancelled.'], 200);
 
             case 'disconnected':
-                return response()->json(['message' => 'The Math Journey host has been disconnected.'], 200);
+                return response()->json(['message' => 'The Math Practice host has been disconnected.'], 200);
 
             case 'waiting':
                 $existingParticipant = MathJamParticipant::where('math_jam_id', $mathJam->id)
@@ -237,7 +237,7 @@ class MathJamController extends Controller
 
                 AuditTrail::create([
                     'user_id' => Auth::user()->id,
-                    'action' => 'Joined Math Journey for ' . $mathJam->math_journey_for . ' in ' . $section_name . ' section',
+                    'action' => 'Joined Math Practice for ' . $mathJam->math_practice_for . ' in ' . $section_name . ' section',
                     'created_at' => now()
                 ]);
 
@@ -247,10 +247,10 @@ class MathJamController extends Controller
                 ]);
 
             case 'ended':
-                return response()->json(['message' => 'The Math Journey has already ended.'], 200);
+                return response()->json(['message' => 'The Math Practice has already ended.'], 200);
 
             default:
-                return response()->json(['message' => 'Unexpected Math Journey status.'], 200);
+                return response()->json(['message' => 'Unexpected Math Practice status.'], 200);
         }
     }
 
@@ -273,7 +273,7 @@ class MathJamController extends Controller
             $validated['math_jam_code'] = $latestParticipant->mathJam->math_jam_code ?? null;
 
             if (!$validated['math_jam_code']) {
-                return response()->json(['message' => 'No valid Math Journey found', 'error' => true], 200);
+                return response()->json(['message' => 'No valid Math Practice found', 'error' => true], 200);
             }
         }
 
@@ -364,7 +364,7 @@ class MathJamController extends Controller
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Disconnected in Math Journey for ' . $mathJam->math_journey_for . ' in ' . $section_name . ' section',
+            'action' => 'Disconnected in Math Practice for ' . $mathJam->math_practice_for . ' in ' . $section_name . ' section',
             'created_at' => now()
         ]);
 
@@ -385,7 +385,7 @@ class MathJamController extends Controller
 
         if (!$mathJam || in_array($mathJam->status, ['cancelled', 'ended'])) {
             return response()->json([
-                'message' => "Current Math Journey " . ucfirst($mathJam->status)
+                'message' => "Current Math Practice " . ucfirst($mathJam->status)
             ], 400);
         }
 
@@ -411,7 +411,7 @@ class MathJamController extends Controller
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Reconnected in Math Journey for ' . $mathJam->math_journey_for . ' in ' . $section_name . ' section',
+            'action' => 'Reconnected in Math Practice for ' . $mathJam->math_practice_for . ' in ' . $section_name . ' section',
             'created_at' => now()
         ]);
 
@@ -545,7 +545,7 @@ class MathJamController extends Controller
 
             AuditTrail::create([
                 'user_id' => Auth::user()->id,
-                'action' => 'Disconnected in Math Journey for ' . $mathJam->math_journey_for . ' in ' . $section_name . ' section',
+                'action' => 'Disconnected in Math Practice for ' . $mathJam->math_practice_for . ' in ' . $section_name . ' section',
                 'created_at' => now()
             ]);
 
@@ -664,7 +664,7 @@ class MathJamController extends Controller
             ->select(
                 'users.id as student_id',
                 'users.name',
-                'math_jams.math_journey_for',
+                'math_jams.math_practice_for',
                 'math_jams.category',
                 'math_jam_participants.score',
                 'math_jams.num_questions',
@@ -692,7 +692,7 @@ class MathJamController extends Controller
 
             if ($entry->score !== null) {
                 $formattedData[$studentId]['scores'][] = [
-                    'math_journey_for' => $entry->math_journey_for,
+                    'math_practice_for' => $entry->math_practice_for,
                     'game_type' => $entry->game_type_name,
                     'category' => $entry->category,
                     'score' => $entry->score,
@@ -701,7 +701,7 @@ class MathJamController extends Controller
                 ];
             } else {
                 $formattedData[$studentId]['scores'][] = [
-                    'math_journey_for' => null,
+                    'math_practice_for' => null,
                     'game_type' => null,
                     'category' => null,
                     'score' => null,
@@ -807,7 +807,7 @@ class MathJamController extends Controller
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Left in Math Journey for ' . $mathJam->math_journey_for . ' in ' . $section_name . ' section',
+            'action' => 'Left in Math Practice for ' . $mathJam->math_practice_for . ' in ' . $section_name . ' section',
             'created_at' => now()
         ]);
 
@@ -835,7 +835,7 @@ class MathJamController extends Controller
             ->select(
                 'users.id as student_id',
                 'users.name',
-                'math_jams.math_journey_for',
+                'math_jams.math_practice_for',
                 'math_jams.category',
                 'math_jam_participants.score',
                 'math_jams.num_questions',
@@ -862,7 +862,7 @@ class MathJamController extends Controller
 
             if ($entry->score !== null) {
                 $formattedData[$studentId]['scores'][] = [
-                    'math_journey_for' => $entry->math_journey_for,
+                    'math_practice_for' => $entry->math_practice_for,
                     'game_type' => $entry->game_type_name,
                     'category' => $entry->category,
                     'score' => $entry->score,
@@ -871,7 +871,7 @@ class MathJamController extends Controller
                 ];
             } else {
                 $formattedData[$studentId]['scores'][] = [
-                    'math_journey_for' => null,
+                    'math_practice_for' => null,
                     'game_type' => null,
                     'category' => null,
                     'score' => null,
@@ -914,7 +914,7 @@ class MathJamController extends Controller
             ->select(
                 'users.id as student_id',
                 'users.name',
-                'math_jams.math_journey_for',
+                'math_jams.math_practice_for',
                 'math_jams.category',
                 'math_jam_participants.score',
                 'math_jams.num_questions',
@@ -941,7 +941,7 @@ class MathJamController extends Controller
 
             if ($entry->score !== null) {
                 $formattedData[$studentId]['scores'][] = [
-                    'math_journey_for' => $entry->math_journey_for,
+                    'math_practice_for' => $entry->math_practice_for,
                     'game_type' => $entry->game_type_name,
                     'category' => $entry->category,
                     'score' => $entry->score,
@@ -950,7 +950,7 @@ class MathJamController extends Controller
                 ];
             } else {
                 $formattedData[$studentId]['scores'][] = [
-                    'math_journey_for' => null,
+                    'math_practice_for' => null,
                     'game_type' => null,
                     'category' => null,
                     'score' => null,
