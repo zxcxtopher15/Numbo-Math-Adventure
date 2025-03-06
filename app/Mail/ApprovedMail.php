@@ -22,9 +22,6 @@ class ApprovedMail extends Mailable
     {
         return $this->subject('Your Account Has Been Approved')
             ->markdown('emails.approval')
-            ->with([
-                'user' => $this->user,
-                'loginUrl' => config('app.url') . '/login'
-            ]);
+            ->with(['user' => $this->user]);
     }
 }
