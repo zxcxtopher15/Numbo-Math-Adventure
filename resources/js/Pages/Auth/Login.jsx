@@ -36,7 +36,7 @@ export default function Login({ status, canResetPassword }) {
 
             <form onSubmit={submit}>
                 <div>
-                    <InputLabel htmlFor="email_or_username" value="Email" />
+                    <InputLabel htmlFor="email_or_username" value="Email or Username" />
 
                     <TextInput
                         id="email_or_username"
@@ -44,8 +44,7 @@ export default function Login({ status, canResetPassword }) {
                         name="email_or_username"
                         value={data.email_or_username}
                         className="mt-1 block w-full"
-                        placeholder="Email"
-                        autoComplete="username"
+                        placeholder="Email or Username"
                         isFocused={true}
                         onChange={(e) => setData('email_or_username', e.target.value)}
                     />
