@@ -1,7 +1,7 @@
 @component('mail::message')
     # Account Deleted
 
-    Hello,
+    Hello {{ $user->name }},
 
     Your account has been deleted. This means you will no longer have access to the system, and all associated data may
     have been removed.

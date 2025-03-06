@@ -1,7 +1,7 @@
 @component('mail::message')
     # Account Rejected
 
-    Hello,
+    Hello {{ $user->name }},
 
     Your account has been rejected. This means you can't access the system.
 
