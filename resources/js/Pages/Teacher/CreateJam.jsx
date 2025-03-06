@@ -187,7 +187,7 @@ const CreateJam = () => {
                     teacher_id: auth.user.id,
                     num_questions: parseInt(numQuestions, 10),
                     time_limit: parseInt(timeLimit, 10),
-                    math_practice_for: journeyFor,
+                    math_journey_for: journeyFor,
                     category,
                     show_scores: showScores ? 1 : 0,
                 }),
@@ -765,7 +765,7 @@ const CreateJam = () => {
                                                         <p className="font-semibold">
                                                             Math Practice For:{' '}
                                                             <span className="font-normal">
-                                                                {existingJam.math_practice_for}
+                                                                {existingJam.math_journey_for}
                                                             </span>
                                                         </p>
                                                         <p className="font-semibold">

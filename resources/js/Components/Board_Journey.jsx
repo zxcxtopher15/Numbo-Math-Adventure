@@ -643,7 +643,7 @@ export function Board_Journey({ data }) {
         return () => window.removeEventListener('resize', updateFontSize);
     }, [currentQuestion, data]);
     return isGameFinished ? (
-        <TotalResult participants={participants} numQuestion={existingJam.num_questions} gameTitle={existingJam.math_practice_for} category={existingJam.category} />
+        <TotalResult participants={participants} numQuestion={existingJam.num_questions} gameTitle={existingJam.math_journey_for} category={existingJam.category} />
     ) : (
         <>
             <div className="w-full h-full bg-white rounded-3xl p-6">

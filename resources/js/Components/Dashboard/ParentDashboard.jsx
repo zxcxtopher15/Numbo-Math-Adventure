@@ -217,7 +217,7 @@ export function ParentDashboard(result) {
                                                                                             score.category}
                                                                                     </p>
                                                                                     <p className="text-xs bg-primary text-white px-2 rounded-2xl w-max">
-                                                                                        {score.math_practice_for}
+                                                                                        {score.math_journey_for}
                                                                                     </p>
                                                                                     <div className="text-xs mt-2 flex items-center gap-1">
                                                                                         <FaClock />
@@ -270,7 +270,7 @@ export function ParentDashboard(result) {
                                                                             score.category}
                                                                     </p>
                                                                     <p className="text-white text-xs bg-primary rounded-2xl px-2 w-max">
-                                                                        {score.math_practice_for}
+                                                                        {score.math_journey_for}
                                                                     </p>
                                                                     <div className="text-xs mt-2 flex items-center gap-1">
                                                                         <FaClock />
