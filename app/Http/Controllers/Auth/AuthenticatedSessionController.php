@@ -31,8 +31,6 @@ class AuthenticatedSessionController extends Controller
     {
         $credentials = $request->only('email_or_username', 'password');
 
-        echo '<pre>'; print_r($credentials); exit;
-
         $user = \App\Models\User::where('email_or_username', $credentials['email_or_username'])->first();
 
         if ($user && $user->status == 1) {
