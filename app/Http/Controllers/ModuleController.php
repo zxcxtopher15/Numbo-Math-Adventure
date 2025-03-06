@@ -155,11 +155,11 @@ class ModuleController extends Controller
         $user_type = Auth::user()->user_type;
 
         if ($user_type == 'Parent') {
-            $student_ids = ParentStudentRelationship::join('users', 'users.id', '=', 'parent_student_relationships.student_id')
-                ->where('parent_student_relationships.status', 0)
+            $student_ids = ParentStudentRelationship::join('users', 'users.id', '=', 'parent_student_relationship.student_id')
+                ->where('parent_student_relationship.status', 0)
                 ->where('users.status', 0)
-                ->where('parent_student_relationships.parent_id', Auth::user()->id)
-                ->pluck('parent_student_relationships.student_id');
+                ->where('parent_student_relationship.parent_id', Auth::user()->id)
+                ->pluck('parent_student_relationship.student_id');
 
             echo '<pre>';
             print_r($student_ids);
