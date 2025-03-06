@@ -41,25 +41,25 @@ class AuthenticatedSessionController extends Controller
 
         if ($user->status == 1) {
             Auth::logout();
-            return redirect()->back()->withErrors(['error' => 'Your account is disabled. Please contact admin.']);
+            return redirect()->back()->withErrors(['email' => 'Your account is disabled. Please contact admin.']);
         }
 
         if ($user->status == 2) {
             Auth::logout();
-            return redirect()->back()->withErrors(['error' => 'Your account is for approval. Please contact admin.']);
+            return redirect()->back()->withErrors(['email' => 'Your account is for approval. Please contact admin.']);
         }
 
         if ($user->status == 3) {
             Auth::logout();
-            return redirect()->back()->withErrors(['error' => 'Your account is rejected. Please contact admin.']);
+            return redirect()->back()->withErrors(['email' => 'Your account is rejected. Please contact admin.']);
         }
 
         if ($user->section_id == 0 && $user->user_type !== 'Administrator') {
             Auth::logout();
             if ($user->user_type == 'Student') {
-                return redirect()->back()->withErrors(['error' => "You can't login yet. No section assigned! Please contact your teacher."]);
+                return redirect()->back()->withErrors(['email' => "You can't login yet. No section assigned! Please contact your teacher."]);
             } elseif ($user->user_type == 'Teacher') {
-                return redirect()->back()->withErrors(['error' => "You can't login yet. No section assigned! Please contact admin."]);
+                return redirect()->back()->withErrors(['email' => "You can't login yet. No section assigned! Please contact admin."]);
             }
         }
 
