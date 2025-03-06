@@ -3,9 +3,9 @@
 
     Hello,
 
-    Your account has been **enabled**! You can now log in and access your account again.
+    Your account has been enabled! You can now log in and access your account again.
 
-    @component('mail::button', ['url' => config('app.url') . '/login'])
+    @component('mail::button', ['url' => url('/login')])
         Login to Your Account
     @endcomponent
 

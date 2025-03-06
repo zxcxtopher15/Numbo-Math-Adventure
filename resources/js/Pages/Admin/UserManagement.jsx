@@ -58,15 +58,28 @@ const UserManagement = () => {
                                 confirmButtonText: 'Yes, disable it!',
                             }).then((result) => {
                                 if (result.isConfirmed) {
+                                    // Show loading Swal
+                                    Swal.fire({
+                                        title: 'Processing...',
+                                        text: 'Please wait while we disable the user.',
+                                        icon: 'info',
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        },
+                                    });
+
                                     axios
                                         .post(`/disable_user/${row.id}`)
                                         .then((response) => {
                                             if (response.data.message) {
-                                                Swal.fire('Disabled!', 'The user has been disabled.', 'success').then(
-                                                    () => {
-                                                        window.location.reload();
-                                                    },
-                                                );
+                                                Swal.fire({
+                                                    title: 'Disabled!',
+                                                    text: 'The user has been disabled.',
+                                                    icon: 'success',
+                                                }).then(() => {
+                                                    window.location.reload();
+                                                });
                                             }
                                         })
                                         .catch((error) => {
@@ -144,6 +157,7 @@ const UserManagement = () => {
     const handleApproveRequests = () => {
         setIsOpenRequest(false);
         setIsOpenReject(false);
+
         Swal.fire({
             title: 'Approve Selected Users?',
             text: 'Are you sure you want to approve the selected user accounts?',
@@ -154,11 +168,25 @@ const UserManagement = () => {
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Processing...',
+                    text: 'Please wait while we approve the users.',
+                    icon: 'info',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+
                 axios
                     .post('/approve_users', { user_ids: selectedRequests })
                     .then((response) => {
                         if (response.data.message) {
-                            Swal.fire('Approved!', 'The selected users have been approved.', 'success').then(() => {
+                            Swal.fire({
+                                title: 'Approved!',
+                                text: 'The selected users have been approved.',
+                                icon: 'success',
+                            }).then(() => {
                                 window.location.reload();
                             });
                         }
@@ -170,6 +198,7 @@ const UserManagement = () => {
             }
         });
     };
+
     const handleRestoreRejects = () => {
         setIsOpenReject(false);
 
@@ -183,11 +212,25 @@ const UserManagement = () => {
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Processing...',
+                    text: 'Please wait while we restore the users.',
+                    icon: 'info',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+
                 axios
                     .post('/restore_users', { user_ids: selectedRejects })
                     .then((response) => {
                         if (response.data.message) {
-                            Swal.fire('Restored!', 'The rejected users have been restored.', 'success').then(() => {
+                            Swal.fire({
+                                title: 'Restored!',
+                                text: 'The rejected users have been restored.',
+                                icon: 'success',
+                            }).then(() => {
                                 window.location.reload();
                             });
                         }
@@ -199,9 +242,11 @@ const UserManagement = () => {
             }
         });
     };
+
     const handleRejectRequests = () => {
         setIsOpenRequest(false);
         setIsOpenReject(false);
+
         Swal.fire({
             title: 'Reject Selected Users?',
             text: 'Are you sure you want to reject the selected user accounts?',
@@ -212,11 +257,25 @@ const UserManagement = () => {
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Processing...',
+                    text: 'Please wait while we reject the users.',
+                    icon: 'info',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+
                 axios
                     .post('/reject_users', { user_ids: selectedRequests })
                     .then((response) => {
                         if (response.data.message) {
-                            Swal.fire('Rejected!', 'The selected users have been rejected.', 'success').then(() => {
+                            Swal.fire({
+                                title: 'Rejected!',
+                                text: 'The selected users have been rejected.',
+                                icon: 'success',
+                            }).then(() => {
                                 window.location.reload();
                             });
                         }
@@ -228,9 +287,11 @@ const UserManagement = () => {
             }
         });
     };
+
     const handleDeleteRequests = () => {
         setIsOpenRequest(false);
         setIsOpenReject(false);
+
         Swal.fire({
             title: 'Delete Selected Users?',
             text: 'Are you sure you want to delete the selected user accounts?',
@@ -241,11 +302,25 @@ const UserManagement = () => {
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Processing...',
+                    text: 'Please wait while we delete the users.',
+                    icon: 'info',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+
                 axios
                     .delete('/delete_users', { data: { user_ids: selectedRequests } })
                     .then((response) => {
                         if (response.data.message) {
-                            Swal.fire('Deleted!', 'The selected users have been deleted.', 'success').then(() => {
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: 'The selected users have been deleted.',
+                                icon: 'success',
+                            }).then(() => {
                                 window.location.reload();
                             });
                         }
@@ -257,9 +332,11 @@ const UserManagement = () => {
             }
         });
     };
+
     const handleDeleteRejects = () => {
         setIsOpenRequest(false);
         setIsOpenReject(false);
+
         Swal.fire({
             title: 'Delete Rejected Users?',
             text: 'Are you sure you want to delete the rejected user accounts?',
@@ -270,11 +347,25 @@ const UserManagement = () => {
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Processing...',
+                    text: 'Please wait while we delete the users.',
+                    icon: 'info',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+
                 axios
                     .delete('/delete_users', { data: { user_ids: selectedRejects } })
                     .then((response) => {
                         if (response.data.message) {
-                            Swal.fire('Deleted!', 'The rejected users have been deleted.', 'success').then(() => {
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: 'The rejected users have been deleted.',
+                                icon: 'success',
+                            }).then(() => {
                                 window.location.reload();
                             });
                         }
@@ -286,10 +377,12 @@ const UserManagement = () => {
             }
         });
     };
+
     const handleEnableUsers = () => {
         setIsOpenRequest(false);
         setIsOpenReject(false);
         setIsOpenDisabled(false);
+
         Swal.fire({
             title: 'Enable Selected Users?',
             text: 'Are you sure you want to enable the selected user accounts?',
@@ -300,11 +393,25 @@ const UserManagement = () => {
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Processing...',
+                    text: 'Please wait while we enable the users.',
+                    icon: 'info',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+
                 axios
                     .post('/enable_users', { user_ids: selectedDisabled })
                     .then((response) => {
                         if (response.data.message) {
-                            Swal.fire('Enabled!', 'The selected users have been enabled.', 'success').then(() => {
+                            Swal.fire({
+                                title: 'Enabled!',
+                                text: 'The selected users have been enabled.',
+                                icon: 'success',
+                            }).then(() => {
                                 window.location.reload();
                             });
                         }
@@ -316,10 +423,12 @@ const UserManagement = () => {
             }
         });
     };
+
     const handleDeleteDisabled = () => {
         setIsOpenRequest(false);
         setIsOpenReject(false);
         setIsOpenDisabled(false);
+
         Swal.fire({
             title: 'Delete Disabled Users?',
             text: 'Are you sure you want to delete the disabled user accounts?',
@@ -330,11 +439,25 @@ const UserManagement = () => {
             allowOutsideClick: false,
         }).then((result) => {
             if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Processing...',
+                    text: 'Please wait while we delete the users.',
+                    icon: 'info',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+
                 axios
                     .delete('/delete_users', { data: { user_ids: selectedDisabled } })
                     .then((response) => {
                         if (response.data.message) {
-                            Swal.fire('Deleted!', 'The disabled users have been deleted.', 'success').then(() => {
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: 'The disabled users have been deleted.',
+                                icon: 'success',
+                            }).then(() => {
                                 window.location.reload();
                             });
                         }
@@ -353,9 +476,8 @@ const UserManagement = () => {
             <div className="py-12 h-d relative">
                 <div className="fixed bottom-0 right-0 mb-4 mr-4">
                     <button
-                        className={`bg-gray-600 font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl ${
-                            allDisabled.length === 0 ? 'opacity-80 cursor-not-allowed' : ''
-                        }`}
+                        className={`bg-gray-600 font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl ${allDisabled.length === 0 ? 'opacity-80 cursor-not-allowed' : ''
+                            }`}
                         onClick={() => setIsOpenDisabled(true)}
                         disabled={allDisabled.length === 0}
                     >
@@ -369,9 +491,8 @@ const UserManagement = () => {
                             <div className="text-2xl font-semibold text-primary "> Manage Users</div>
                             <div className="relative transition duration-300 ease-in-out hover:scale-110">
                                 <button
-                                    className={`bg-primary font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl mt-4 sm:mt-0 ${
-                                        allRequests.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
-                                    }`}
+                                    className={`bg-primary font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl mt-4 sm:mt-0 ${allRequests.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                                        }`}
                                     onClick={() => setIsOpenRequest(true)}
                                     disabled={allRequests.length === 0}
                                 >
@@ -385,9 +506,8 @@ const UserManagement = () => {
                             </div>
                             <div className="relative transition duration-300 ease-in-out hover:scale-110">
                                 <button
-                                    className={`bg-warning font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl mt-4 sm:mt-0 ${
-                                        allRejects.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
-                                    }`}
+                                    className={`bg-warning font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl mt-4 sm:mt-0 ${allRejects.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                                        }`}
                                     onClick={() => setIsOpenReject(true)}
                                     disabled={allRejects.length === 0}
                                 >

@@ -6,6 +6,10 @@ use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Mail\ApprovedMail;
+use App\Mail\DeletedMail;
+use App\Mail\DisabledMail;
+use App\Mail\EnabledMail;
+use App\Mail\RejectedMail;
 use App\Models\AuditTrail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -75,6 +79,8 @@ class UserManagementController extends Controller
             $user->status = 0;
             $user->save();
 
+            Mail::to($user->email)->send(new EnabledMail($user));
+
             AuditTrail::create([
                 'user_id' => Auth::user()->id,
                 'action' => 'Approve Previously Rejected User: ' . $user->name,
@@ -104,6 +110,8 @@ class UserManagementController extends Controller
             $user->status = 3; // 
             $user->save();
 
+            Mail::to($user->email)->send(new RejectedMail($user));
+
             AuditTrail::create([
                 'user_id' => Auth::user()->id,
                 'action' => 'Reject User: ' . $user->name,
@@ -117,7 +125,7 @@ class UserManagementController extends Controller
         ], 200);
     }
 
-    
+
     public function disableUser($id)
     {
         $user = User::find($id);
@@ -126,8 +134,10 @@ class UserManagementController extends Controller
             return response()->json(['message' => 'User not found.'], 404);
         }
 
-        $user->status = 1; 
+        $user->status = 1;
         $user->save();
+
+        Mail::to($user->email)->send(new DisabledMail($user));
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
@@ -152,8 +162,10 @@ class UserManagementController extends Controller
         }
 
         foreach ($users as $user) {
-            $user->status = 0; 
+            $user->status = 0;
             $user->save();
+
+            Mail::to($user->email)->send(new EnabledMail($user));
 
             AuditTrail::create([
                 'user_id' => Auth::user()->id,
@@ -182,6 +194,8 @@ class UserManagementController extends Controller
         foreach ($users as $user) {
             $user->delete();
 
+            Mail::to($user->email)->send(new DeletedMail($user));
+
             AuditTrail::create([
                 'user_id' => Auth::user()->id,
                 'action' => 'Delete User: ' . $user->name,
@@ -195,7 +209,8 @@ class UserManagementController extends Controller
         ], 200);
     }
 
-    public function userCounts(Request $request){
+    public function userCounts(Request $request)
+    {
         $parents = User::where('user_type', 'Parent')->where('status', 0)->count();
         $students = User::where('user_type', 'Student')->where('status', 0)->count();
         $teachers = User::where('user_type', 'Teacher')->where('status', 0)->count();
@@ -205,6 +220,4 @@ class UserManagementController extends Controller
             'teachers' => $teachers
         ], 200);
     }
-
 }
-
