@@ -161,11 +161,9 @@ class ModuleController extends Controller
                 ->where('parent_student_relation.parent_id', Auth::user()->id)
                 ->pluck('parent_student_relation.student_id');
 
-            echo '<pre>';
-            print_r($student_ids);
-            exit;
-
             $section_ids = User::whereIn('id', $student_ids)->pluck('section_id');
+
+            echo '<pre>'; print_r($section_ids); exit;
 
             $modules = Modules::whereIn('section_id', $section_ids)->get();
         } else {
