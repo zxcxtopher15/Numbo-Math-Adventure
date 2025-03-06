@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Models\User;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Route;
-use App\Http\Requests\Auth\LoginRequest;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -30,34 +29,40 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $loginId = $request->input('email');
-        $password = $request->input('password');
+        $credentials = $request->only('email', 'password');
 
-        $user = User::where('email', $loginId)
-            ->orWhere('username', $loginId)
-            ->first();
+        $fieldType = filter_var($credentials['email'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-        if ($user && $user->status == 1) {
-            return redirect()->back()->withErrors(['email' => 'Your account is disabled. Please contact admin.']);
+        if (!Auth::attempt([$fieldType => $credentials['email'], 'password' => $credentials['password']], $request->filled('remember'))) {
+            return redirect()->back()->withErrors(['email' => 'Invalid email/username or password.']);
         }
 
-        if ($user && $user->section_id == 0 && $user->user_type != 'Administrator') {
+        $user = Auth::user();
+
+        if ($user->status == 1) {
+            Auth::logout();
+            return redirect()->back()->withErrors(['error' => 'Your account is disabled. Please contact admin.']);
+        }
+
+        if ($user->status == 2) {
+            Auth::logout();
+            return redirect()->back()->withErrors(['error' => 'Your account is for approval. Please contact admin.']);
+        }
+
+        if ($user->status == 3) {
+            Auth::logout();
+            return redirect()->back()->withErrors(['error' => 'Your account is rejected. Please contact admin.']);
+        }
+
+        if ($user->section_id == 0 && $user->user_type !== 'Administrator') {
+            Auth::logout();
             if ($user->user_type == 'Student') {
-                return redirect()->back()->withErrors(['email' => "You can't login yet. No section assigned! Please contact your teacher."]);
-            } else if ($user->user_type == 'Teacher') {
-                return redirect()->back()->withErrors(['email' => "You can't login yet. No section assigned! Please contact admin."]);
+                return redirect()->back()->withErrors(['error' => "You can't login yet. No section assigned! Please contact your teacher."]);
+            } elseif ($user->user_type == 'Teacher') {
+                return redirect()->back()->withErrors(['error' => "You can't login yet. No section assigned! Please contact admin."]);
             }
         }
 
-        if ($user && $user->status == 2) {
-            return redirect()->back()->withErrors(['email' => 'Your account is for approval. Please contact admin.']);
-        }
-
-        if ($user && $user->status == 3) {
-            return redirect()->back()->withErrors(['email' => 'Your account is rejected. Please contact admin.']);
-        }
-
-        $request->authenticate();
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard', absolute: false));
