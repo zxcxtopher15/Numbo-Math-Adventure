@@ -29,13 +29,9 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $credentials = $request->only('email_or_username', 'password');
+        $credentials = $request->only('email', 'password');
 
-        $user = \App\Models\User::where('email', $credentials['email_or_username'])
-            ->orWhere('username', $credentials['email_or_username'])
-            ->first();
-
-        echo '<pre>'; print_r($user); exit;
+        $user = \App\Models\User::where('email', $credentials['email'])->first();
 
         if ($user && $user->status == 1) {
             return redirect()->back()->withErrors(['email' => 'Your account is disabled. Please contact admin.']);
@@ -51,8 +47,8 @@ class AuthenticatedSessionController extends Controller
 
         if ($user && $user->status == 2) {
             return redirect()->back()->withErrors(['email' => 'Your account is for approval. Please contact admin.']);
-        }
-
+        } 
+        
         if ($user && $user->status == 3) {
             return redirect()->back()->withErrors(['email' => 'Your account is rejected. Please contact admin.']);
         }
