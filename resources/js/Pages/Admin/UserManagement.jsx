@@ -349,7 +349,7 @@ const UserManagement = () => {
 
     return (
         <AuthenticatedLayout>
-            <Head title="Questions" />
+            <Head title="User Management" />
             <div className="py-12 h-d relative">
                 <div className="fixed bottom-0 right-0 mb-4 mr-4">
                     <button

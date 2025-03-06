@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Models\User;
-use Illuminate\Http\Request;
+use App\Mail\ApprovedMail;
 use App\Models\AuditTrail;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class UserManagementController extends Controller
 {
@@ -41,6 +43,8 @@ class UserManagementController extends Controller
         foreach ($users as $user) {
             $user->status = 0;
             $user->save();
+
+            Mail::to($user->email)->send(new ApprovedMail($user));
 
             AuditTrail::create([
                 'user_id' => Auth::user()->id,
