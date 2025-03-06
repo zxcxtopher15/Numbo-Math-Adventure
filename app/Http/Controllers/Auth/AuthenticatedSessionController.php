@@ -31,26 +31,28 @@ class AuthenticatedSessionController extends Controller
     {
         $credentials = $request->only('email_or_username', 'password');
 
-        $user = \App\Models\User::where('email_or_username', $credentials['email_or_username'])->first();
+        $user = \App\Models\User::where('email', $credentials['email_or_username'])
+            ->orWhere('username', $credentials['email_or_username'])
+            ->first();
 
         if ($user && $user->status == 1) {
-            return redirect()->back()->withErrors(['email_or_username' => 'Your account is disabled. Please contact admin.']);
+            return redirect()->back()->withErrors(['email' => 'Your account is disabled. Please contact admin.']);
         }
 
         if ($user && $user->section_id == 0 && $user->user_type != 'Administrator') {
             if ($user->user_type == 'Student') {
-                return redirect()->back()->withErrors(['email_or_username' => "You can't login yet. No section assigned! Please contact your teacher."]);
+                return redirect()->back()->withErrors(['email' => "You can't login yet. No section assigned! Please contact your teacher."]);
             } else if ($user->user_type == 'Teacher') {
-                return redirect()->back()->withErrors(['email_or_username' => "You can't login yet. No section assigned! Please contact admin."]);
+                return redirect()->back()->withErrors(['email' => "You can't login yet. No section assigned! Please contact admin."]);
             }
         }
 
         if ($user && $user->status == 2) {
-            return redirect()->back()->withErrors(['email_or_username' => 'Your account is for approval. Please contact admin.']);
-        } 
-        
+            return redirect()->back()->withErrors(['email' => 'Your account is for approval. Please contact admin.']);
+        }
+
         if ($user && $user->status == 3) {
-            return redirect()->back()->withErrors(['email_or_username' => 'Your account is rejected. Please contact admin.']);
+            return redirect()->back()->withErrors(['email' => 'Your account is rejected. Please contact admin.']);
         }
 
         $request->authenticate();
