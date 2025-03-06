@@ -6,7 +6,9 @@ use App\Models\Modules;
 use App\Models\Section;
 use App\Models\AuditTrail;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ParentStudentRelationship;
 
 class ModuleController extends Controller
 {
@@ -150,11 +152,23 @@ class ModuleController extends Controller
 
     public function get_modules()
     {
-        $sectionId = Auth::user()->section_id;
+        $user_type = Auth::user()->user_type;
 
-        $modules = Modules::where('section_id', $sectionId)->get();
+        if ($user_type == 'Parent') {
+            $student_ids = ParentStudentRelationship::where('status', 0)
+                ->where('parent_id', Auth::user()->id)
+                ->pluck('student_id');
 
-        return response()->json($modules);
+            $section_ids = User::whereIn('id', $student_ids)->pluck('section_id');
+
+            $modules = Modules::whereIn('section_id', $section_ids)->get();
+        } else {
+            $sectionId = Auth::user()->section_id;
+
+            $modules = Modules::where('section_id', $sectionId)->get();
+
+            return response()->json($modules);
+        }
     }
 
     public function destroy_single($id, $index)
