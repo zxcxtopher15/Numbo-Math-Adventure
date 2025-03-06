@@ -49,12 +49,12 @@ class ModuleController extends Controller
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Added Module: ' . $request->mdule_name . ' for Section ' . $section_name,
+            'action' => 'Added Announcement: ' . $request->mdule_name . ' for Section ' . $section_name,
             'created_at' => now()
         ]);
 
         return response()->json([
-            'message' => 'Modules added successfully!'
+            'message' => 'Announcements added successfully!'
         ]);
     }
 
@@ -64,7 +64,7 @@ class ModuleController extends Controller
 
         if (!$module) {
             return response()->json([
-                'message' => 'Module not found!'
+                'message' => 'Announcement not found!'
             ], 404);
         }
 
@@ -120,12 +120,12 @@ class ModuleController extends Controller
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Update Module: ' . $module->mdule_name . ' for Section ' . $section_name,
+            'action' => 'Update Announcement: ' . $module->mdule_name . ' for Section ' . $section_name,
             'created_at' => now()
         ]);
 
         return response()->json([
-            'message' => 'Module updated successfully!'
+            'message' => 'Announcement updated successfully!'
         ]);
     }
 
@@ -139,12 +139,12 @@ class ModuleController extends Controller
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Delete Module: ' . $module->module_name . ' for Section ' . $section_name,
+            'action' => 'Delete Announcement: ' . $module->module_name . ' for Section ' . $section_name,
             'created_at' => now()
         ]);
 
         return response()->json([
-            'message' => 'Module deleted successfully!'
+            'message' => 'Announcement deleted successfully!'
         ]);
     }
 
@@ -185,12 +185,12 @@ class ModuleController extends Controller
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Deleted module file: "' . $deletedFileName . '"' . ' for Section ' . $section_name,
+            'action' => 'Deleted Announcement file: "' . $deletedFileName . '"' . ' for Section ' . $section_name,
             'created_at' => now()
         ]);
 
         return response()->json([
-            'message' => 'Module file deleted successfully!'
+            'message' => 'Announcement file deleted successfully!'
         ]);
     }
 }
