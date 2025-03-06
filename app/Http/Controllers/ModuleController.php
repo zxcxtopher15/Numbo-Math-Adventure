@@ -163,8 +163,6 @@ class ModuleController extends Controller
 
             $section_ids = User::whereIn('id', $student_ids)->pluck('section_id');
 
-            echo '<pre>'; print_r($section_ids); exit;
-
             $modules = Modules::whereIn('section_id', $section_ids)->get();
         } else {
             $sectionId = Auth::user()->section_id;
