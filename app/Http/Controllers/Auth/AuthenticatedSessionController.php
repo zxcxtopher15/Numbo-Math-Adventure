@@ -31,7 +31,9 @@ class AuthenticatedSessionController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        $user = \App\Models\User::where('email', $credentials['email'])->first();
+        $user = \App\Models\User::where('email', $credentials['email'])
+            ->orWhere('username', $credentials['email'])
+            ->first();
 
         if ($user && $user->status == 1) {
             return redirect()->back()->withErrors(['email' => 'Your account is disabled. Please contact admin.']);
@@ -47,8 +49,8 @@ class AuthenticatedSessionController extends Controller
 
         if ($user && $user->status == 2) {
             return redirect()->back()->withErrors(['email' => 'Your account is for approval. Please contact admin.']);
-        } 
-        
+        }
+
         if ($user && $user->status == 3) {
             return redirect()->back()->withErrors(['email' => 'Your account is rejected. Please contact admin.']);
         }
