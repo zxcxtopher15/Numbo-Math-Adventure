@@ -1,14 +1,14 @@
 @component('mail::message')
-    # Account Enabled
+# Account Enabled
 
-    Hello {{ $user->name }},
+Hello {{ $user->name }},
 
-    Your account has been successfully enabled! You can now log in using the link below:
+Your account has been successfully enabled! You can now log in using the link below:
 
-    @component('mail::button', ['url' => url('/login')])
-        Login to Your Account
-    @endcomponent
+@component('mail::button', ['url' => url('/login')])
+Login to Your Account
+@endcomponent
 
-    Thanks,
-    {{ config('app.name') }}
+Thanks,  
+{{ config('app.name') }}
 @endcomponent
