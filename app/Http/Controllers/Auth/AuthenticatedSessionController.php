@@ -35,6 +35,8 @@ class AuthenticatedSessionController extends Controller
             ->orWhere('username', $credentials['email_or_username'])
             ->first();
 
+        echo '<pre>'; print_r($user); exit;
+
         if ($user && $user->status == 1) {
             return redirect()->back()->withErrors(['email' => 'Your account is disabled. Please contact admin.']);
         }
