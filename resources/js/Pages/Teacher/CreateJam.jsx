@@ -826,7 +826,6 @@ const CreateJam = () => {
                                                             value={journeyFor}
                                                             onChange={(e) => setJourneyFor(e.target.value)}
                                                         >
-                                                            <option value="Assignment">Assignment</option>
                                                             <option value="Pre-Assessment">Pre-Assessment</option>
                                                             <option value="Post-Assessment">Post-Assessment</option>
                                                             <option value="Quiz">Quiz</option>
