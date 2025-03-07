@@ -16,11 +16,11 @@ const AuditTrail = () => {
             name: '#',
             selector: (_, index) => (currentPage - 1) * rowsPerPage + index + 1,
             sortable: false,
-            width: '70px',
+            width: '80px',
         },
-        { name: 'Name', selector: (row) => row.name, sortable: true, wrap: true },
-        { name: 'User Type', selector: (row) => row.user_type, sortable: true, wrap: true },
-        { name: 'Action', selector: (row) => row.action, sortable: true, wrap: true },
+        { name: 'Name', selector: (row) => row.name, sortable: true, wrap: true, width: '200px' },
+        { name: 'User Type', selector: (row) => row.user_type, sortable: true, wrap: true, width: '180px' },
+        { name: 'Action', selector: (row) => row.action, sortable: true, wrap: true, width: '220px' },
         {
             name: 'Date',
             selector: (row) => (
@@ -28,6 +28,7 @@ const AuditTrail = () => {
             ),
             sortable: true,
             wrap: true,
+            width: '250px',
         },
     ];
 
@@ -48,57 +49,54 @@ const AuditTrail = () => {
 
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Sections</h2>}>
-            <Head title="Questions" />
+            <Head title="Audit Trail" />
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8"></div>
                 <div className="p-4">
-                    <div className="bg-blue-50 border border-4 flex flex-col gap-3 items-center sm:flex-row justify-between border-blue-300 p-5 rounded-3xl mb-4">
+                    <div className="bg-blue-50 border border-4 flex flex-col gap-3 sm:flex-row justify-between border-blue-300 p-5 rounded-3xl mb-4">
                         <div className="text-2xl font-semibold text-primary w-full"> Audit Trail Logs</div>
                         <div className="flex justify-end w-full">
                             <input
                                 type="text"
                                 placeholder="Search..."
-                                className="p-2 border border-gray-300 rounded-3xl lg:w-1/2 w-full "
+                                className="p-2 border border-gray-300 rounded-3xl lg:w-1/2 w-full"
                                 onChange={(e) => setFilterText(e.target.value)}
                             />
                         </div>
                     </div>
 
-                    <div className="rounded-2xl border border-gray-200 shadow-md overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 ">
-                        <div className="overflow-x-auto max-w-full">
-                            <DataTable
-                                columns={columns}
-                                data={filteredData}
-                                pagination
-                                paginationPerPage={rowsPerPage}
-                                onChangePage={(page) => setCurrentPage(page)}
-                                highlightOnHover
-                                striped
-                                responsive
-                                customStyles={{
-                                    headRow: {
-                                        style: {
-                                            backgroundColor: '#6CA6CD',
-                                            color: '#FFFFFF',
-                                            fontWeight: 'semibold',
-                                            fontSize: '17px',
-                                        },
+                    <div className="overflow-x-auto rounded-xl sm:w-[calc(100vw-20rem)] w-[calc(100vw-4rem)]">
+                        <DataTable
+                            columns={columns}
+                            data={filteredData}
+                            pagination
+                            paginationPerPage={rowsPerPage}
+                            onChangePage={(page) => setCurrentPage(page)}
+                            highlightOnHover
+                            striped
+                            customStyles={{
+                                headRow: {
+                                    style: {
+                                        backgroundColor: '#6CA6CD',
+                                        color: '#FFFFFF',
+                                        fontWeight: 'semibold',
+                                        fontSize: '16px',
                                     },
-                                    rows: {
-                                        style: {
-                                            minHeight: '48px',
-                                        },
+                                },
+                                rows: {
+                                    style: {
+                                        minHeight: '48px',
                                     },
-                                    cells: {
-                                        style: {
-                                            padding: '12px',
-                                            fontSize: '14px',
-                                        },
+                                },
+                                cells: {
+                                    style: {
+                                        padding: '12px',
+                                        fontSize: '14px',
                                     },
-                                }}
-                                onChangeRowsPerPage={handleChangeRowsPerPage}
-                            />
-                        </div>
+                                },
+                            }}
+                            onChangeRowsPerPage={handleChangeRowsPerPage}
+                        />
                     </div>
                 </div>
             </div>

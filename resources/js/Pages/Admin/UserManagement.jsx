@@ -476,8 +476,9 @@ const UserManagement = () => {
             <div className="py-12 h-d relative">
                 <div className="fixed bottom-0 right-0 mb-4 mr-4">
                     <button
-                        className={`bg-gray-600 font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl ${allDisabled.length === 0 ? 'opacity-80 cursor-not-allowed' : ''
-                            }`}
+                        className={`bg-gray-600 font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl ${
+                            allDisabled.length === 0 ? 'opacity-80 cursor-not-allowed' : ''
+                        }`}
                         onClick={() => setIsOpenDisabled(true)}
                         disabled={allDisabled.length === 0}
                     >
@@ -487,32 +488,36 @@ const UserManagement = () => {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8"></div>
                 <div className="p-4">
                     <div className="bg-blue-50  border-4 flex flex-col gap-3 items-center sm:flex-row justify-between border-blue-300 p-5 rounded-3xl mb-4">
-                        <div className="flex items-center w-full gap-5">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-5">
                             <div className="text-2xl font-semibold text-primary "> Manage Users</div>
-                            <div className="relative transition duration-300 ease-in-out hover:scale-110">
-                                <button
-                                    className={`bg-primary font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl mt-4 sm:mt-0 ${allRequests.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                            <div className="flex gap-3">
+                                <div className="relative transition duration-300 ease-in-out hover:scale-110">
+                                    <button
+                                        className={`bg-primary font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl mt-4 sm:mt-0 ${
+                                            allRequests.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
                                         }`}
-                                    onClick={() => setIsOpenRequest(true)}
-                                    disabled={allRequests.length === 0}
-                                >
-                                    For Approval
-                                </button>
-                                {allRequests.length > 0 && (
-                                    <span className="absolute top-1 right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
-                                        {allRequests.length}
-                                    </span>
-                                )}
-                            </div>
-                            <div className="relative transition duration-300 ease-in-out hover:scale-110">
-                                <button
-                                    className={`bg-warning font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl mt-4 sm:mt-0 ${allRejects.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                                        onClick={() => setIsOpenRequest(true)}
+                                        disabled={allRequests.length === 0}
+                                    >
+                                        For Approval
+                                    </button>
+                                    {allRequests.length > 0 && (
+                                        <span className="absolute top-1 right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+                                            {allRequests.length}
+                                        </span>
+                                    )}
+                                </div>
+                                <div className="relative transition duration-300 ease-in-out hover:scale-110">
+                                    <button
+                                        className={`bg-warning font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl mt-4 sm:mt-0 ${
+                                            allRejects.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
                                         }`}
-                                    onClick={() => setIsOpenReject(true)}
-                                    disabled={allRejects.length === 0}
-                                >
-                                    Rejected List
-                                </button>
+                                        onClick={() => setIsOpenReject(true)}
+                                        disabled={allRejects.length === 0}
+                                    >
+                                        Rejected List
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -525,41 +530,39 @@ const UserManagement = () => {
                             />
                         </div>
                     </div>
-                    <div className="rounded-2xl border border-gray-200 shadow-md overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-                        <div className="overflow-x-auto max-w-full">
-                            <DataTable
-                                columns={columns}
-                                data={filteredData}
-                                pagination
-                                paginationPerPage={rowsPerPage}
-                                onChangePage={(page) => setCurrentPage(page)}
-                                highlightOnHover
-                                striped
-                                responsive
-                                customStyles={{
-                                    headRow: {
-                                        style: {
-                                            backgroundColor: '#6CA6CD',
-                                            color: '#FFFFFF',
-                                            fontWeight: 'semibold',
-                                            fontSize: '17px',
-                                        },
+                    <div className="overflow-x-auto rounded-xl sm:w-[calc(100vw-20rem)] w-[calc(100vw-4rem)]">
+                        <DataTable
+                            columns={columns}
+                            data={filteredData}
+                            pagination
+                            paginationPerPage={rowsPerPage}
+                            onChangePage={(page) => setCurrentPage(page)}
+                            highlightOnHover
+                            striped
+                            responsive
+                            customStyles={{
+                                headRow: {
+                                    style: {
+                                        backgroundColor: '#6CA6CD',
+                                        color: '#FFFFFF',
+                                        fontWeight: 'semibold',
+                                        fontSize: '17px',
                                     },
-                                    rows: {
-                                        style: {
-                                            minHeight: '48px',
-                                        },
+                                },
+                                rows: {
+                                    style: {
+                                        minHeight: '48px',
                                     },
-                                    cells: {
-                                        style: {
-                                            padding: '12px',
-                                            fontSize: '14px',
-                                        },
+                                },
+                                cells: {
+                                    style: {
+                                        padding: '12px',
+                                        fontSize: '14px',
                                     },
-                                }}
-                                onChangeRowsPerPage={handleChangeRowsPerPage}
-                            />
-                        </div>
+                                },
+                            }}
+                            onChangeRowsPerPage={handleChangeRowsPerPage}
+                        />
                     </div>
                 </div>
             </div>
