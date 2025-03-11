@@ -19,23 +19,25 @@ class ModuleController extends Controller
             'module_name' => 'required|string|max:255',
             'module_desc' => 'required|string|max:255',
             'module_file_desc' => 'required|string|max:255',
-            'module_file' => 'array',
+            'module_file' => 'nullable|array', // Make module_file optional
             'module_file.*' => 'mimes:jpeg,png,jpg,pdf,doc,docx,xls,xlsx,txt',
         ]);
 
         $filePaths = [];
         $fileNames = [];
 
-        foreach ($request->file('module_file') as $file) {
-            $fileNameWithoutExtension = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $fileExtension = $file->getClientOriginalExtension();
-            $fileName = $fileNameWithoutExtension;
-            $filePath = $fileNameWithoutExtension . '.' . $fileExtension;
+        if ($request->hasFile('module_file')) {
+            foreach ($request->file('module_file') as $file) {
+                $fileNameWithoutExtension = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $fileExtension = $file->getClientOriginalExtension();
+                $fileName = $fileNameWithoutExtension;
+                $filePath = $fileNameWithoutExtension . '.' . $fileExtension;
 
-            $file->move(public_path('modules'), $filePath);
+                $file->move(public_path('modules'), $filePath);
 
-            $filePaths[] = $filePath;
-            $fileNames[] = $fileName;
+                $filePaths[] = $filePath;
+                $fileNames[] = $fileName;
+            }
         }
 
         Modules::create([
@@ -51,12 +53,12 @@ class ModuleController extends Controller
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Added Announcement: ' . $request->mdule_name . ' for Section ' . $section_name,
+            'action' => 'Added Announcement: ' . $request->module_name . ' for Section ' . $section_name,
             'created_at' => now()
         ]);
 
         return response()->json([
-            'message' => 'Announcements added successfully!'
+            'message' => 'Announcement added successfully!'
         ]);
     }
 
