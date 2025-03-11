@@ -19,7 +19,7 @@ class ModuleController extends Controller
             'module_name' => 'required|string|max:255',
             'module_desc' => 'required|string|max:255',
             'module_file_desc' => 'required|string|max:255',
-            'module_file' => 'required|array',
+            'module_file' => 'array',
             'module_file.*' => 'mimes:jpeg,png,jpg,pdf,doc,docx,xls,xlsx,txt',
         ]);
 
