@@ -14,6 +14,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { FaFile } from 'react-icons/fa6';
 import { FaCloudDownloadAlt, FaTrashAlt } from 'react-icons/fa';
 import { useEffect } from 'react';
+import { Textarea } from '@headlessui/react';
 
 export default function Modules({ }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -433,20 +434,20 @@ export default function Modules({ }) {
                             className="border w-full p-2 mb-2"
                         />
                         <InputLabel htmlFor="module_desc" value="Description" />
-                        <TextInput
+                        <Textarea
                             type="text"
                             name="module_desc"
                             value={data.module_desc}
                             onChange={handleChange}
-                            className="border w-full p-2 mb-2"
+                            className="border w-full p-2 mb-2 rounded-2xl h-14 min-h-[120px] bg-gray-50 border-gray-300 shadow-sm focus:border-warning focus:ring-warning"
                         />
                         <InputLabel htmlFor="module_file_desc" value="File Description" />
-                        <TextInput
+                        <Textarea
                             type="text"
                             name="module_file_desc"
                             value={data.module_file_desc}
                             onChange={handleChange}
-                            className="border w-full p-2 mb-2"
+                            className="border w-full p-2 mb-2 rounded-2xl h-14 min-h-[120px] bg-gray-50 border-gray-300 shadow-sm focus:border-warning focus:ring-warning"
                         />
 
                         <InputLabel htmlFor="module_file" value="Announcement File" />
@@ -508,20 +509,20 @@ export default function Modules({ }) {
                             className="border w-full p-2 mb-2"
                         />
                         <InputLabel htmlFor="module_desc" value="Description" />
-                        <TextInput
+                        <Textarea
                             type="text"
                             name="module_desc"
                             value={editModuleData ? editModuleData.module_desc : ''}
                             onChange={handleEditChange}
-                            className="border w-full p-2 mb-2"
+                            className="border w-full p-2 mb-2 rounded-2xl h-14 min-h-[120px] bg-gray-50 border-gray-300 shadow-sm focus:border-warning focus:ring-warning"
                         />
                         <InputLabel htmlFor="module_file_desc" value="File Description" />
-                        <TextInput
+                        <Textarea
                             type="text"
                             name="module_file_desc"
                             value={editModuleData ? editModuleData.module_file_desc : ''}
                             onChange={handleEditChange}
-                            className="border w-full p-2 mb-2"
+                            className="border w-full p-2 mb-2 rounded-2xl h-14 min-h-[120px] bg-gray-50 border-gray-300 shadow-sm focus:border-warning focus:ring-warning"
                         />
                         <InputLabel htmlFor="module_file" value="Announcement File" />
                         <div
