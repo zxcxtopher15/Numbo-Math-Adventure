@@ -844,6 +844,7 @@ class MathJamController extends Controller
             )
             ->where('users.user_type', 'Student')
             ->orderBy('math_jam_participants.created_at', 'desc')
+            ->groupBy('math_jam_participants.student_id')
             ->where('users.status', 0)
             ->get();
 
