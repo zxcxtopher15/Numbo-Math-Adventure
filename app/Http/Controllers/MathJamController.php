@@ -674,6 +674,16 @@ class MathJamController extends Controller
             ->where('users.user_type', 'Student')
             ->where('users.section_id', $sectionId)
             ->where('users.status', 0)
+            ->groupBy(
+                'users.id',
+                'users.name',
+                'math_jams.math_practice_for',
+                'math_jams.category',
+                'math_jam_participants.score',
+                'math_jams.num_questions',
+                'math_jam_participants.created_at',
+                'game_type.game_type_name'
+            )
             ->orderBy('math_jam_participants.created_at', 'desc')
             ->get();
 
@@ -690,25 +700,14 @@ class MathJamController extends Controller
                 ];
             }
 
-            if ($entry->score !== null) {
-                $formattedData[$studentId]['scores'][] = [
-                    'math_practice_for' => $entry->math_practice_for,
-                    'game_type' => $entry->game_type_name,
-                    'category' => $entry->category,
-                    'score' => $entry->score,
-                    'num_questions' => $entry->num_questions,
-                    'date' => $entry->date,
-                ];
-            } else {
-                $formattedData[$studentId]['scores'][] = [
-                    'math_practice_for' => null,
-                    'game_type' => null,
-                    'category' => null,
-                    'score' => null,
-                    'num_questions' => null,
-                    'date' => null,
-                ];
-            }
+            $formattedData[$studentId]['scores'][] = [
+                'math_practice_for' => $entry->math_practice_for,
+                'game_type' => $entry->game_type_name,
+                'category' => $entry->category,
+                'score' => $entry->score,
+                'num_questions' => $entry->num_questions,
+                'date' => $entry->date,
+            ];
         }
 
         return response()->json(['results' => array_values($formattedData)]);
@@ -843,8 +842,18 @@ class MathJamController extends Controller
                 'game_type.game_type_name'
             )
             ->where('users.user_type', 'Student')
-            ->orderBy('math_jam_participants.created_at', 'desc')
             ->where('users.status', 0)
+            ->groupBy(
+                'users.id',
+                'users.name',
+                'math_jams.math_practice_for',
+                'math_jams.category',
+                'math_jam_participants.score',
+                'math_jams.num_questions',
+                'math_jam_participants.created_at',
+                'game_type.game_type_name'
+            )
+            ->orderBy('math_jam_participants.created_at', 'desc')
             ->get();
 
         $formattedData = [];
@@ -860,25 +869,14 @@ class MathJamController extends Controller
                 ];
             }
 
-            if ($entry->score !== null) {
-                $formattedData[$studentId]['scores'][] = [
-                    'math_practice_for' => $entry->math_practice_for,
-                    'game_type' => $entry->game_type_name,
-                    'category' => $entry->category,
-                    'score' => $entry->score,
-                    'num_questions' => $entry->num_questions,
-                    'date' => $entry->date,
-                ];
-            } else {
-                $formattedData[$studentId]['scores'][] = [
-                    'math_practice_for' => null,
-                    'game_type' => null,
-                    'category' => null,
-                    'score' => null,
-                    'num_questions' => null,
-                    'date' => null,
-                ];
-            }
+            $formattedData[$studentId]['scores'][] = [
+                'math_practice_for' => $entry->math_practice_for,
+                'game_type' => $entry->game_type_name,
+                'category' => $entry->category,
+                'score' => $entry->score,
+                'num_questions' => $entry->num_questions,
+                'date' => $entry->date,
+            ];
         }
 
         return response()->json(['results' => array_values($formattedData)]);
@@ -923,6 +921,16 @@ class MathJamController extends Controller
             )
             ->where('users.user_type', 'Student')
             ->where('users.status', 0)
+            ->groupBy(
+                'users.id',
+                'users.name',
+                'math_jams.math_practice_for',
+                'math_jams.category',
+                'math_jam_participants.score',
+                'math_jams.num_questions',
+                'math_jam_participants.created_at',
+                'game_type.game_type_name'
+            )
             ->orderBy('math_jam_participants.created_at', 'desc')
             ->get();
 
@@ -939,25 +947,14 @@ class MathJamController extends Controller
                 ];
             }
 
-            if ($entry->score !== null) {
-                $formattedData[$studentId]['scores'][] = [
-                    'math_practice_for' => $entry->math_practice_for,
-                    'game_type' => $entry->game_type_name,
-                    'category' => $entry->category,
-                    'score' => $entry->score,
-                    'num_questions' => $entry->num_questions,
-                    'date' => $entry->date,
-                ];
-            } else {
-                $formattedData[$studentId]['scores'][] = [
-                    'math_practice_for' => null,
-                    'game_type' => null,
-                    'category' => null,
-                    'score' => null,
-                    'num_questions' => null,
-                    'date' => null,
-                ];
-            }
+            $formattedData[$studentId]['scores'][] = [
+                'math_practice_for' => $entry->math_practice_for,
+                'game_type' => $entry->game_type_name,
+                'category' => $entry->category,
+                'score' => $entry->score,
+                'num_questions' => $entry->num_questions,
+                'date' => $entry->date,
+            ];
         }
 
         return response()->json(['results' => array_values($formattedData)]);
