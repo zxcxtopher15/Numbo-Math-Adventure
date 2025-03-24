@@ -675,7 +675,6 @@ class MathJamController extends Controller
             ->where('users.section_id', $sectionId)
             ->where('users.status', 0)
             ->orderBy('math_jam_participants.created_at', 'desc')
-            ->groupBy('math_jams.math_jam_id')
             ->get();
 
         $formattedData = [];
