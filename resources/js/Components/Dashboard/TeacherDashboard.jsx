@@ -279,53 +279,49 @@ export function TeacherDashboard({ data: result, topStudentsData }) {
                                                                 </DialogTitle>
                                                             </DialogHeader>
                                                             <div className="space-y-4">
-                                                                {student.scores.map((score, index) => (
-                                                                    <div key={score.id} className="mt-3">
-                                                                        <div className="flex md:flex-row flex-col md:items-center items-start justify-between gap-2 p-2 border-b border-blue-200 w-full">
-                                                                            <div className="flex gap-3">
-                                                                                <p className="font-semibold">
-                                                                                    {index + 1}.
-                                                                                </p>
-                                                                                <div className="flex flex-col">
-                                                                                    <p className="font-medium">
-                                                                                        {score.game_type +
-                                                                                            ' -  ' +
-                                                                                            score.category}
-                                                                                    </p>
-                                                                                    <p className="text-xs bg-primary text-white px-2 rounded-2xl w-max">
-                                                                                        {score.math_practice_for}
-                                                                                    </p>
-                                                                                    <div className="text-xs mt-2 flex items-center gap-1">
-                                                                                        <FaClock />
-                                                                                        {new Intl.DateTimeFormat(
-                                                                                            'en-US',
-                                                                                            {
-                                                                                                month: 'short',
-                                                                                                day: '2-digit',
-                                                                                                year: 'numeric',
-                                                                                                hour: '2-digit',
-                                                                                                minute: '2-digit',
-                                                                                            },
-                                                                                        ).format(new Date(score.date))}
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div className="flex bg-gray-100 rounded-xl px-5 items-center flex-col sm:w-max w-full">
-                                                                                <p>score</p>
-                                                                                <p
-                                                                                    className={`font-semibold ${score.score <=
-                                                                                        score.num_questions * 0.4
-                                                                                        ? 'text-red-600'
-                                                                                        : 'text-green-600'
-                                                                                        }`}
-                                                                                >
-                                                                                    {score.score} /{' '}
-                                                                                    {score.num_questions}
-                                                                                </p>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                ))}
+                                                            {student.scores.map((score, index) => {
+    console.log("Score Data:", score); // Log each score object
+    return (
+        <div key={score.id} className="mt-3">
+            <div className="flex md:flex-row flex-col md:items-center items-start justify-between gap-2 p-2 border-b border-blue-200 w-full">
+                <div className="flex gap-3">
+                    <p className="font-semibold">{index + 1}.</p>
+                    <div className="flex flex-col">
+                        <p className="font-medium">
+                            {score.game_type + ' -  ' + score.category}
+                        </p>
+                        <p className="text-xs bg-primary text-white px-2 rounded-2xl w-max">
+                            {score.math_practice_for}
+                        </p>
+                        <div className="text-xs mt-2 flex items-center gap-1">
+                            <FaClock />
+                            {new Intl.DateTimeFormat('en-US', {
+                                month: 'short',
+                                day: '2-digit',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                            }).format(new Date(score.date))}
+                        </div>
+                    </div>
+                </div>
+                <div className="flex bg-gray-100 rounded-xl px-5 items-center flex-col sm:w-max w-full">
+                    <p>score</p>
+                    <p
+                        className={`font-semibold ${
+                            score.score <= score.num_questions * 0.4
+                                ? 'text-red-600'
+                                : 'text-green-600'
+                        }`}
+                    >
+                        {score.score} / {score.num_questions}
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+})}
+
                                                             </div>
                                                         </DialogContent>
                                                     </Dialog>
