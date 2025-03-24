@@ -103,7 +103,7 @@ const UserManagement = () => {
             (item) =>
                 item.name?.toLowerCase().includes(filterText.toLowerCase()) ||
                 item.email?.toLowerCase().includes(filterText.toLowerCase()) ||
-                item.type?.toLowerCase().includes(filterText.toLowerCase()) ||
+                item.user_type?.toLowerCase().includes(filterText.toLowerCase()) ||
                 format(new Date(item.created_at), 'MMMM do, yyyy, h:mm a')
                     .toLowerCase()
                     .includes(filterText.toLowerCase()),
