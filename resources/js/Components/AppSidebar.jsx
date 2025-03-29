@@ -45,7 +45,7 @@ export function AppSidebar(props) {
             ...(userType !== 'Administrator'
                 ? [
                       {
-                          title: 'Announcements',
+                          title: 'Modules',
                           url: 'view_announcements',
                           icon: Settings2,
                           isActive: window.location.pathname === '/view_announcements',

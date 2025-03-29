@@ -130,9 +130,7 @@ export default function Questions({ questions = [] }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         setIsModalOpen(false);
-        const trimmedChoices = data.choices
-            .map((choice) => choice.trim())
-            .filter((choice) => choice !== '');
+        const trimmedChoices = data.choices.map((choice) => choice.trim()).filter((choice) => choice !== '');
 
         const trimmedCorrectAnswer = data.correct_answer.trim();
 
@@ -207,9 +205,7 @@ export default function Questions({ questions = [] }) {
         e.preventDefault();
         setIsEditQuestionModalOpen(false);
 
-        const trimmedChoices = formDataUpdate.choices
-            .map((choice) => choice.trim())
-            .filter((choice) => choice !== '');
+        const trimmedChoices = formDataUpdate.choices.map((choice) => choice.trim()).filter((choice) => choice !== '');
 
         const trimmedCorrectAnswer = formDataUpdate.correct_answer.trim();
 
@@ -303,10 +299,12 @@ export default function Questions({ questions = [] }) {
                         { status: updatedStatus },
                         {
                             headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'X-CSRF-TOKEN': document
+                                    .querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content'),
                                 'Content-Type': 'application/json',
                             },
-                        }
+                        },
                     );
 
                     if (response.status === 200) {
@@ -631,16 +629,19 @@ export default function Questions({ questions = [] }) {
                             const filteredQuestions = questions.filter(
                                 (q) =>
                                     groupedCategories[gameType.type] &&
-                                    groupedCategories[gameType.type]
-                                        .map((item) => item.category)
-                                        .includes(q.category)
+                                    groupedCategories[gameType.type].map((item) => item.category).includes(q.category),
                             );
 
                             return (
                                 <div key={gameType.type} className="mb-8 relative">
-                                    <div className={`bg-gradient-to-r ${gradient} sm:p-6 p-3 rounded-3xl text-gray-600 relative`}>
+                                    <div
+                                        className={`bg-gradient-to-r ${gradient} sm:p-6 p-3 rounded-3xl text-gray-600 relative`}
+                                    >
                                         <div className="flex items-center justify-between">
-                                            <div className="cursor-pointer text-white" onClick={() => toggleSection(gameType.type)}>
+                                            <div
+                                                className="cursor-pointer text-white"
+                                                onClick={() => toggleSection(gameType.type)}
+                                            >
                                                 {isExpanded ? <FaChevronUp size={20} /> : <FaChevronDown size={20} />}
                                             </div>
                                             <h1 className="text-2xl font-semibold text-white">{gameType.type}</h1>
@@ -648,7 +649,7 @@ export default function Questions({ questions = [] }) {
                                                 onClick={() => handlePublish(gameType)}
                                                 className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg"
                                             >
-                                                {gameType.status === 0 ? "Unpublish" : "Publish"}
+                                                {gameType.status === 0 ? 'Unpublish' : 'Publish'}
                                             </button>
                                         </div>
 
@@ -687,7 +688,10 @@ export default function Questions({ questions = [] }) {
                                                                 <div className="bg-gray-100 rounded-2xl">
                                                                     <div className="text-sm text-gray-700 font-medium mt-2 flex gap-3">
                                                                         {q.choices
-                                                                            .filter((choice) => choice !== null && choice !== '')
+                                                                            .filter(
+                                                                                (choice) =>
+                                                                                    choice !== null && choice !== '',
+                                                                            )
                                                                             .map((choice, i) => (
                                                                                 <div
                                                                                     key={`${q.id}-${choice}`}
@@ -719,7 +723,7 @@ export default function Questions({ questions = [] }) {
 
             <Dialog open={isModalOpen} onOpenChange={toggleModal} className="fixed inset-0 overflow-y-auto">
                 <DialogContent className="overflow-y-auto max-h-[80vh] max-w-lg p-0">
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-4">
                         <div className="p-6">
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-semibold mb-5">Add New Question</DialogTitle>
@@ -912,13 +916,13 @@ export default function Questions({ questions = [] }) {
                         <div className="sm:grid grid-cols-1 gap-4">
                             {Object.entries(
                                 categories_data
-                                    .filter(category => category.type !== null)
+                                    .filter((category) => category.type !== null)
                                     .reduce((map, category) => {
                                         const key = category.type;
                                         map[key] = map[key] || [];
                                         map[key].push(category);
                                         return map;
-                                    }, {})
+                                    }, {}),
                             ).map(([key, categories]) => (
                                 <div key={key}>
                                     <h2 className="text-lg font-semibold px-3 py-2 bg-gray-200 text-gray-600 rounded-t-xl">
@@ -1056,7 +1060,7 @@ export default function Questions({ questions = [] }) {
                                 <div key={type.id}>
                                     <div className="bg-white text-gray-600 p-3 rounded-xl flex justify-between">
                                         <span>
-                                            <p>{ }</p>
+                                            <p>{}</p>
                                             <h3 className="text-lg">{type.type}</h3>
                                         </span>
                                         <div>
