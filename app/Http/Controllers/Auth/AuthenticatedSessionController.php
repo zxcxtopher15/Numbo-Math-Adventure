@@ -54,7 +54,7 @@ class AuthenticatedSessionController extends Controller
             return redirect()->back()->withErrors(['email' => 'Your account is rejected. Please contact admin.']);
         }
 
-        if ($user->section_id == 0 && $user->user_type !== 'Administrator') {
+        if ($user->section_id == 0 && !in_array($user->user_type, ['Administrator', 'Parent'])) {
             Auth::logout();
             if ($user->user_type == 'Student') {
                 return redirect()->back()->withErrors(['email' => "You can't login yet. No section assigned! Please contact your teacher."]);

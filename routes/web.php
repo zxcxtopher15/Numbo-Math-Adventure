@@ -40,6 +40,7 @@ Route::get('/modules/{id}', [ModuleController::class, 'get_module'])->name('modu
 Route::post('/modules/update/{id}', [ModuleController::class, 'update'])->name('modules.update');
 Route::delete('/modules/{id}', [ModuleController::class, 'destroy'])->name('modules.destroy');
 Route::get('/get_all_modules', [ModuleController::class, 'get_modules']);
+Route::get('/get_all_submissions', [ModuleController::class, 'get_submissions']);
 Route::delete('/modules/single/{id}/{index}', [ModuleController::class, 'destroy_single'])->name('modules.delete');
 Route::post('/math-practice/update_has_answer', [MathJamController::class, 'update_has_answer']);
 Route::post('/math-practice/update_answers', [MathJamController::class, 'update_answers']);
@@ -122,7 +123,7 @@ Route::get('/admin-student-results', [MathJamController::class, 'getStudentResul
 Route::get('/top-student-results', [MathJamController::class, 'getTopStudents']);
 
 
-Route::get('/view_announcements', function () {
+Route::get('/view_modules', function () {
     if (Auth::check() && Auth::user()->user_type === 'Administrator') {
         return redirect()->route('dashboard');
     }
@@ -239,6 +240,7 @@ Route::group(['middleware' => 'student'], function () {
     Route::post('/math-practice/update_is_correct', [MathJamController::class, 'update_is_correct']);
     Route::post('/math-practice/exit_jam', [MathJamController::class, 'exit_jam']);
     Route::get('/math-practice/get-score', [MathJamController::class, 'getScore']);
+    Route::post('/submit-answer', [ModuleController::class, 'submit_answer'])->name('submit.answer');
 });
 
 Route::group(['middleware' => 'parent'], function () {

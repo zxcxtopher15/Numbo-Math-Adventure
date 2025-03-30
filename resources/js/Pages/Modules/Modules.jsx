@@ -29,33 +29,65 @@ import { Textarea } from '@headlessui/react';
 import { set } from 'date-fns';
 import Avatar from '@/Components/Avatar';
 
-export default function Modules({}) {
+export default function Modules({ }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isSubmissionRequired, setIsSubmissionRequired] = useState(false);
+    const [isEditSubmissionRequired, setIsEditSubmissionRequired] = useState(false);
+    const [isEnableComment, setIsEnableComment] = useState(false);
+    const [isEditEnableComment, setIsEditEnableComment] = useState(false);
     const [isFileTypeSelected, setIsFileTypeSelected] = useState(false);
     const [isViewListSubmissionModalOpen, setIsViewListSubmissionModalOpen] = useState(false);
     const [isViewSubmissionModalOpen, setIsViewSubmissionModalOpen] = useState(false);
     const [submissionIndex, setSubmissionIndex] = useState(0);
     const [isAnswerModalOpen, setIsAnswerModalOpen] = useState(null);
     const [selectedModuleData, setSelectedModuleData] = useState(null);
+    const [answerSubmitType, setAnswerSubmitType] = useState(null);
+    const [answerCommentEnabled, setAnswerCommentEnabled] = useState(null);
+    const [selectedModuleId, setSelectedModuleId] = useState(null);
+    const [selectedSubmissions, setSelectedSubmissions] = useState([]);
 
     const { data, setData, reset } = useForm({
         module_name: '',
         module_desc: '',
         file: [],
+        due_date: '',
+        points: '',
+        attempts: '',
+        submit_type: ''
     });
 
     const [editModuleData, setEditModuleData] = useState({
         module_name: '',
         module_desc: '',
         module_file_desc: '',
+        due_date: '',
+        points: '',
+        num_of_attempts: '',
+        submit_type: '',
+        file_type: '',
+        is_comment_enabled: false,
     });
 
     const [modulesData, setModuleData] = useState([]);
+    const [submissions, setSubmissionsData] = useState([]);
     const { auth } = usePage().props;
     const userType = auth?.user?.user_type;
     const section_id = auth?.user?.section_id;
+
+    const formatDueDate = (dateString) => {
+        if (!dateString) return 'No due date';
+
+        const date = new Date(dateString);
+        return date.toLocaleString('en-US', {
+            month: 'long',
+            day: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+    };
 
     useEffect(() => {
         axios
@@ -80,6 +112,16 @@ export default function Modules({}) {
                         module_desc: module.module_desc,
                         module_file_desc: module.module_file_desc,
                         file: files.length > 0 ? files : [],
+                        is_submission_required: module.is_submission_required,
+                        points: module.points,
+                        score: module.score ? module.score : 0,
+                        attempts: module.num_of_attempts,
+                        submit_type: module.submit_type,
+                        file_type: module.submit_type === 'text' ? '' : module.file_type,
+                        enable_comments: module.is_comment_enabled,
+                        due_date: module.due_date,
+                        total_students: module.total_students ? module.total_students : 0,
+                        students_submitted: module.students_submitted ? module.students_submitted : 0,
                     };
                 });
 
@@ -97,7 +139,7 @@ export default function Modules({}) {
     };
     const toggleEditModal = () => {
         setIsEditModalOpen(!isEditModalOpen);
-        setIsSubmissionRequired(false);
+        setIsEditSubmissionRequired(false);
         setIsFileTypeSelected(false);
     };
     const handleChange = (e) => setData(e.target.name, e.target.value);
@@ -120,6 +162,13 @@ export default function Modules({}) {
         formData.append('module_name', data.module_name);
         formData.append('module_desc', data.module_desc);
         formData.append('module_file_desc', data.module_file_desc);
+        formData.append('is_submission_required', isSubmissionRequired);
+        formData.append('due_date', data.due_date);
+        formData.append('points', data.points);
+        formData.append('num_of_attempts', data.attempts);
+        formData.append('submit_type', data.submit_type);
+        formData.append('file_type', data.file_type);
+        formData.append('is_comment_enabled', isEnableComment);
 
         files.forEach((file) => {
             formData.append('module_file[]', file);
@@ -179,9 +228,16 @@ export default function Modules({}) {
 
                 const files = [];
 
-                setEditModuleData(moduleData);
+                setEditModuleData({
+                    ...moduleData,
+                    is_comment_enabled: Boolean(moduleData.is_comment_enabled),
+                });
                 setEditFiles(files);
                 toggleEditModal();
+                setIsEditSubmissionRequired(moduleData.is_submission_required);
+                if (moduleData.submit_type !== 'text') {
+                    setIsFileTypeSelected(true);
+                }
             })
             .catch((error) => {
                 console.error('There was an error fetching the module data:', error);
@@ -197,6 +253,14 @@ export default function Modules({}) {
         formData.append('module_name', editModuleData.module_name);
         formData.append('module_desc', editModuleData.module_desc);
         formData.append('module_file_desc', editModuleData.module_file_desc);
+        formData.append('is_submission_required', isEditSubmissionRequired);
+        formData.append('due_date', editModuleData.due_date);
+        formData.append('points', editModuleData.points);
+        formData.append('num_of_attempts', editModuleData.num_of_attempts);
+        formData.append('submit_type', editModuleData.submit_type);
+        formData.append('file_type', editModuleData.file_type);
+        formData.append('is_comment_enabled', isEditEnableComment);
+
 
         editFiles.forEach((file) => {
             formData.append('module_file[]', file);
@@ -340,38 +404,57 @@ export default function Modules({}) {
         }
     };
 
-    // DUMMY DATA SUBMISSION
-    // List of all students
-    const submissions = [
-        {
-            module_answer_id: 1,
-            name: 'John Doe',
-            text_answer: null, // if null ang selected na  Submit Type ay file input
-            uploadFile: 'SampleFile.pdf',
-            comments: 'No comment',
-            score: 100,
-            date_submitted: 'April 1, 2025 at 9:00 AM',
-        },
-        {
-            name: 'Jane Smith',
-            module_answer_id: 2,
+    useEffect(() => {
+        axios
+            .get('/get_all_submissions')
+            .then((response) => {
+                console.log(response.data);
+                setSubmissionsData(response.data);
+            })
+            .catch((error) => {
+                console.error('There was an error fetching the submissions:', error);
+            });
+    }, []);
 
-            text_answer: 'Test answer',
-            uploadFile: null, // if null ang selected na  Submit Type ay text input
-            comments: "The sample question is incorrect, which is why I didn't answer the question.",
-            score: null, // If null di pa gradan yung student // Not checked yet
-            date_submitted: 'April 1, 2025 at 9:30 AM',
-        },
-        {
-            module_answer_id: 3,
-            name: 'Bob Johnson',
-            text_answer: null, // if null ang selected na  Submit Type ay file input
-            uploadFile: 'YetAnotherFile.xlsx',
-            comments: 'No comment',
-            score: null, // If null di pa gradan yung student  // Not checked yet
-            date_submitted: null, // If null  di pa nagsusubmit yung student
-        },
-    ];
+    // // DUMMY DATA SUBMISSION
+    // // List of all students
+    // const submissions = [
+    //     {
+    //         module_answer_id: 1,
+    //         name: 'John Doe',
+    //         text_answer: null, // if null ang selected na  Submit Type ay file input
+    //         uploadFile: 'SampleFile.pdf',
+    //         comments: 'No comment',
+    //         score: 100,
+    //         date_submitted: 'April 1, 2025 at 9:00 AM',
+    //     },
+    //     {
+    //         name: 'Jane Smith',
+    //         module_answer_id: 2,
+
+    //         text_answer: 'Test answer',
+    //         uploadFile: null, // if null ang selected na  Submit Type ay text input
+    //         comments: "The sample question is incorrect, which is why I didn't answer the question.",
+    //         score: null, // If null di pa gradan yung student // Not checked yet
+    //         date_submitted: 'April 1, 2025 at 9:30 AM',
+    //     },
+    //     {
+    //         module_answer_id: 3,
+    //         name: 'Bob Johnson',
+    //         text_answer: null, // if null ang selected na  Submit Type ay file input
+    //         uploadFile: 'YetAnotherFile.xlsx',
+    //         comments: 'No comment',
+    //         score: null, // If null di pa gradan yung student  // Not checked yet
+    //         date_submitted: null, // If null  di pa nagsusubmit yung student
+    //     },
+    // ];
+
+    const handleViewSubmissions = (moduleId) => {
+        if (!submissions) return;
+        const filteredSubmissions = submissions.filter(submission => submission.module_id === moduleId);
+        setSelectedSubmissions(filteredSubmissions);
+        setIsViewListSubmissionModalOpen(true);
+    };
 
     const handleViewSubmission = (submission, index) => {
         setIsViewSubmissionModalOpen(true);
@@ -381,18 +464,74 @@ export default function Modules({}) {
     const handleOpenAnswerModal = (module) => {
         setIsAnswerModalOpen(true);
         setSelectedModuleData(module);
+        setSelectedModuleId(module.module_id);
+
+        if (module.submit_type == 'text') {
+            setAnswerSubmitType(true);
+        } else {
+            setAnswerSubmitType(false);
+        }
+
+        if (module.is_comment_enabled) {
+            setAnswerCommentEnabled(true);
+        } else {
+            setAnswerCommentEnabled(false);
+        }
     };
-    const handleSubmitAnswer = (e) => {
+
+    const handleSubmitAnswer = async (e) => {
         e.preventDefault();
+
+        setIsAnswerModalOpen(false);
+
+        if (!answerSubmitType && files.length === 0) {
+            Swal.fire("Error!", "Please upload a file before submitting.", "error").then(() => {
+                setIsAnswerModalOpen(true);
+            });
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("module_id", selectedModuleId);
+        formData.append("text_answer", answerSubmitType ? e.target.text_answer.value : "");
+        formData.append("comments", answerCommentEnabled ? document.querySelector('[name="comments"]').value || "" : '');
+        formData.append("score", 0);
+        formData.append("total_attempts", 1);
+
+        if (!answerSubmitType && files.length > 0) {
+            formData.append("module_file", files[0]);
+        }
+
         Swal.fire({
-            title: 'Submit Answer?',
-            text: 'Are you sure you want to submit?',
-            icon: 'warning',
+            title: "Submit Answer?",
+            text: "Are you sure you want to submit?",
+            icon: "warning",
             showCancelButton: true,
-            confirmButtonText: 'Submit',
+            confirmButtonText: "Submit",
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire('Success!', 'The answer has been submitted.', 'success');
+                fetch("/submit-answer", {
+                    method: "POST",
+                    body: formData,
+                })
+                    .then(async (response) => {
+                        const data = await response.json();
+
+                        if (!response.ok) {
+                            throw new Error(data.message || "An error occurred.");
+                        }
+
+                        return data;
+                    })
+                    .then((data) => {
+                        Swal.fire("Success!", data.message, "success").then(() => {
+                            location.reload();
+                        });
+                        setIsAnswerModalOpen(false);
+                    })
+                    .catch((error) => {
+                        Swal.fire("Error!", error.message, "error");
+                    });
             }
         });
     };
@@ -439,30 +578,45 @@ export default function Modules({}) {
                                                         {module.module_name}
                                                     </h1>
 
-                                                    <p
-                                                        className={`bg-white border text-gray-700 p-1 px-2 rounded-lg font-medium text-xs ${
-                                                            new Date(module.due_date) - new Date() < 1000 * 60 * 60 * 24
-                                                                ? 'bg-red-200 text-red-700'
-                                                                : new Date(module.due_date) < new Date()
-                                                                  ? 'bg-green-200 text-green-800'
-                                                                  : 'bg-gray-300 text-gray-500'
-                                                        }`}
-                                                    >
-                                                        Due: Apr 1, 2025 at 8:00 AM
-                                                        {/* replace with real data */}
-                                                    </p>
+                                                    {module.is_submission_required === 1 ? (
+                                                        <>
+                                                            <p
+                                                                className={`bg-white border text-gray-700 p-1 px-2 rounded-lg font-medium text-xs ${new Date(module.due_date) - new Date() < 1000 * 60 * 60 * 24
+                                                                    ? 'bg-red-200 text-red-700'
+                                                                    : new Date(module.due_date) < new Date()
+                                                                        ? 'bg-green-200 text-green-800'
+                                                                        : 'bg-gray-300 text-gray-500'
+                                                                    }`}
+                                                            >
+
+                                                                Due: {formatDueDate(module.due_date)}
+                                                            </p>
+                                                        </>
+                                                    ) : (
+                                                        <></>
+                                                    )}
                                                 </div>
-                                                {userType === 'Teacher' && (
-                                                    <div className="text-center pe-0 md:pe-4">
-                                                        <p className="text-gray-600">Submitted</p>
-                                                        <h3 className="font-semibold text-xl text-warning">10/100</h3>
-                                                    </div>
-                                                )}
-                                                {userType === 'Student' && (
-                                                    <div className="text-center pe-4">
-                                                        <p className="text-gray-600">Score</p>
-                                                        <h3 className="font-semibold text-xl text-warning">99/100</h3>
-                                                    </div>
+                                                {module.is_submission_required === 1 ? (
+                                                    <>
+                                                        {userType === 'Teacher' && (
+                                                            <div className="text-center pe-0 md:pe-4">
+                                                                <p className="text-gray-600">Submitted</p>
+                                                                <h3 className="font-semibold text-xl text-warning">
+                                                                    {module.students_submitted ? module.students_submitted : 0} / {module.total_students}
+                                                                </h3>
+                                                            </div>
+                                                        )}
+                                                        {userType === 'Student' && (
+                                                            <div className="text-center pe-4">
+                                                                <p className="text-gray-600">Score</p>
+                                                                <h3 className="font-semibold text-xl text-warning">
+                                                                    {module.score ? module.score : 0} / {module.points}
+                                                                </h3>
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <></>
                                                 )}
                                             </div>
                                         </AccordionTrigger>
@@ -470,15 +624,37 @@ export default function Modules({}) {
                                             <div className="bg-white border  rounded-3xl p-5 text-black">
                                                 {userType === 'Teacher' && (
                                                     <>
-                                                        <div className="flex justify-between flex-wrap gap-2 mb-2 w-full text-white font-semibold">
-                                                            <button
-                                                                onClick={() => setIsViewListSubmissionModalOpen(true)}
-                                                                className="cursor-pointer bg-success p-1 px-4 rounded-lg flex items-center"
-                                                            >
-                                                                <FaEye className="text-sm mr-1" />
-                                                                View Submissions
-                                                            </button>
-                                                            <div className="flex gap-2 ">
+                                                        {module.is_submission_required === 1 ? (
+                                                            <>
+                                                                <div className="flex justify-between flex-wrap gap-2 mb-2 w-full text-white font-semibold">
+                                                                    <button
+                                                                        onClick={() => handleViewSubmissions(module.module_id)}
+                                                                        className="cursor-pointer bg-success p-1 px-4 rounded-lg flex items-center"
+                                                                    >
+                                                                        <FaEye className="text-sm mr-1" />
+                                                                        View Submissions
+                                                                    </button>
+                                                                    <div className="flex gap-2">
+                                                                        <button
+                                                                            onClick={() => handleEdit(module.module_id)}
+                                                                            className="cursor-pointer bg-primary p-1 px-4 rounded-lg flex items-center"
+                                                                        >
+                                                                            <FaEdit className="text-sm mr-1" />
+                                                                            Edit
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={() => handleDeleteModule(module.module_id)}
+                                                                            className="cursor-pointer bg-danger p-1 px-4 rounded-lg flex items-center"
+                                                                        >
+                                                                            <FaTrashAlt className="text-sm mr-1" />
+                                                                            Delete
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <hr className="my-4" />
+                                                            </>
+                                                        ) : (
+                                                            <div className="flex justify-end flex-wrap gap-2 mb-2 w-full text-white font-semibold">
                                                                 <button
                                                                     onClick={() => handleEdit(module.module_id)}
                                                                     className="cursor-pointer bg-primary p-1 px-4 rounded-lg flex items-center"
@@ -494,63 +670,75 @@ export default function Modules({}) {
                                                                     Delete
                                                                 </button>
                                                             </div>
-                                                        </div>
-                                                        <hr className="my-4" />
+                                                        )}
                                                     </>
                                                 )}
                                                 {userType === 'Student' && (
                                                     <>
-                                                        <div className="flex justify-between gap-2 mb-2 w-full text-white font-semibold">
-                                                            <button
-                                                                onClick={() => handleOpenAnswerModal(module)}
-                                                                className="cursor-pointer bg-success p-1 px-4 rounded-lg flex items-center"
-                                                            >
-                                                                <FaEye className="text-sm mr-1" />
-                                                                View Answer
-                                                            </button>
-                                                        </div>
-                                                        <hr className="my-4" />
+                                                        {module.is_submission_required === 1 ? (
+                                                            <>
+                                                                <div className="flex justify-between gap-2 mb-2 w-full text-white font-semibold">
+                                                                    <button
+                                                                        onClick={() => handleOpenAnswerModal(module)}
+                                                                        className="cursor-pointer bg-success p-1 px-4 rounded-lg flex items-center"
+                                                                    >
+                                                                        <FaEye className="text-sm mr-1" />
+                                                                        View Answer
+                                                                    </button>
+                                                                </div>
+                                                                <hr className="my-4" />
+                                                            </>
+                                                        ) : (
+                                                            <></>
+                                                        )}
+
                                                     </>
                                                 )}
 
-                                                <p className="text-gray-500 text-sm my-2 mb-4">Details:</p>
-                                                <div className=" grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                                    <div className="flex gap-3 items-center">
-                                                        <FaFileAlt className="text-xl text-gray-600" />
-                                                        <div>
-                                                            <h3 className="font-semibold">Points: </h3>
-                                                            <span className=" font-normal"> 100</span>
+                                                {module.is_submission_required === 1 && (
+                                                    <>
+                                                        <p className="text-gray-500 text-sm my-2 mb-4">Details:</p>
+                                                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                                            <div className="flex gap-3 items-center">
+                                                                <FaFileAlt className="text-xl text-gray-600" />
+                                                                <div>
+                                                                    <h3 className="font-semibold">Points: </h3>
+                                                                    <span className="font-normal">{module.points}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex gap-3 items-center">
+                                                                <FaUpload className="text-xl text-gray-600" />
+                                                                <div>
+                                                                    <h3 className="font-semibold">Submitting: </h3>
+                                                                    <span className="font-normal">
+                                                                        {module.submit_type === "text" ? "User Input" : "File Upload"}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex gap-3 items-center">
+                                                                <FaFile className="text-xl text-gray-600" />
+                                                                <div>
+                                                                    <h3 className="font-semibold">File Type: </h3>
+                                                                    <span className="font-normal">{module.file_type}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex gap-3 items-center">
+                                                                <FaRedo className="text-xl text-gray-600" />
+                                                                <div>
+                                                                    <h3 className="font-semibold">Attempts: </h3>
+                                                                    <span className="font-normal">{module.attempts}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex gap-3 items-center">
+                                                                <FaCalendarAlt className="text-xl text-gray-600" />
+                                                                <div>
+                                                                    <h3 className="font-semibold">Available Until: </h3>
+                                                                    <span className="font-normal">{formatDueDate(module.due_date)}</span>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="flex gap-3 items-center">
-                                                        <FaUpload className="text-xl text-gray-600" />
-                                                        <div>
-                                                            <h3 className="font-semibold">Submitting: </h3>
-                                                            <span className=" font-normal"> a File Upload</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex gap-3 items-center">
-                                                        <FaFile className="text-xl text-gray-600" />
-                                                        <div>
-                                                            <h3 className="font-semibold">File Type: </h3>
-                                                            <span className=" font-normal"> pdf</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex gap-3 items-center">
-                                                        <FaRedo className="text-xl text-gray-600" />
-                                                        <div>
-                                                            <h3 className="font-semibold">Attemps: </h3>
-                                                            <span className=" font-normal"> 1</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex gap-3 items-center">
-                                                        <FaCalendarAlt className="text-xl text-gray-600" />
-                                                        <div>
-                                                            <h3 className="font-semibold">Available Until: </h3>
-                                                            <span className=" font-normal"> March 24, 2025</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                    </>
+                                                )}
                                                 <hr className="my-4" />
                                                 <div className="py-2">
                                                     <p className="text-gray-500 text-sm my-4">Desciption:</p>
@@ -629,54 +817,69 @@ export default function Modules({}) {
                         <form onSubmit={handleSubmitAnswer}>
                             {/* {selectedModuleData && selectedModuleData.submit_type === 'text' && ( */}{' '}
                             {/* Add this condition pag may submit type na db */}
-                            <div className="mt-4">
-                                <InputLabel htmlFor="text_answer" value="Answer" />
-                                <Textarea
-                                    label="Text Answer"
-                                    type="text"
-                                    name="text_answer"
-                                    className="border w-full p-2 mb-2 rounded-2xl h-14 min-h-[120px] bg-gray-50 border-gray-300 shadow-sm focus:border-warning focus:ring-warning"
-                                    required
-                                />
-                            </div>
+                            {answerSubmitType && (
+                                <div className="mt-4">
+                                    <InputLabel htmlFor="text_answer" value="Answer" />
+                                    <Textarea
+                                        label="Text Answer"
+                                        type="text"
+                                        name="text_answer"
+                                        className="border w-full p-2 mb-2 rounded-2xl h-14 min-h-[120px] bg-gray-50 border-gray-300 shadow-sm focus:border-warning focus:ring-warning"
+                                        required
+                                    />
+                                </div>
+                            )}
                             {/* )} */}
                             {/* {selectedModuleData && selectedModuleData.submit_type === 'file' && ( */}{' '}
                             {/* Add this condition pag may submit type na db  */}
-                            <div className="mt-4">
-                                <InputLabel htmlFor="module_file" value="Upload File" />
-                                <div
-                                    {...getRootProps()}
-                                    className="border-2 border-dashed p-4 text-center cursor-pointer rounded-lg mb-4"
-                                >
-                                    <input {...getInputProps()} />
-                                    <p>Drag & drop a file here, or click to select one</p>
-                                </div>
+                            {!answerSubmitType && (
+                                <div className="mt-4">
+                                    <InputLabel htmlFor="module_file" value="Upload File" />
+                                    <div
+                                        {...getRootProps()}
+                                        className="border-2 border-dashed p-4 text-center cursor-pointer rounded-lg mb-4"
+                                    >
+                                        <input
+                                            {...getInputProps({
+                                                multiple: false,
+                                                onChange: (event) => {
+                                                    const selectedFile = event.target.files[0];
+                                                    if (selectedFile) {
+                                                        setFiles([selectedFile]);
+                                                    }
+                                                },
+                                            })}
+                                        />
+                                        <p>Drag & drop a file here, or click to select one</p>
+                                    </div>
 
-                                {files.length > 0 && (
-                                    <ul className="mb-9">
-                                        {files.map((file, index) => (
-                                            <li key={index} className="text-sm text-gray-700">
-                                                {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                                    {files.length > 0 && (
+                                        <ul className="mb-9">
+                                            <li className="text-sm text-gray-700">
+                                                {files[0].name} ({(files[0].size / 1024).toFixed(2)} KB)
                                                 <button
-                                                    onClick={() => handleRemoveFile(index)}
+                                                    onClick={() => setFiles([])}
                                                     className="text-red-500 hover:text-red-700 p-1 px-4 rounded-lg"
                                                 >
                                                     X
                                                 </button>
                                             </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>
+                                        </ul>
+                                    )}
+                                </div>
+                            )}
                             {/* )} */}
-                            <div className="mt-4">
-                                <InputLabel htmlFor="comments" value="Comments" />
-                                <Textarea
-                                    label="Comments"
-                                    type="text"
-                                    className="border w-full p-2 mb-2 rounded-2xl h-14 min-h-[120px] bg-gray-50 border-gray-300 shadow-sm focus:border-warning focus:ring-warning"
-                                />
-                            </div>
+                            {!answerSubmitType && (
+                                <div className="mt-4">
+                                    <InputLabel htmlFor="comments" value="Comments" />
+                                    <Textarea
+                                        label="Comments"
+                                        type="text"
+                                        name="comments"
+                                        className="border w-full p-2 mb-2 rounded-2xl h-14 min-h-[120px] bg-gray-50 border-gray-300 shadow-sm focus:border-warning focus:ring-warning"
+                                    />
+                                </div>
+                            )}
                             <div className="mt-4 flex justify-end">
                                 <DangerButton onClick={() => setIsAnswerModalOpen(false)} className="mr-2">
                                     Cancel
@@ -722,53 +925,59 @@ export default function Modules({}) {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {submissions.map((submission, index) => (
-                                        <tr key={index}>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm ">
-                                                <span
-                                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                        !submission.date_submitted && !submission.score
+                                    {selectedSubmissions.length > 0 ? (
+                                        selectedSubmissions.map((submission, index) => (
+                                            <tr key={index}>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                                    <span
+                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${!submission.date_submitted && !submission.score
                                                             ? 'bg-yellow-100 text-yellow-700'
                                                             : 'bg-green-100 text-green-600'
-                                                    }`}
-                                                >
-                                                    {!submission.date_submitted && !submission.score
-                                                        ? 'No Submission'
-                                                        : 'Submitted'}
-                                                </span>
-                                            </td>
-
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {submission.name}
-                                            </td>
-
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {submission.date_submitted ? submission.date_submitted : ' - '}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {submission.date_submitted === null ? (
-                                                    ' - '
-                                                ) : submission.score === null ? (
-                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
-                                                        Not checked yet
+                                                            }`}
+                                                    >
+                                                        {!submission.date_submitted && !submission.score ? 'No Submission' : 'Submitted'}
                                                     </span>
-                                                ) : (
-                                                    `${submission.score}`
-                                                )}
-                                            </td>
+                                                </td>
 
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 cursor-pointer hover:text-blue-800">
-                                                <button
-                                                    className="bg-blue-500 hover:bg-blue-600 p-2 rounded-lg text-white font-semibold transition duration-300"
-                                                    onClick={() => {
-                                                        handleViewSubmission(submission, index);
-                                                    }}
-                                                >
-                                                    View
-                                                </button>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    {submission.name}
+                                                </td>
+
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    {submission.date_submitted || ' - '}
+                                                </td>
+
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    {submission.date_submitted === null ? (
+                                                        ' - '
+                                                    ) : submission.score === null ? (
+                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                                                            Not checked yet
+                                                        </span>
+                                                    ) : (
+                                                        `${submission.score}`
+                                                    )}
+                                                </td>
+
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 cursor-pointer hover:text-blue-800">
+                                                    <button
+                                                        className="bg-blue-500 hover:bg-blue-600 p-2 rounded-lg text-white font-semibold transition duration-300"
+                                                        onClick={() => {
+                                                            handleViewSubmission(submission, index);
+                                                        }}
+                                                    >
+                                                        View
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="5" className="text-center py-4 text-gray-500">
+                                                No submissions found.
                                             </td>
                                         </tr>
-                                    ))}
+                                    )}
                                 </tbody>
                             </table>
                         </div>
@@ -777,7 +986,7 @@ export default function Modules({}) {
             )}
 
             {/* View Student Submission Modal */}
-            {isViewSubmissionModalOpen && (
+            {isViewSubmissionModalOpen && selectedSubmissions.length > 0 && (
                 <Dialog
                     open={isViewSubmissionModalOpen}
                     onOpenChange={setIsViewSubmissionModalOpen}
@@ -798,22 +1007,24 @@ export default function Modules({}) {
                                 </DialogHeader>
                                 <div className="mb-4 flex flex-row justify-between">
                                     <button
-                                        className={`bg-${submissionIndex > 0 ? 'green-500' : 'gray-400'} hover:bg-gray-600 py-2 px-5 rounded-lg text-white font-semibold transition duration-300`}
+                                        className={`bg-${submissionIndex > 0 ? 'green-500' : 'gray-400'} hover:bg-${submissionIndex > 0 ? 'green-600' : 'gray-600'} py-2 px-5 rounded-lg text-white font-semibold transition duration-300`}
                                         onClick={() => {
                                             if (submissionIndex > 0) {
                                                 setSubmissionIndex(submissionIndex - 1);
                                             }
                                         }}
+                                        disabled={submissionIndex === 0}
                                     >
                                         Previous
                                     </button>
                                     <button
-                                        className={`bg-${submissionIndex < submissions.length - 1 ? 'blue-500' : 'gray-400'} hover:bg-gray-600 py-2 px-5  rounded-lg text-white font-semibold transition duration-300`}
+                                        className={`bg-${submissionIndex < selectedSubmissions.length - 1 ? 'blue-500' : 'gray-400'} hover:bg-${submissionIndex < selectedSubmissions.length - 1 ? 'blue-600' : 'gray-600'} py-2 px-5 rounded-lg text-white font-semibold transition duration-300`}
                                         onClick={() => {
-                                            if (submissionIndex < submissions.length - 1) {
+                                            if (submissionIndex < selectedSubmissions.length - 1) {
                                                 setSubmissionIndex(submissionIndex + 1);
                                             }
                                         }}
+                                        disabled={submissionIndex >= selectedSubmissions.length - 1}
                                     >
                                         Next
                                     </button>
@@ -823,36 +1034,29 @@ export default function Modules({}) {
                                     <div className="grid grid-cols- md:grid-cols-2 gap-5 items-center">
                                         <div className="flex items-center gap-5">
                                             <Avatar
-                                                name={submissions[submissionIndex].name}
-                                                image={submissions[submissionIndex].image}
+                                                name={selectedSubmissions[submissionIndex].name}
+                                                image={selectedSubmissions[submissionIndex].image}
                                             />
                                             <p className="font-semibold text-xl text-gray-600">
-                                                {submissions[submissionIndex].name}
+                                                {selectedSubmissions[submissionIndex].name}
                                             </p>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5 my-5">
                                         <div className="bg-gray-200 rounded-2xl col-span-1 md:col-span-2 p-5">
-                                            {submissions[submissionIndex].text_answer && (
-                                                <div className="">
+                                            {selectedSubmissions[submissionIndex].text_answer && (
+                                                <div>
                                                     <p className="font-medium text-gray-600">Answer:</p>
                                                     <p className="mt-2 mb-5 text-gray-600">
-                                                        {submissions[submissionIndex].text_answer}
+                                                        {selectedSubmissions[submissionIndex].text_answer}
                                                     </p>
                                                 </div>
                                             )}
-                                            {submissions[submissionIndex].uploadFile && (
-                                                <div className="">
-                                                    <p className="font-medium text-gray-600 mb-4">Submitted Files:</p>
+                                            {selectedSubmissions[submissionIndex].uploadFile && (
+                                                <div>
+                                                    <p className="font-medium text-gray-600 mb-4">Submitted File:</p>
                                                     <div className="flex items-center justify-between gap-2 w-full ">
-                                                        <p>{submissions[submissionIndex].uploadFile}</p>
-                                                        <button className="cursor-pointer bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-lg text-white font-semibold transition duration-300 flex gap-2 items-center">
-                                                            <FaCloudDownloadAlt /> Download
-                                                        </button>
-                                                    </div>
-                                                    <hr className="my-5 bg-gray-500" />
-                                                    <div className="flex items-center justify-between gap-2 w-full ">
-                                                        <p>{submissions[submissionIndex].uploadFile}</p>
+                                                        <p>{selectedSubmissions[submissionIndex].uploadFile}</p>
                                                         <button className="cursor-pointer bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-lg text-white font-semibold transition duration-300 flex gap-2 items-center">
                                                             <FaCloudDownloadAlt /> Download
                                                         </button>
@@ -863,25 +1067,24 @@ export default function Modules({}) {
                                         <div className="bg-gray-200 rounded-2xl p-5 col-span-1">
                                             <p className="font-medium text-gray-600">Comments:</p>
                                             <p className="mt-2 text-gray-600">
-                                                {submissions[submissionIndex].comments}
+                                                {selectedSubmissions[submissionIndex].comments}
                                             </p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className=" sticky bottom-0 bg-white h-max ">
+                        <div className="sticky bottom-0 bg-white h-max">
                             <div className="h-full flex justify-end space-x-4 p-6">
-                                <div className="flex items-center  gap-4 text-center ">
+                                <div className="flex items-center gap-4 text-center">
                                     <p className="font-medium">Score:</p>
                                     <TextInput
                                         type="number"
                                         name="score"
-                                        value={submissions[submissionIndex].score}
+                                        value={selectedSubmissions[submissionIndex].score}
                                         className="border border-blue-600 border-2 w-full p-2 text-center"
                                     />
                                 </div>
-
                                 <PrimaryButton type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
                                     Save Score
                                 </PrimaryButton>
@@ -890,6 +1093,7 @@ export default function Modules({}) {
                     </DialogContent>
                 </Dialog>
             )}
+
             {/* Add Modal */}
             <Dialog open={isModalOpen} onOpenChange={toggleModal} className="fixed inset-0 overflow-y-auto">
                 <DialogContent className="overflow-y-auto max-h-[80vh] max-w-lg p-0">
@@ -1008,6 +1212,7 @@ export default function Modules({}) {
                                             className="border w-full p-2 mb-2"
                                             required
                                         >
+                                            <option value="">Select Submit Type</option>
                                             <option value="text">Text Input</option>
                                             <option value="file">File Upload</option>
                                         </SelectInput>
@@ -1016,10 +1221,11 @@ export default function Modules({}) {
                                                 <InputLabel htmlFor="file_type" value="File Type" />
                                                 <SelectInput
                                                     name="file_type"
-                                                    value={data.file_types}
+                                                    value={data.file_type}
                                                     onChange={handleChange}
                                                     className="border w-full p-2 mb-2"
                                                 >
+                                                    <option value="">Select File Type</option>
                                                     <option value="png/jpeg/jpg">Image</option>
                                                     <option value="video">Video</option>
                                                     <option value="pdf">PDF</option>
@@ -1036,7 +1242,10 @@ export default function Modules({}) {
                                             <Checkbox
                                                 id="enable_comments"
                                                 checked={data.enable_comments}
-                                                onChange={handleChange}
+                                                onChange={(e) => {
+                                                    handleChange(e);
+                                                    setIsEnableComment(e.target.checked);
+                                                }}
                                             />
                                             <label htmlFor="enable_comments" className="ml-2 text-gray-700">
                                                 Enable comments for this module?
@@ -1129,10 +1338,10 @@ export default function Modules({}) {
                                 <div className="">
                                     <Checkbox
                                         id="is_submission_required"
-                                        checked={editModuleData ? editModuleData.is_submission_required : false}
+                                        checked={isEditSubmissionRequired ? isEditSubmissionRequired : false}
                                         onChange={(e) => {
                                             handleEditChange(e);
-                                            setIsSubmissionRequired(e.target.checked);
+                                            setIsEditSubmissionRequired(e.target.checked);
                                         }}
                                     />
                                     <label htmlFor="is_submission_required" className="ml-2 text-gray-700">
@@ -1140,7 +1349,7 @@ export default function Modules({}) {
                                     </label>
                                 </div>
 
-                                {isSubmissionRequired && (
+                                {isEditSubmissionRequired && (
                                     <div className="mt-7">
                                         <InputLabel htmlFor="due_date" value="Due Date" />
                                         <TextInput
@@ -1162,11 +1371,11 @@ export default function Modules({}) {
                                             required
                                         />
 
-                                        <InputLabel htmlFor="attempts" value="Number of Attempts" />
+                                        <InputLabel htmlFor="num_of_attempts" value="Number of Attempts" />
                                         <TextInput
                                             type="number"
-                                            name="attempts"
-                                            value={editModuleData ? editModuleData.attempts : ''}
+                                            name="num_of_attempts"
+                                            value={editModuleData ? editModuleData.num_of_attempts : ''}
                                             onChange={handleEditChange}
                                             className="border w-full p-2 mb-2"
                                             required
@@ -1183,6 +1392,7 @@ export default function Modules({}) {
                                             className="border w-full p-2 mb-2"
                                             required
                                         >
+                                            <option value="">Select Submit Type</option>
                                             <option value="text">Text Input</option>
                                             <option value="file">File Upload</option>
                                         </SelectInput>
@@ -1191,10 +1401,11 @@ export default function Modules({}) {
                                                 <InputLabel htmlFor="file_type" value="File Type" />
                                                 <SelectInput
                                                     name="file_type"
-                                                    value={editModuleData ? editModuleData.file_types : []}
+                                                    value={editModuleData ? editModuleData.file_type : []}
                                                     onChange={handleEditChange}
                                                     className="border w-full p-2 mb-2"
                                                 >
+                                                    <option value="">Select File Type</option>
                                                     <option value="png/jpeg/jpg">Image</option>
                                                     <option value="video">Video</option>
                                                     <option value="pdf">PDF</option>
@@ -1210,8 +1421,15 @@ export default function Modules({}) {
                                         <div className="my-6 mx-2">
                                             <Checkbox
                                                 id="enable_comments"
-                                                checked={editModuleData ? editModuleData.enable_comments : false}
-                                                onChange={handleEditChange}
+                                                checked={!!editModuleData.is_comment_enabled}
+                                                onChange={(e) => {
+                                                    const newValue = e.target.checked;
+                                                    setEditModuleData((prevData) => ({
+                                                        ...prevData,
+                                                        is_comment_enabled: newValue,
+                                                    }));
+                                                    setIsEditEnableComment(newValue);
+                                                }}
                                             />
                                             <label htmlFor="enable_comments" className="ml-2 text-gray-700">
                                                 Enable comments for this module?

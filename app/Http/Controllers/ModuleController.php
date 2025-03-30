@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Models\Answer;
 use App\Models\Modules;
 use App\Models\Section;
 use App\Models\AuditTrail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ParentStudentRelationship;
@@ -19,8 +22,41 @@ class ModuleController extends Controller
             'module_name' => 'required|string|max:255',
             'module_desc' => 'required|string|max:255',
             'module_file_desc' => 'required|string|max:255',
-            'module_file' => 'nullable|array', // Make module_file optional
+            'module_file' => 'nullable|array',
             'module_file.*' => 'mimes:jpeg,png,jpg,pdf,doc,docx,xls,xlsx,txt',
+            'is_submission_required' => 'nullable|in:0,1,true,false',
+            'points' => [
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->boolean('is_submission_required') && (is_null($value) || $value < 1)) {
+                        $fail('The points field is required and must be at least 1 when submission is required.');
+                    }
+                },
+            ],
+            'num_of_attempts' => [
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->boolean('is_submission_required') && (is_null($value) || $value < 1)) {
+                        $fail('The number of attempts field is required and must be at least 1 when submission is required.');
+                    }
+                },
+            ],
+            'submit_type' => [
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->boolean('is_submission_required') && empty($value)) {
+                        $fail('The submit type field is required when submission is required.');
+                    }
+                },
+            ],
+            'file_type' => 'nullable|string|max:255',
+            'is_comment_enabled' => 'nullable|in:0,1,true,false',
+            'due_date' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) {
+                    if (Carbon::parse($value)->startOfDay()->lt(Carbon::now()->startOfDay())) {
+                        $fail('The due date must be today or a future date.');
+                    }
+                }
+            ],
         ]);
 
         $filePaths = [];
@@ -40,6 +76,19 @@ class ModuleController extends Controller
             }
         }
 
+        $formattedDueDate = Carbon::parse($request->due_date)->format('Y-m-d H:i:s');
+
+        if (!$request->boolean('is_submission_required')) {
+            $request->merge([
+                'is_comment_enabled' => 0,
+                'points' => null,
+                'num_of_attempts' => null,
+                'submit_type' => '',
+                'file_type' => '',
+                'due_date' => ''
+            ]);
+        }
+
         Modules::create([
             'section_id' => $request->section_id,
             'module_name' => $request->module_name,
@@ -47,6 +96,13 @@ class ModuleController extends Controller
             'module_file_desc' => $request->module_file_desc,
             'file_name' => implode(',', $fileNames),
             'file_path' => implode(',', $filePaths),
+            'is_submission_required' => $request->boolean('is_submission_required'),
+            'is_comment_enabled' => $request->boolean('is_comment_enabled'),
+            'points' => $request->boolean('is_submission_required') ? $request->points : null,
+            'num_of_attempts' => $request->boolean('is_submission_required') ? $request->num_of_attempts : null,
+            'submit_type' => $request->boolean('is_submission_required') ? $request->submit_type : '',
+            'file_type' => $request->file_type,
+            'due_date' => $formattedDueDate,
         ]);
 
         $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
@@ -86,6 +142,39 @@ class ModuleController extends Controller
             'module_file_desc' => 'required|string|max:255',
             'module_file' => 'nullable|array',
             'module_file.*' => 'mimes:jpeg,png,jpg,pdf,doc,docx,xls,xlsx,txt',
+            'is_submission_required' => 'nullable|in:0,1,true,false',
+            'points' => [
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->boolean('is_submission_required') && (is_null($value) || $value < 1)) {
+                        $fail('The points field is required and must be at least 1 when submission is required.');
+                    }
+                },
+            ],
+            'num_of_attempts' => [
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->boolean('is_submission_required') && (is_null($value) || $value < 1)) {
+                        $fail('The number of attempts field is required and must be at least 1 when submission is required.');
+                    }
+                },
+            ],
+            'submit_type' => [
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->boolean('is_submission_required') && empty($value)) {
+                        $fail('The submit type field is required when submission is required.');
+                    }
+                },
+            ],
+            'file_type' => 'nullable|string|max:255',
+            'is_comment_enabled' => 'nullable|in:0,1,true,false',
+            'due_date' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) {
+                    if (Carbon::parse($value)->startOfDay()->lt(Carbon::now()->startOfDay())) {
+                        $fail('The due date must be today or a future date.');
+                    }
+                }
+            ],
         ]);
 
         $module = Modules::findOrFail($id);
@@ -111,6 +200,19 @@ class ModuleController extends Controller
             }
         }
 
+        $formattedDueDate = Carbon::parse($request->due_date)->format('Y-m-d H:i:s');
+
+        if (!$request->boolean('is_submission_required')) {
+            $request->merge([
+                'is_comment_enabled' => 0,
+                'points' => 0,
+                'num_of_attempts' => 0,
+                'submit_type' => '',
+                'file_type' => '',
+                'due_date' => ''
+            ]);
+        }
+
         $module->update([
             'section_id' => $request->section_id,
             'module_name' => $request->module_name,
@@ -118,6 +220,13 @@ class ModuleController extends Controller
             'module_file_desc' => $request->module_file_desc,
             'file_name' => implode(',', $fileNames),
             'file_path' => implode(',', $filePaths),
+            'is_submission_required' => $request->boolean('is_submission_required'),
+            'is_comment_enabled' => $request->boolean('is_comment_enabled'),
+            'points' => $request->points,
+            'num_of_attempts' => $request->num_of_attempts,
+            'submit_type' => $request->submit_type,
+            'file_type' => $request->file_type,
+            'due_date' => $formattedDueDate,
         ]);
 
         $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
@@ -165,13 +274,38 @@ class ModuleController extends Controller
 
             $section_ids = User::whereIn('id', $student_ids)->pluck('section_id');
 
-            $modules = Modules::whereIn('section_id', $section_ids)->get();
+            $modules = Modules::whereIn('section_id', $section_ids)
+                ->distinct()
+                ->get();
+
+            return response()->json($modules);
+        } else if ($user_type == 'Student') {
+            $sectionId = Auth::user()->section_id;
+            $studentId = Auth::user()->id;
+
+            $modules = Modules::leftJoin('module_submissions', function ($join) use ($studentId) {
+                $join->on('modules.id', '=', 'module_submissions.module_id')
+                    ->where('module_submissions.student_id', '=', $studentId);
+            })
+                ->where('modules.section_id', $sectionId)
+                ->select('modules.*', 'module_submissions.score')
+                ->get();
 
             return response()->json($modules);
         } else {
             $sectionId = Auth::user()->section_id;
 
-            $modules = Modules::where('section_id', $sectionId)->get();
+            $totalStudents = User::where('user_type', 'Student')
+                ->where('section_id', $sectionId)
+                ->count();
+
+            $modules = Modules::where('modules.section_id', $sectionId)
+                ->leftJoin('module_submissions', 'modules.id', '=', 'module_submissions.module_id')
+                ->select('modules.*')
+                ->selectRaw('? as total_students', [$totalStudents])
+                ->selectRaw('(SELECT COUNT(DISTINCT student_id) FROM module_submissions WHERE module_submissions.module_id = modules.id) as students_submitted')
+                ->groupBy('modules.id')
+                ->get();
 
             return response()->json($modules);
         }
@@ -212,5 +346,120 @@ class ModuleController extends Controller
         return response()->json([
             'message' => 'Announcement file deleted successfully!'
         ]);
+    }
+
+    public function submit_answer(Request $request)
+    {
+        $request->validate([
+            'module_id' => 'required|integer',
+            'text_answer' => 'nullable|string',
+            'module_file' => 'nullable|file',
+            'comments' => 'nullable|string',
+            'score' => 'nullable|integer',
+            'total_attempts' => 'nullable|integer',
+        ]);
+
+        $studentId = Auth::user()->id;
+        $moduleId = $request->input('module_id');
+
+        $module = Modules::where('id', $moduleId)->first();
+
+        if (!$module) {
+            return response()->json(['message' => 'Module not found!'], 404);
+        }
+
+        $numOfAttempts = $module->num_of_attempts;
+        $dueDate = $module->due_date;
+        $currentDateTime = now();
+
+        if ($dueDate && $currentDateTime->greaterThan($dueDate)) {
+            return response()->json(['message' => 'The deadline for this module has passed!'], 403);
+        }
+
+        $existingAnswer = Answer::where('student_id', $studentId)
+            ->where('module_id', $moduleId)
+            ->first();
+
+        if ($existingAnswer && $existingAnswer->total_attempts >= $numOfAttempts) {
+            return response()->json(['message' => 'Maximum number of attempts reached!'], 403);
+        }
+
+        $fileName = null;
+        if ($request->hasFile('module_file')) {
+            $file = $request->file('module_file');
+
+            $fileNameWithoutExtension = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $fileExtension = $file->getClientOriginalExtension();
+
+            $fileName = $fileNameWithoutExtension;
+            $counter = 1;
+
+            while (file_exists(public_path("module_submissions/{$fileName}.{$fileExtension}"))) {
+                $fileName = "{$fileNameWithoutExtension} ({$counter})";
+                $counter++;
+            }
+
+            $fileName = "{$fileName}.{$fileExtension}";
+            $file->move(public_path('module_submissions'), $fileName);
+        }
+
+        if ($existingAnswer) {
+            $existingAnswer->update([
+                'text_answer' => $request->input('text_answer', $existingAnswer->text_answer),
+                'upload_file' => $fileName ?? $existingAnswer->upload_file,
+                'comment' => $request->input('comments', $existingAnswer->comment),
+                'score' => $request->input('score', $existingAnswer->score),
+                'total_attempts' => $existingAnswer->total_attempts + 1,
+            ]);
+
+            return response()->json(['message' => 'Answer updated successfully!'], 200);
+        } else {
+            Answer::create([
+                'student_id' => $studentId,
+                'module_id' => $moduleId,
+                'text_answer' => $request->input('text_answer'),
+                'upload_file' => $fileName,
+                'comment' => $request->input('comments'),
+                'score' => $request->input('score'),
+                'total_attempts' => 1,
+            ]);
+
+            return response()->json(['message' => 'Answer submitted successfully!'], 200);
+        }
+    }
+
+    public function get_submissions()
+    {
+        $submissions = DB::table('module_submissions as ms')
+            ->join('users as u', 'ms.student_id', '=', 'u.id') // Join with users table
+            ->select(
+                'ms.id as module_answer_id',
+                'ms.module_id',
+                'u.name',
+                'ms.text_answer',
+                'ms.upload_file',
+                'ms.comment',
+                'ms.score',
+                'ms.created_at'
+            )
+            ->get();
+
+        // Format data to match your dummy structure
+        $formattedSubmissions = $submissions->map(function ($submission) {
+            return [
+                'module_answer_id' => $submission->module_answer_id,
+                'module_id' => $submission->module_id,
+                'name' => $submission->name ?? 'Unknown Student',
+                'text_answer' => $submission->text_answer,
+                'uploadFile' => $submission->upload_file,
+                'comments' => $submission->comment ?? 'No comment',
+                'score' => $submission->score ?? 0,
+                'date_submitted' => $submission->created_at
+                    ? Carbon::parse($submission->created_at)->format('F j, Y \a\t g:i A')
+                    : null,
+            ];
+        });
+
+        return response()->json($formattedSubmissions);
     }
 }

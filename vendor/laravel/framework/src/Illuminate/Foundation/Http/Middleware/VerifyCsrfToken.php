@@ -72,7 +72,8 @@ class VerifyCsrfToken
         '/game-type/store',
         '/game-type/destroy',
         '/category/store',
-        '/category/destroy'
+        '/category/destroy',
+        '/submit-answer'
     ];
 
     /**
