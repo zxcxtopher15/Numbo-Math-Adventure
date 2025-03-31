@@ -32,7 +32,7 @@ import Avatar from '@/Components/Avatar';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
-import DocViewer, { DocViewerRenderers } from 'react-doc-viewer';
+import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 
 export default function Modules({}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
