@@ -32,8 +32,6 @@ import Avatar from '@/Components/Avatar';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
-import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
-import '@cyntler/react-doc-viewer/dist/index.css';
 
 export default function Modules({}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -342,10 +340,10 @@ export default function Modules({}) {
     const handleViewFile = useCallback((fileName) => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         const updatedFileUrl = `${baseUrl}/module_submissions/${fileName}`;
-        setFileUrl(updatedFileUrl);
-        console.log('fileUrl', updatedFileUrl);
 
+        setFileUrl(updatedFileUrl);
         setIsViewFileModalOpen(true);
+        console.log('fileUrl', updatedFileUrl);
     }, []);
 
     const handleDeleteModule = (module) => {
@@ -746,25 +744,13 @@ export default function Modules({}) {
                 <DialogContent className="max-h-[95vh] h-[95vh] max-w-[95vw] rounded-3xl">
                     <DialogTitle>Viewer</DialogTitle>
                     {fileUrl && (
-                        <DocViewer
-                            className="w-full h-full bg-gray-800 overflow-y-auto border rounded-3xl -pe-3"
-                            documents={[{ uri: fileUrl }]}
-                            pluginRenderers={DocViewerRenderers}
-                            theme={{
-                                secondary: '#6CCF3D',
-                                tertiary: 'rgba(59, 130, 246, 0.7)',
-
-                                textSecondary: '#3B82F6',
-                                textTertiary: 'rgba(0, 0, 0, 0.7)',
-                                disableThemeScrollbar: false,
-                            }}
-                            config={{
-                                pdfZoom: {
-                                    defaultZoom: 0.5, // 1 as default,
-                                },
-                                pdfVerticalScrollByDefault: true, // false as default
-                            }}
-                        />
+                        <div className="w-full h-[85vh]  flex justify-center items-center">
+                            <iframe
+                                src={fileUrl}
+                                title="File Viewer"
+                                className="w-full h-full  rounded-2xl border-none"
+                            ></iframe>
+                        </div>
                     )}
                 </DialogContent>
             </Dialog>
