@@ -387,11 +387,37 @@ class ModuleController extends Controller
             return response()->json(['message' => 'Maximum number of attempts reached!'], 403);
         }
 
+        $fileTypeMappings = [
+            'png/jpeg/jpg' => ['png', 'jpeg', 'jpg'],
+            'video' => ['mp4', 'avi', 'mov', 'mkv'],
+            'pdf' => ['pdf'],
+            'doc/docx' => ['doc', 'docx'],
+            'txt' => ['txt'],
+            'xls/xlsx' => ['xls', 'xlsx'],
+            'ppt/pptx' => ['ppt', 'pptx'],
+            'any' => []
+        ];
+
+        $allowedFileTypes = explode(',', $module->file_type);
+        $allowedExtensions = [];
+
+        foreach ($allowedFileTypes as $type) {
+            $type = trim($type);
+            if (isset($fileTypeMappings[$type])) {
+                $allowedExtensions = array_merge($allowedExtensions, $fileTypeMappings[$type]);
+            }
+        }
+
         $fileName = null;
         if ($request->hasFile('module_file')) {
             $file = $request->file('module_file');
+            $fileExtension = strtolower($file->getClientOriginalExtension());
+
+            if ($module->file_type !== 'any' && !in_array($fileExtension, $allowedExtensions)) {
+                return response()->json(['message' => 'Invalid file type! Allowed file types: ' . implode(', ', $allowedExtensions)], 400);
+            }
+
             $fileNameWithoutExtension = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $fileExtension = $file->getClientOriginalExtension();
             $fileName = $fileNameWithoutExtension;
             $counter = 1;
 
