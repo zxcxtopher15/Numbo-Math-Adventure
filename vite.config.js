@@ -14,14 +14,7 @@ export default defineConfig({
             },
         }),
     ],
-    optimizeDeps: {
-        include: ['@cyntler/react-doc-viewer'],
-    },
-    resolve: {
-        alias: {
-            fs: false, // Fix issues with 'fs' module (if any)
-        },
-    },
+
     server: {
         watch: {
             usePolling: false, // Fixes auto-reloading issues on some systems
