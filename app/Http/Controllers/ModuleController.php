@@ -25,6 +25,13 @@ class ModuleController extends Controller
             'module_file' => 'nullable|array',
             'module_file.*' => 'mimes:jpeg,png,jpg,pdf,doc,docx,xls,xlsx,txt',
             'is_submission_required' => 'nullable|in:0,1,true,false',
+            'module_title' => [
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->boolean('is_submission_required') && is_null($value)) {
+                        $fail('The module title field is required.');
+                    }
+                },
+            ],
             'points' => [
                 function ($attribute, $value, $fail) use ($request) {
                     if ($request->boolean('is_submission_required') && (is_null($value) || $value < 1)) {
@@ -80,6 +87,7 @@ class ModuleController extends Controller
 
         if (!$request->boolean('is_submission_required')) {
             $request->merge([
+                'module_title' => "",
                 'is_comment_enabled' => 0,
                 'points' => null,
                 'num_of_attempts' => null,
@@ -97,6 +105,7 @@ class ModuleController extends Controller
             'file_name' => implode(',', $fileNames),
             'file_path' => implode(',', $filePaths),
             'is_submission_required' => $request->boolean('is_submission_required'),
+            'module_title' => $request->boolean('is_submission_required') ? $request->module_title : null,
             'is_comment_enabled' => $request->boolean('is_comment_enabled'),
             'points' => $request->boolean('is_submission_required') ? $request->points : null,
             'num_of_attempts' => $request->boolean('is_submission_required') ? $request->num_of_attempts : null,
@@ -143,6 +152,13 @@ class ModuleController extends Controller
             'module_file' => 'nullable|array',
             'module_file.*' => 'mimes:jpeg,png,jpg,pdf,doc,docx,xls,xlsx,txt',
             'is_submission_required' => 'nullable|in:0,1,true,false',
+            'module_title' => [
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->boolean('is_submission_required') && is_null($value)) {
+                        $fail('The module title field is required.');
+                    }
+                },
+            ],
             'points' => [
                 function ($attribute, $value, $fail) use ($request) {
                     if ($request->boolean('is_submission_required') && (is_null($value) || $value < 1)) {
@@ -204,6 +220,7 @@ class ModuleController extends Controller
 
         if (!$request->boolean('is_submission_required')) {
             $request->merge([
+                'module_title' => "",
                 'is_comment_enabled' => 0,
                 'points' => 0,
                 'num_of_attempts' => 0,
@@ -221,6 +238,7 @@ class ModuleController extends Controller
             'file_name' => implode(',', $fileNames),
             'file_path' => implode(',', $filePaths),
             'is_submission_required' => $request->boolean('is_submission_required'),
+            'module_title' => $request->module_title,
             'is_comment_enabled' => $request->boolean('is_comment_enabled'),
             'points' => $request->points,
             'num_of_attempts' => $request->num_of_attempts,

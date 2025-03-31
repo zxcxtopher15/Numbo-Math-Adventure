@@ -51,8 +51,6 @@ export default function Modules({ }) {
     const [selectedSubmissions, setSelectedSubmissions] = useState([]);
     const [selectedStudentSubmission, setSelectedStudentSubmissions] = useState([]);
 
-    console.log(selectedStudentSubmission);
-
     const { data, setData, reset } = useForm({
         module_name: '',
         module_desc: '',
@@ -60,7 +58,8 @@ export default function Modules({ }) {
         due_date: '',
         points: '',
         attempts: '',
-        submit_type: ''
+        submit_type: '',
+        module_title: ''
     });
 
     const [editModuleData, setEditModuleData] = useState({
@@ -73,6 +72,7 @@ export default function Modules({ }) {
         submit_type: '',
         file_type: '',
         is_comment_enabled: false,
+        module_title: ''
     });
 
     const [modulesData, setModuleData] = useState([]);
@@ -119,6 +119,7 @@ export default function Modules({ }) {
                         module_file_desc: module.module_file_desc,
                         file: files.length > 0 ? files : [],
                         is_submission_required: module.is_submission_required,
+                        module_title: module.module_title,
                         points: module.points,
                         score: module.score ? module.score : 0,
                         attempts: module.num_of_attempts,
@@ -168,6 +169,7 @@ export default function Modules({ }) {
         formData.append('module_name', data.module_name);
         formData.append('module_desc', data.module_desc);
         formData.append('module_file_desc', data.module_file_desc);
+        formData.append('module_title', data.module_title);
         formData.append('is_submission_required', isSubmissionRequired);
         formData.append('due_date', data.due_date);
         formData.append('points', data.points);
@@ -232,6 +234,8 @@ export default function Modules({ }) {
             .then((response) => {
                 const moduleData = response.data.module;
 
+                console.log(moduleData);
+
                 const files = [];
 
                 setEditModuleData({
@@ -260,6 +264,7 @@ export default function Modules({ }) {
         formData.append('module_desc', editModuleData.module_desc);
         formData.append('module_file_desc', editModuleData.module_file_desc);
         formData.append('is_submission_required', isEditSubmissionRequired);
+        formData.append('module_title', editModuleData.module_title);
         formData.append('due_date', editModuleData.due_date);
         formData.append('points', editModuleData.points);
         formData.append('num_of_attempts', editModuleData.num_of_attempts);
@@ -1241,6 +1246,16 @@ export default function Modules({ }) {
 
                                 {isSubmissionRequired && (
                                     <div className="mt-7">
+                                        <InputLabel htmlFor="module_title" value="Module Title" />
+                                        <TextInput
+                                            type="text"
+                                            name="module_title"
+                                            value={data.module_title}
+                                            onChange={handleChange}
+                                            className="border w-full p-2 mb-2"
+                                            required
+                                        />
+
                                         <InputLabel htmlFor="due_date" value="Due Date" />
                                         <TextInput
                                             type="datetime-local"
@@ -1421,6 +1436,16 @@ export default function Modules({ }) {
 
                                 {isEditSubmissionRequired === 1 && (
                                     <div className="mt-7">
+                                        <InputLabel htmlFor="module_title" value="Module Title" />
+                                        <TextInput
+                                            type="text"
+                                            name="module_title"
+                                            value={editModuleData ? editModuleData.module_title : ''}
+                                            onChange={handleEditChange}
+                                            className="border w-full p-2 mb-2"
+                                            required
+                                        />
+
                                         <InputLabel htmlFor="due_date" value="Due Date" />
                                         <TextInput
                                             type="datetime-local"
