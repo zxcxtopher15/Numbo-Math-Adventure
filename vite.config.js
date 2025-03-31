@@ -13,14 +13,16 @@ export default defineConfig({
                 plugins: [['babel-plugin-react-compiler', { target: '18' }]],
             },
         }),
-        
     ],
+    optimizeDeps: {
+        include: ['@cyntler/react-doc-viewer'],
+    },
     server: {
         watch: {
-          usePolling: false, // Fixes auto-reloading issues on some systems
+            usePolling: false, // Fixes auto-reloading issues on some systems
         },
         hmr: {
-          host: 'numbo-math-adventure.test', // Adjust if using Docker/WSL
+            host: 'numbo-math-adventure.test', // Adjust if using Docker/WSL
         },
-      },
+    },
 });
