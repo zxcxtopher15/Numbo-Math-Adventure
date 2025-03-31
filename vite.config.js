@@ -14,7 +14,14 @@ export default defineConfig({
             },
         }),
     ],
-
+    build: {
+        commonjsOptions: {
+            transformMixedEsModules: true, // Fixes issues with CJS/ESM modules
+        },
+    },
+    optimizeDeps: {
+        include: ['@cyntler/react-doc-viewer'], // Ensures Vite includes it
+    },
     server: {
         watch: {
             usePolling: false, // Fixes auto-reloading issues on some systems
