@@ -49,7 +49,6 @@ class ModuleController extends Controller
             'file_type' => 'nullable|string|max:255',
             'is_comment_enabled' => 'nullable|in:0,1,true,false',
             'due_date' => [
-                'date',
                 function ($attribute, $value, $fail) use ($request) {
                     if ($request->boolean('is_submission_required') && empty($value)) {
                         if (Carbon::parse($value)->lt(Carbon::now())) {
@@ -168,7 +167,6 @@ class ModuleController extends Controller
             'file_type' => 'nullable|string|max:255',
             'is_comment_enabled' => 'nullable|in:0,1,true,false',
             'due_date' => [
-                'date',
                 function ($attribute, $value, $fail) use ($request) {
                     if ($request->boolean('is_submission_required') && empty($value)) {
                         if (Carbon::parse($value)->lt(Carbon::now())) {
