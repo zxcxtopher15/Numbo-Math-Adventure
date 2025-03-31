@@ -1419,7 +1419,7 @@ export default function Modules({ }) {
                                     </label>
                                 </div>
 
-                                {isEditSubmissionRequired && (
+                                {isEditSubmissionRequired === 1 && (
                                     <div className="mt-7">
                                         <InputLabel htmlFor="due_date" value="Due Date" />
                                         <TextInput
