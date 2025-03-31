@@ -214,6 +214,7 @@ Route::group(['middleware' => 'teacher'], function () {
     Route::post('/category/store', [CategoryController::class, 'store']);
     Route::post('/category/destroy', [CategoryController::class, 'destroy']);
     Route::put('/game-types/{id}/status', [GameTypeController::class, 'updateStatus']);
+    Route::post('/save-score', [ModuleController::class, 'saveScore'])->name('submit.score');
 });
 
 Route::group(['middleware' => 'student'], function () {

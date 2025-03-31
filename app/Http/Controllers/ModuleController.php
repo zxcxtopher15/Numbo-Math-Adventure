@@ -363,7 +363,6 @@ class ModuleController extends Controller
         $moduleId = $request->input('module_id');
 
         $module = Modules::where('id', $moduleId)->first();
-
         if (!$module) {
             return response()->json(['message' => 'Module not found!'], 404);
         }
@@ -380,6 +379,10 @@ class ModuleController extends Controller
             ->where('module_id', $moduleId)
             ->first();
 
+        if ($existingAnswer && $existingAnswer->score !== 0) {
+            return response()->json(['message' => 'You have already received a score for this module, resubmission is not allowed!'], 403);
+        }
+
         if ($existingAnswer && $existingAnswer->total_attempts >= $numOfAttempts) {
             return response()->json(['message' => 'Maximum number of attempts reached!'], 403);
         }
@@ -387,10 +390,8 @@ class ModuleController extends Controller
         $fileName = null;
         if ($request->hasFile('module_file')) {
             $file = $request->file('module_file');
-
             $fileNameWithoutExtension = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $fileExtension = $file->getClientOriginalExtension();
-
             $fileName = $fileNameWithoutExtension;
             $counter = 1;
 
@@ -404,12 +405,21 @@ class ModuleController extends Controller
         }
 
         if ($existingAnswer) {
+            $newAttempt = $existingAnswer->total_attempts + 1;
+            $ordinalAttempt = $this->ordinal($newAttempt);
+
             $existingAnswer->update([
                 'text_answer' => $request->input('text_answer', $existingAnswer->text_answer),
                 'upload_file' => $fileName ?? $existingAnswer->upload_file,
                 'comment' => $request->input('comments', $existingAnswer->comment),
                 'score' => $request->input('score', $existingAnswer->score),
-                'total_attempts' => $existingAnswer->total_attempts + 1,
+                'total_attempts' => $newAttempt,
+            ]);
+
+            AuditTrail::create([
+                'user_id' => Auth::user()->id,
+                'action' => "Resubmit Answer for {$module->module_name} ({$ordinalAttempt} Attempt)",
+                'created_at' => now()
             ]);
 
             return response()->json(['message' => 'Answer updated successfully!'], 200);
@@ -424,16 +434,32 @@ class ModuleController extends Controller
                 'total_attempts' => 1,
             ]);
 
+            AuditTrail::create([
+                'user_id' => Auth::user()->id,
+                'action' => "Submit Answer for {$module->module_name} (1st Attempt)",
+                'created_at' => now()
+            ]);
+
             return response()->json(['message' => 'Answer submitted successfully!'], 200);
         }
+    }
+
+    private function ordinal($number)
+    {
+        $suffixes = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
+        if (($number % 100) >= 11 && ($number % 100) <= 13) {
+            return $number . 'th';
+        }
+        return $number . $suffixes[$number % 10];
     }
 
     public function get_submissions()
     {
         $submissions = DB::table('module_submissions as ms')
-            ->join('users as u', 'ms.student_id', '=', 'u.id') // Join with users table
+            ->join('users as u', 'ms.student_id', '=', 'u.id')
             ->select(
                 'ms.id as module_answer_id',
+                'ms.student_id',
                 'ms.module_id',
                 'u.name',
                 'ms.text_answer',
@@ -444,9 +470,9 @@ class ModuleController extends Controller
             )
             ->get();
 
-        // Format data to match your dummy structure
         $formattedSubmissions = $submissions->map(function ($submission) {
             return [
+                'student_id' => $submission->student_id,
                 'module_answer_id' => $submission->module_answer_id,
                 'module_id' => $submission->module_id,
                 'name' => $submission->name ?? 'Unknown Student',
@@ -461,5 +487,58 @@ class ModuleController extends Controller
         });
 
         return response()->json($formattedSubmissions);
+    }
+
+    public function saveScore(Request $request)
+    {
+        $request->validate([
+            'student_id' => 'required|exists:module_submissions,student_id',
+            'module_id' => 'required|exists:module_submissions,module_id',
+            'score' => 'required|numeric|min:0',
+        ]);
+
+        $module = Modules::where('id', $request->module_id)->first();
+
+        if (!$module) {
+            return response()->json(['message' => 'Module not found.'], 404);
+        }
+
+        if ($request->score > $module->points) {
+            return response()->json(['message' => 'Score cannot exceed module points.'], 422);
+        }
+
+        $submission = Answer::where('student_id', $request->student_id)
+            ->where('module_id', $request->module_id)
+            ->join('users', 'users.id', '=', 'module_submissions.student_id')
+            ->select('module_submissions.*', 'users.name as student_name')
+            ->first();
+
+        if (!$submission) {
+            return response()->json(['message' => 'Submission not found.'], 404);
+        }
+
+        $previousScore = $submission->score;
+
+        $submission->score = $request->score;
+        $submission->save();
+
+        if ($previousScore !== 0) {
+            AuditTrail::create([
+                'user_id' => Auth::user()->id,
+                'action' => "Updated Score for {$module->module_name} - Student: {$submission->student_name} (From: {$previousScore} To: {$request->score})",
+                'created_at' => now()
+            ]);
+        } else {
+            AuditTrail::create([
+                'user_id' => Auth::user()->id,
+                'action' => "Submitted Score for {$module->module_name} - Student: {$submission->student_name}",
+                'created_at' => now()
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Score saved successfully!',
+            'submission' => $submission
+        ], 200);
     }
 }

@@ -28,6 +28,9 @@ import { useEffect } from 'react';
 import { Textarea } from '@headlessui/react';
 import { set } from 'date-fns';
 import Avatar from '@/Components/Avatar';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 export default function Modules({ }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,6 +49,9 @@ export default function Modules({ }) {
     const [answerCommentEnabled, setAnswerCommentEnabled] = useState(null);
     const [selectedModuleId, setSelectedModuleId] = useState(null);
     const [selectedSubmissions, setSelectedSubmissions] = useState([]);
+    const [selectedStudentSubmission, setSelectedStudentSubmissions] = useState([]);
+
+    console.log(selectedStudentSubmission);
 
     const { data, setData, reset } = useForm({
         module_name: '',
@@ -312,6 +318,17 @@ export default function Modules({ }) {
             });
     };
 
+    const handleDownload = (fileName) => {
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        const fileUrl = `${baseUrl}/module_submissions/${fileName}`;
+        const link = document.createElement("a");
+        link.href = fileUrl;
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const handleDeleteModule = (module) => {
         Swal.fire({
             title: 'Are you sure?',
@@ -408,7 +425,6 @@ export default function Modules({ }) {
         axios
             .get('/get_all_submissions')
             .then((response) => {
-                console.log(response.data);
                 setSubmissionsData(response.data);
             })
             .catch((error) => {
@@ -459,6 +475,7 @@ export default function Modules({ }) {
     const handleViewSubmission = (submission, index) => {
         setIsViewSubmissionModalOpen(true);
         setSubmissionIndex(index);
+        setSelectedStudentSubmissions(submission);
     };
 
     const handleOpenAnswerModal = (module) => {
@@ -536,10 +553,55 @@ export default function Modules({ }) {
         });
     };
 
+    const handleScoreChange = (e) => {
+        const newScore = e.target.value;
+        setSelectedSubmissions(prevSubmissions => {
+            const updatedSubmissions = [...prevSubmissions];
+            updatedSubmissions[submissionIndex] = {
+                ...updatedSubmissions[submissionIndex],
+                score: newScore
+            };
+            return updatedSubmissions;
+        });
+    };
+
+    const handleSubmitScore = async () => {
+        if (!selectedSubmissions[submissionIndex].score) {
+            toast.error("Please enter a valid score.");
+            return;
+        }
+
+        try {
+            const response = await fetch("/save-score", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                },
+                body: JSON.stringify({
+                    student_id: selectedStudentSubmission.student_id,
+                    module_id: selectedStudentSubmission.module_id,
+                    score: selectedSubmissions[submissionIndex].score,
+                }),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || "Failed to save score.");
+            }
+
+            toast.success("Score saved successfully!");
+        } catch (error) {
+            console.error("Error saving score:", error);
+            toast.error(error.message || "An error occurred while saving the score.");
+        }
+    };
+
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Module</h2>}>
             <Head title="Modules" />
-
+            <ToastContainer position="top-right" autoClose={3000} hideProgressBar closeOnClick />
             <div className="sm:py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="sm:p-4 py-5 space-y-4">
@@ -1055,9 +1117,12 @@ export default function Modules({ }) {
                                             {selectedSubmissions[submissionIndex].uploadFile && (
                                                 <div>
                                                     <p className="font-medium text-gray-600 mb-4">Submitted File:</p>
-                                                    <div className="flex items-center justify-between gap-2 w-full ">
+                                                    <div className="flex items-center justify-between gap-2 w-full">
                                                         <p>{selectedSubmissions[submissionIndex].uploadFile}</p>
-                                                        <button className="cursor-pointer bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-lg text-white font-semibold transition duration-300 flex gap-2 items-center">
+                                                        <button
+                                                            className="cursor-pointer bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-lg text-white font-semibold transition duration-300 flex gap-2 items-center"
+                                                            onClick={() => handleDownload(selectedSubmissions[submissionIndex].uploadFile)}
+                                                        >
                                                             <FaCloudDownloadAlt /> Download
                                                         </button>
                                                     </div>
@@ -1081,11 +1146,16 @@ export default function Modules({ }) {
                                     <TextInput
                                         type="number"
                                         name="score"
-                                        value={selectedSubmissions[submissionIndex].score}
+                                        value={selectedSubmissions[submissionIndex]?.score || 0}
                                         className="border border-blue-600 border-2 w-full p-2 text-center"
+                                        onChange={handleScoreChange}
                                     />
                                 </div>
-                                <PrimaryButton type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+                                <PrimaryButton
+                                    type="button"
+                                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                                    onClick={handleSubmitScore}
+                                >
                                     Save Score
                                 </PrimaryButton>
                             </div>
