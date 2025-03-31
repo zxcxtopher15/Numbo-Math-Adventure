@@ -51,7 +51,7 @@ class ModuleController extends Controller
             'due_date' => [
                 'required',
                 'date',
-                function ($attribute, $value, $fail) {
+                function ($attribute, $value, $fail) use ($request) {
                     if ($request->boolean('is_submission_required') && empty($value)) {
                         if (Carbon::parse($value)->lt(Carbon::now())) {
                             $fail('The due date and time must be in the future.');
@@ -171,9 +171,11 @@ class ModuleController extends Controller
             'due_date' => [
                 'required',
                 'date',
-                function ($attribute, $value, $fail) {
-                    if (Carbon::parse($value)->lt(Carbon::now())) {
-                        $fail('The due date and time must be in the future.');
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->boolean('is_submission_required') && empty($value)) {
+                        if (Carbon::parse($value)->lt(Carbon::now())) {
+                            $fail('The due date and time must be in the future.');
+                        }
                     }
                 }
             ],
