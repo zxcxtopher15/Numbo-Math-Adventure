@@ -52,8 +52,8 @@ class ModuleController extends Controller
                 'required',
                 'date',
                 function ($attribute, $value, $fail) {
-                    if (Carbon::parse($value)->startOfDay()->lt(Carbon::now()->startOfDay())) {
-                        $fail('The due date must be today or a future date.');
+                    if (Carbon::parse($value)->lt(Carbon::now())) {
+                        $fail('The due date and time must be in the future.');
                     }
                 }
             ],
@@ -170,8 +170,8 @@ class ModuleController extends Controller
                 'required',
                 'date',
                 function ($attribute, $value, $fail) {
-                    if (Carbon::parse($value)->startOfDay()->lt(Carbon::now()->startOfDay())) {
-                        $fail('The due date must be today or a future date.');
+                    if (Carbon::parse($value)->lt(Carbon::now())) {
+                        $fail('The due date and time must be in the future.');
                     }
                 }
             ],
