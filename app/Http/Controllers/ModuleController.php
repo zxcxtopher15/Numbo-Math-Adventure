@@ -304,6 +304,7 @@ class ModuleController extends Controller
                 ->select('modules.*')
                 ->selectRaw('? as total_students', [$totalStudents])
                 ->selectRaw('(SELECT COUNT(DISTINCT student_id) FROM module_submissions WHERE module_submissions.module_id = modules.id) as students_submitted')
+                ->distinct('modules.id')
                 ->get();
 
             return response()->json($modules);
