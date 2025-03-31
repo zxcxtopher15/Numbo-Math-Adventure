@@ -23,16 +23,19 @@ import {
     FaCalendarAlt,
     FaEdit,
     FaEye,
+    FaArrowRight,
 } from 'react-icons/fa';
 import { useEffect } from 'react';
 import { Textarea } from '@headlessui/react';
 import { set } from 'date-fns';
 import Avatar from '@/Components/Avatar';
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
+import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
+import '@cyntler/react-doc-viewer/dist/index.css';
 
-export default function Modules({ }) {
+export default function Modules({}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isSubmissionRequired, setIsSubmissionRequired] = useState(false);
@@ -49,7 +52,9 @@ export default function Modules({ }) {
     const [answerCommentEnabled, setAnswerCommentEnabled] = useState(null);
     const [selectedModuleId, setSelectedModuleId] = useState(null);
     const [selectedSubmissions, setSelectedSubmissions] = useState([]);
-    const [selectedStudentSubmission, setSelectedStudentSubmissions] = useState([]);
+    const [selectedStudentSubmission, setSelectedStudentSubmission] = useState([]);
+    const [isViewLessonModalOpen, setIsViewLessonModalOpen] = useState(false);
+    const [selectedLessonData, setSelectedLessonData] = useState(null);
 
     const { data, setData, reset } = useForm({
         module_name: '',
@@ -59,7 +64,7 @@ export default function Modules({ }) {
         points: '',
         attempts: '',
         submit_type: '',
-        module_title: ''
+        module_title: '',
     });
 
     const [editModuleData, setEditModuleData] = useState({
@@ -72,7 +77,7 @@ export default function Modules({ }) {
         submit_type: '',
         file_type: '',
         is_comment_enabled: false,
-        module_title: ''
+        module_title: '',
     });
 
     const [modulesData, setModuleData] = useState([]);
@@ -91,7 +96,7 @@ export default function Modules({ }) {
             year: 'numeric',
             hour: '2-digit',
             minute: '2-digit',
-            hour12: true
+            hour12: true,
         });
     };
 
@@ -234,8 +239,6 @@ export default function Modules({ }) {
             .then((response) => {
                 const moduleData = response.data.module;
 
-                console.log(moduleData);
-
                 const files = [];
 
                 setEditModuleData({
@@ -271,7 +274,6 @@ export default function Modules({ }) {
         formData.append('submit_type', editModuleData.submit_type);
         formData.append('file_type', editModuleData.file_type);
         formData.append('is_comment_enabled', isEditEnableComment);
-
 
         editFiles.forEach((file) => {
             formData.append('module_file[]', file);
@@ -326,13 +328,25 @@ export default function Modules({ }) {
     const handleDownload = (fileName) => {
         const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
         const fileUrl = `${baseUrl}/module_submissions/${fileName}`;
-        const link = document.createElement("a");
+        const link = document.createElement('a');
         link.href = fileUrl;
-        link.setAttribute("download", fileName);
+        link.setAttribute('download', fileName);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     };
+    const [isViewFileModalOpen, setIsViewFileModalOpen] = useState(false);
+
+    const [fileUrl, setFileUrl] = useState(null);
+
+    const handleViewFile = useCallback((fileName) => {
+        const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content');
+        const updatedFileUrl = `${baseUrl}/module_submissions/${fileName}`;
+        setFileUrl(updatedFileUrl);
+        console.log('fileUrl', updatedFileUrl);
+
+        setIsViewFileModalOpen(true);
+    }, []);
 
     const handleDeleteModule = (module) => {
         Swal.fire({
@@ -437,50 +451,22 @@ export default function Modules({ }) {
             });
     }, []);
 
-    // // DUMMY DATA SUBMISSION
-    // // List of all students
-    // const submissions = [
-    //     {
-    //         module_answer_id: 1,
-    //         name: 'John Doe',
-    //         text_answer: null, // if null ang selected na  Submit Type ay file input
-    //         uploadFile: 'SampleFile.pdf',
-    //         comments: 'No comment',
-    //         score: 100,
-    //         date_submitted: 'April 1, 2025 at 9:00 AM',
-    //     },
-    //     {
-    //         name: 'Jane Smith',
-    //         module_answer_id: 2,
-
-    //         text_answer: 'Test answer',
-    //         uploadFile: null, // if null ang selected na  Submit Type ay text input
-    //         comments: "The sample question is incorrect, which is why I didn't answer the question.",
-    //         score: null, // If null di pa gradan yung student // Not checked yet
-    //         date_submitted: 'April 1, 2025 at 9:30 AM',
-    //     },
-    //     {
-    //         module_answer_id: 3,
-    //         name: 'Bob Johnson',
-    //         text_answer: null, // if null ang selected na  Submit Type ay file input
-    //         uploadFile: 'YetAnotherFile.xlsx',
-    //         comments: 'No comment',
-    //         score: null, // If null di pa gradan yung student  // Not checked yet
-    //         date_submitted: null, // If null  di pa nagsusubmit yung student
-    //     },
-    // ];
-
     const handleViewSubmissions = (moduleId) => {
         if (!submissions) return;
-        const filteredSubmissions = submissions.filter(submission => submission.module_id === moduleId);
+        const filteredSubmissions = submissions.filter((submission) => submission.module_id === moduleId);
         setSelectedSubmissions(filteredSubmissions);
         setIsViewListSubmissionModalOpen(true);
     };
 
     const handleViewSubmission = (submission, index) => {
+        console.log('submission', submission);
+
         setIsViewSubmissionModalOpen(true);
+        console.log('isViewSubmissionModalOpen', isViewSubmissionModalOpen);
+
         setSubmissionIndex(index);
-        setSelectedStudentSubmissions(submission);
+        setSelectedStudentSubmission(submission);
+        console.log('selectedStudentSubmission', selectedStudentSubmission);
     };
 
     const handleOpenAnswerModal = (module) => {
@@ -505,66 +491,73 @@ export default function Modules({ }) {
         e.preventDefault();
 
         setIsAnswerModalOpen(false);
+        setIsViewLessonModalOpen(false);
 
         if (!answerSubmitType && files.length === 0) {
-            Swal.fire("Error!", "Please upload a file before submitting.", "error").then(() => {
+            Swal.fire('Error!', 'Please upload a file before submitting.', 'error').then(() => {
                 setIsAnswerModalOpen(true);
             });
             return;
         }
 
         const formData = new FormData();
-        formData.append("module_id", selectedModuleId);
-        formData.append("text_answer", answerSubmitType ? e.target.text_answer.value : "");
-        formData.append("comments", answerCommentEnabled ? document.querySelector('[name="comments"]').value || "" : '');
-        formData.append("score", 0);
-        formData.append("total_attempts", 1);
+        formData.append('module_id', selectedModuleId);
+        formData.append('text_answer', answerSubmitType ? e.target.text_answer.value : '');
+        formData.append(
+            'comments',
+            answerCommentEnabled ? document.querySelector('[name="comments"]').value || '' : '',
+        );
+        formData.append('score', 0);
+        formData.append('total_attempts', 1);
 
         if (!answerSubmitType && files.length > 0) {
-            formData.append("module_file", files[0]);
+            formData.append('module_file', files[0]);
         }
 
         Swal.fire({
-            title: "Submit Answer?",
-            text: "Are you sure you want to submit?",
-            icon: "warning",
+            title: 'Submit Answer?',
+            text: 'Are you sure you want to submit?',
+            icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: "Submit",
+            confirmButtonText: 'Submit',
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch("/submit-answer", {
-                    method: "POST",
+                fetch('/submit-answer', {
+                    method: 'POST',
                     body: formData,
                 })
                     .then(async (response) => {
                         const data = await response.json();
 
                         if (!response.ok) {
-                            throw new Error(data.message || "An error occurred.");
+                            throw new Error(data.message || 'An error occurred.');
                         }
 
                         return data;
                     })
                     .then((data) => {
-                        Swal.fire("Success!", data.message, "success").then(() => {
+                        Swal.fire('Success!', data.message, 'success').then(() => {
                             location.reload();
                         });
                         setIsAnswerModalOpen(false);
                     })
                     .catch((error) => {
-                        Swal.fire("Error!", error.message, "error");
+                        Swal.fire('Error!', error.message, 'error');
                     });
+            } else {
+                setIsViewLessonModalOpen(true);
+                setIsAnswerModalOpen(true);
             }
         });
     };
 
     const handleScoreChange = (e) => {
         const newScore = e.target.value;
-        setSelectedSubmissions(prevSubmissions => {
+        setSelectedSubmissions((prevSubmissions) => {
             const updatedSubmissions = [...prevSubmissions];
             updatedSubmissions[submissionIndex] = {
                 ...updatedSubmissions[submissionIndex],
-                score: newScore
+                score: newScore,
             };
             return updatedSubmissions;
         });
@@ -572,16 +565,16 @@ export default function Modules({ }) {
 
     const handleSubmitScore = async () => {
         if (!selectedSubmissions[submissionIndex].score) {
-            toast.error("Please enter a valid score.");
+            toast.error('Please enter a valid score.');
             return;
         }
 
         try {
-            const response = await fetch("/save-score", {
-                method: "POST",
+            const response = await fetch('/save-score', {
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 },
                 body: JSON.stringify({
                     student_id: selectedStudentSubmission.student_id,
@@ -593,15 +586,32 @@ export default function Modules({ }) {
             const result = await response.json();
 
             if (!response.ok) {
-                throw new Error(result.message || "Failed to save score.");
+                throw new Error(result.message || 'Failed to save score.');
             }
 
-            toast.success("Score saved successfully!");
+            // Update moduleData with the new score
+            setModuleData((prevData) =>
+                prevData.map((module) =>
+                    module.id === selectedStudentSubmission.module_id
+                        ? { ...module, score: selectedSubmissions[submissionIndex].score }
+                        : module,
+                ),
+            );
+
+            toast.success('Score saved successfully!');
         } catch (error) {
-            console.error("Error saving score:", error);
-            toast.error(error.message || "An error occurred while saving the score.");
+            console.error('Error saving score:', error);
+            toast.error(error.message || 'An error occurred while saving the score.');
         }
     };
+
+    const handleViewLesson = (module_id) => {
+        setIsViewLessonModalOpen(true);
+        setSelectedLessonData(module_id);
+    };
+    console.log('modulesData[selectedLessonData]', modulesData[selectedLessonData]);
+    console.log('modulesData', modulesData);
+    console.log('[selectedLessonData]', selectedLessonData);
 
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Module</h2>}>
@@ -631,235 +641,97 @@ export default function Modules({ }) {
                                 <Accordion
                                     key={index}
                                     type="single"
-                                    className="bg-gray-200 rounded-2xl px-2 md:px-5 text-primary"
+                                    className="bg-gray-200 rounded-2xl px-2 md:px-4 text-primary"
                                     collapsible
                                     open
                                     defaultValue="item-1"
                                 >
                                     <AccordionItem value="item-1">
                                         <AccordionTrigger>
-                                            <div className="flex justify-between items-center w-full gap-4">
+                                            <div className="flex flex-wrap justify-between items-center w-full gap-4">
                                                 <div>
-                                                    <h1 className="font-medium text-base md:text-2xl no-underline text-gray-800 ps-2 mb-1">
+                                                    <h1 className="font-medium text-base md:text-3xl no-underline text-primary ps-2 mb-1">
                                                         {' '}
                                                         {module.module_name}
                                                     </h1>
-
-                                                    {module.is_submission_required === 1 ? (
-                                                        <>
-                                                            <p
-                                                                className={`bg-white border text-gray-700 p-1 px-2 rounded-lg font-medium text-xs ${new Date(module.due_date) - new Date() < 1000 * 60 * 60 * 24
-                                                                    ? 'bg-red-200 text-red-700'
-                                                                    : new Date(module.due_date) < new Date()
-                                                                        ? 'bg-green-200 text-green-800'
-                                                                        : 'bg-gray-300 text-gray-500'
-                                                                    }`}
-                                                            >
-
-                                                                Due: {formatDueDate(module.due_date)}
-                                                            </p>
-                                                        </>
-                                                    ) : (
-                                                        <></>
-                                                    )}
                                                 </div>
-                                                {module.is_submission_required === 1 ? (
-                                                    <>
-                                                        {userType === 'Teacher' && (
-                                                            <div className="text-center pe-0 md:pe-4">
-                                                                <p className="text-gray-600">Submitted</p>
-                                                                <h3 className="font-semibold text-xl text-warning">
-                                                                    {module.students_submitted ? module.students_submitted : 0} / {module.total_students}
-                                                                </h3>
-                                                            </div>
-                                                        )}
-                                                        {userType === 'Student' && (
-                                                            <div className="text-center pe-4">
-                                                                <p className="text-gray-600">Score</p>
-                                                                <h3 className="font-semibold text-xl text-warning">
-                                                                    {module.score ? module.score : 0} / {module.points}
-                                                                </h3>
-                                                            </div>
-                                                        )}
-                                                    </>
-                                                ) : (
-                                                    <></>
+                                                {module?.is_submission_required === 1 && (
+                                                    <div className="px-4">
+                                                        <p
+                                                            className={`border text-gray-700 p-1 px-2 rounded-lg font-medium text-xs ${
+                                                                new Date(module.due_date) - new Date() <
+                                                                1000 * 60 * 60 * 24
+                                                                    ? 'bg-red-200 text-red-700'
+                                                                    : new Date(module.due_date) > new Date()
+                                                                      ? 'bg-green-200 text-green-800'
+                                                                      : 'bg-gray-300 text-gray-500'
+                                                            }`}
+                                                        >
+                                                            Due: {formatDueDate(module.due_date)}
+                                                        </p>
+                                                    </div>
                                                 )}
                                             </div>
                                         </AccordionTrigger>
                                         <AccordionContent>
-                                            <div className="bg-white border  rounded-3xl p-5 text-black">
-                                                {userType === 'Teacher' && (
-                                                    <>
-                                                        {module.is_submission_required === 1 ? (
-                                                            <>
-                                                                <div className="flex justify-between flex-wrap gap-2 mb-2 w-full text-white font-semibold">
+                                            <div className="py-2">
+                                                <p className="text-primary text-base  px-3">{module.module_desc}</p>
+                                            </div>
+                                            {userType === 'Teacher' && (
+                                                <>
+                                                    {module?.is_submission_required === 1 ? (
+                                                        <>
+                                                            <div className="flex justify-between flex-wrap gap-2 mb-2 w-full px-3 text-white font-semibold">
+                                                                <div className="flex gap-2">
                                                                     <button
-                                                                        onClick={() => handleViewSubmissions(module.module_id)}
-                                                                        className="cursor-pointer bg-success p-1 px-4 rounded-lg flex items-center"
+                                                                        onClick={() => handleEdit(module.module_id)}
+                                                                        className="cursor-pointer bg-primary p-1 px-4 rounded-lg flex items-center"
                                                                     >
-                                                                        <FaEye className="text-sm mr-1" />
-                                                                        View Submissions
+                                                                        <FaEdit className="text-sm mr-1" />
+                                                                        Edit
                                                                     </button>
-                                                                    <div className="flex gap-2">
-                                                                        <button
-                                                                            onClick={() => handleEdit(module.module_id)}
-                                                                            className="cursor-pointer bg-primary p-1 px-4 rounded-lg flex items-center"
-                                                                        >
-                                                                            <FaEdit className="text-sm mr-1" />
-                                                                            Edit
-                                                                        </button>
-                                                                        <button
-                                                                            onClick={() => handleDeleteModule(module.module_id)}
-                                                                            className="cursor-pointer bg-danger p-1 px-4 rounded-lg flex items-center"
-                                                                        >
-                                                                            <FaTrashAlt className="text-sm mr-1" />
-                                                                            Delete
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                                <hr className="my-4" />
-                                                            </>
-                                                        ) : (
-                                                            <div className="flex justify-end flex-wrap gap-2 mb-2 w-full text-white font-semibold">
-                                                                <button
-                                                                    onClick={() => handleEdit(module.module_id)}
-                                                                    className="cursor-pointer bg-primary p-1 px-4 rounded-lg flex items-center"
-                                                                >
-                                                                    <FaEdit className="text-sm mr-1" />
-                                                                    Edit
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => handleDeleteModule(module.module_id)}
-                                                                    className="cursor-pointer bg-danger p-1 px-4 rounded-lg flex items-center"
-                                                                >
-                                                                    <FaTrashAlt className="text-sm mr-1" />
-                                                                    Delete
-                                                                </button>
-                                                            </div>
-                                                        )}
-                                                    </>
-                                                )}
-                                                {userType === 'Student' && (
-                                                    <>
-                                                        {module.is_submission_required === 1 ? (
-                                                            <>
-                                                                <div className="flex justify-between gap-2 mb-2 w-full text-white font-semibold">
                                                                     <button
-                                                                        onClick={() => handleOpenAnswerModal(module)}
-                                                                        className="cursor-pointer bg-success p-1 px-4 rounded-lg flex items-center"
+                                                                        onClick={() =>
+                                                                            handleDeleteModule(module.module_id)
+                                                                        }
+                                                                        className="cursor-pointer bg-danger p-1 px-4 rounded-lg flex items-center"
                                                                     >
-                                                                        <FaEye className="text-sm mr-1" />
-                                                                        View Answer
+                                                                        <FaTrashAlt className="text-sm mr-1" />
+                                                                        Delete
                                                                     </button>
                                                                 </div>
-                                                                <hr className="my-4" />
-                                                            </>
-                                                        ) : (
-                                                            <></>
-                                                        )}
-
-                                                    </>
-                                                )}
-
-                                                {module.is_submission_required === 1 && (
-                                                    <>
-                                                        <p className="text-gray-500 text-sm my-2 mb-4">Details:</p>
-                                                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                                            <div className="flex gap-3 items-center">
-                                                                <FaFileAlt className="text-xl text-gray-600" />
-                                                                <div>
-                                                                    <h3 className="font-semibold">Points: </h3>
-                                                                    <span className="font-normal">{module.points}</span>
-                                                                </div>
                                                             </div>
-                                                            <div className="flex gap-3 items-center">
-                                                                <FaUpload className="text-xl text-gray-600" />
-                                                                <div>
-                                                                    <h3 className="font-semibold">Submitting: </h3>
-                                                                    <span className="font-normal">
-                                                                        {module.submit_type === "text" ? "User Input" : "File Upload"}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="flex gap-3 items-center">
-                                                                <FaFile className="text-xl text-gray-600" />
-                                                                <div>
-                                                                    <h3 className="font-semibold">File Type: </h3>
-                                                                    <span className="font-normal">{module.file_type}</span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="flex gap-3 items-center">
-                                                                <FaRedo className="text-xl text-gray-600" />
-                                                                <div>
-                                                                    <h3 className="font-semibold">Attempts: </h3>
-                                                                    <span className="font-normal">{module.attempts}</span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="flex gap-3 items-center">
-                                                                <FaCalendarAlt className="text-xl text-gray-600" />
-                                                                <div>
-                                                                    <h3 className="font-semibold">Available Until: </h3>
-                                                                    <span className="font-normal">{formatDueDate(module.due_date)}</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                )}
-                                                <hr className="my-4" />
-                                                <div className="py-2">
-                                                    <p className="text-gray-500 text-sm my-4">Desciption:</p>
-                                                    <p className="text-gray-700 text-base my-4 px-3">
-                                                        {module.module_desc}
-                                                    </p>
-                                                </div>
-
-                                                <hr className="my-4" />
-                                                <p className="text-gray-500 text-sm my-4">Files:</p>
-                                                {module.module_file_desc && (
-                                                    <h3 className="font-medium my-4  bg-yellow-50 p-3 rounded-lg text-yellow-700">
-                                                        {module.module_file_desc}
-                                                    </h3>
-                                                )}
-
-                                                {module.file.map((file, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="flex justify-between items-center border-b py-3 md:flex-row flex-col sm:gap-2 gap-4"
-                                                    >
-                                                        <div
-                                                            className="flex gap-2 items-center cursor-pointer text-blue-600 hover:text-blue-800"
-                                                            onClick={() => {
-                                                                window.open(file.file_path, '_blank');
-                                                            }}
-                                                        >
-                                                            <FaFile /> {file.file_name}
-                                                        </div>
-                                                        <div className="flex gap-2">
+                                                            <hr className="my-4" />
+                                                        </>
+                                                    ) : (
+                                                        <div className="flex justify-end flex-wrap gap-2 mb-2 w-full px-3 text-white font-semibold">
                                                             <button
-                                                                onClick={() => {
-                                                                    const link = document.createElement('a');
-                                                                    link.href = file.file_path;
-                                                                    link.download = file.file_name;
-                                                                    link.click();
-                                                                }}
-                                                                className="cursor-pointer bg-blue-500 hover:bg-blue-600 p-2 rounded-lg text-white font-semibold transition duration-300"
+                                                                onClick={() => handleEdit(module.module_id)}
+                                                                className="cursor-pointer bg-primary p-1 px-4 rounded-lg flex items-center"
                                                             >
-                                                                <FaCloudDownloadAlt />
+                                                                <FaEdit className="text-sm mr-1" />
+                                                                Edit
                                                             </button>
-                                                            {userType === 'Teacher' && (
-                                                                <button
-                                                                    onClick={() => {
-                                                                        handleRemoveFile(module.module_id, index);
-                                                                    }}
-                                                                    className="cursor-pointer bg-red-500 hover:bg-red-600 p-2 rounded-lg text-white font-semibold transition duration-300"
-                                                                >
-                                                                    <FaTrashAlt />
-                                                                </button>
-                                                            )}
+                                                            <button
+                                                                onClick={() => handleDeleteModule(module.module_id)}
+                                                                className="cursor-pointer bg-danger p-1 px-4 rounded-lg flex items-center"
+                                                            >
+                                                                <FaTrashAlt className="text-sm mr-1" />
+                                                                Delete
+                                                            </button>
                                                         </div>
-                                                    </div>
-                                                ))}
+                                                    )}
+                                                </>
+                                            )}
+
+                                            <div className="bg-white text-primary rounded-xl px-4 py-5">
+                                                <div
+                                                    onClick={() => handleViewLesson(index)}
+                                                    className=" px-3 py-2 text-lg font-medium text-gray-600 cursor-pointer hover:bg-gray-200  focus:border-red-400 flex justify-between items-center border-b"
+                                                >
+                                                    {module.module_title}
+                                                    <FaArrowRight className="text-gray-600 ml-2" />
+                                                </div>
                                             </div>
                                         </AccordionContent>
                                     </AccordionItem>
@@ -869,6 +741,227 @@ export default function Modules({ }) {
                     </div>
                 </div>
             </div>
+
+            <Dialog open={isViewFileModalOpen} onOpenChange={setIsViewFileModalOpen}>
+                <DialogContent className="max-h-[95vh] h-[95vh] max-w-[95vw] rounded-3xl">
+                    <DialogTitle>Viewer</DialogTitle>
+                    {fileUrl && (
+                        <DocViewer
+                            className="w-full h-full bg-gray-800 overflow-y-auto border rounded-3xl -pe-3"
+                            documents={[{ uri: fileUrl }]}
+                            pluginRenderers={DocViewerRenderers}
+                            theme={{
+                                secondary: '#6CCF3D',
+                                tertiary: 'rgba(59, 130, 246, 0.7)',
+
+                                textSecondary: '#3B82F6',
+                                textTertiary: 'rgba(0, 0, 0, 0.7)',
+                                disableThemeScrollbar: false,
+                            }}
+                            config={{
+                                pdfZoom: {
+                                    defaultZoom: 0.5, // 1 as default,
+                                },
+                                pdfVerticalScrollByDefault: true, // false as default
+                            }}
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
+
+            {/* View Modal Module Lesson */}
+            {isViewLessonModalOpen && (
+                <Dialog open={isViewLessonModalOpen} onOpenChange={setIsViewLessonModalOpen}>
+                    <DialogContent
+                        className="overflow-y-auto max-h-[95vh] h-[95vh] max-w-[95vw] rounded-3xl"
+                        onInteractOutside={(e) => {
+                            e.preventDefault();
+                        }}
+                    >
+                        <DialogHeader>
+                            <DialogTitle>View Module</DialogTitle>
+                        </DialogHeader>
+                        <div className="bg-white border rounded-3xl p-5 text-black">
+                            {userType === 'Teacher' && (
+                                <>
+                                    {modulesData[selectedLessonData]?.is_submission_required === 1 && (
+                                        <>
+                                            <div className="flex justify-between items-center flex-wrap gap-2 mb-2 w-full text-white font-semibold">
+                                                <h1 className="text-2xl text-gray-700">
+                                                    {modulesData[selectedLessonData].module_title}
+                                                </h1>
+                                                <div className="flex gap-2 items-center">
+                                                    <div className="text-center pe-0 md:pe-4">
+                                                        <p className="text-gray-600">Submitted</p>
+                                                        <h3 className="font-semibold text-xl text-warning">
+                                                            {modulesData[selectedLessonData].students_submitted
+                                                                ? modulesData[selectedLessonData].students_submitted
+                                                                : 0}{' '}
+                                                            / {modulesData[selectedLessonData].total_students}
+                                                        </h3>
+                                                    </div>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleViewSubmissions(
+                                                                modulesData[selectedLessonData].module_id,
+                                                            )
+                                                        }
+                                                        className="cursor-pointer bg-success p-1 px-4 rounded-lg flex items-center"
+                                                    >
+                                                        <FaEye className="text-sm mr-1" />
+                                                        View Submissions
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <hr className="my-4" />
+                                        </>
+                                    )}
+                                </>
+                            )}
+                            {userType === 'Student' && (
+                                <>
+                                    {modulesData[selectedLessonData]?.is_submission_required === 1 ? (
+                                        <>
+                                            <div className="flex justify-between items-center flex-wrap gap-2 mb-2 w-full text-white font-semibold">
+                                                <div className="text-center pe-4">
+                                                    <p className="text-gray-600">Score</p>
+                                                    <h3 className="font-semibold text-xl text-warning">
+                                                        {modulesData[selectedLessonData].score
+                                                            ? modulesData[selectedLessonData].score
+                                                            : 0}{' '}
+                                                        / {modulesData[selectedLessonData].points}
+                                                    </h3>
+                                                </div>
+                                                <button
+                                                    onClick={() =>
+                                                        handleOpenAnswerModal(modulesData[selectedLessonData])
+                                                    }
+                                                    className="cursor-pointer bg-success p-1 px-4 rounded-lg flex items-center"
+                                                >
+                                                    <FaEye className="text-sm mr-1" />
+                                                    Answer
+                                                </button>
+                                            </div>
+                                            <hr className="my-4" />
+                                        </>
+                                    ) : (
+                                        <></>
+                                    )}
+                                </>
+                            )}
+
+                            {modulesData[selectedLessonData]?.is_submission_required === 1 && (
+                                <>
+                                    <p className="text-gray-500 text-sm my-2 mb-4">Details:</p>
+                                    <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+                                        <div className="flex gap-2 items-center">
+                                            <FaFileAlt className="text-base text-gray-600" />
+                                            <div>
+                                                <h3 className="font-semibold text-sm">Points: </h3>
+                                                <span className="font-normal text-sm">
+                                                    {modulesData[selectedLessonData].points}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2 items-center">
+                                            <FaUpload className="text-base text-gray-600" />
+                                            <div>
+                                                <h3 className="font-semibold text-sm">Submitting: </h3>
+                                                <span className="font-normal text-sm">
+                                                    {modulesData[selectedLessonData].submit_type === 'text'
+                                                        ? 'User Input'
+                                                        : 'File Upload'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2 items-center">
+                                            <FaFile className="text-base text-gray-600" />
+                                            <div>
+                                                <h3 className="font-semibold text-sm">File Type: </h3>
+                                                <span className="font-normal text-sm">
+                                                    {modulesData[selectedLessonData].file_type}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2 items-center">
+                                            <FaRedo className="text-base text-gray-600" />
+                                            <div>
+                                                <h3 className="font-semibold text-sm">Attempts: </h3>
+                                                <span className="font-normal text-sm">
+                                                    {modulesData[selectedLessonData].attempts}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2 items-center">
+                                            <FaCalendarAlt className="text-base text-gray-600" />
+                                            <div>
+                                                <h3 className="font-semibold text-sm">Available Until: </h3>
+                                                <span className="font-normal text-sm">
+                                                    {formatDueDate(modulesData[selectedLessonData].due_date)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                            <hr className="my-4" />
+                            <div className="py-2">
+                                <p className="text-gray-500 text-sm my-4">Desciption:</p>
+                                <p className="text-gray-700 text-base my-4 px-3">
+                                    {modulesData[selectedLessonData].module_desc}
+                                </p>
+                            </div>
+
+                            <hr className="my-4" />
+                            <p className="text-gray-500 text-sm my-4">Files:</p>
+                            {modulesData[selectedLessonData].module_file_desc && (
+                                <h3 className="font-medium my-4  bg-yellow-50 p-3 rounded-lg text-yellow-700">
+                                    {modulesData[selectedLessonData].module_file_desc}
+                                </h3>
+                            )}
+
+                            {modulesData[selectedLessonData].file.map((file, index) => (
+                                <div
+                                    key={index}
+                                    className="flex justify-between items-center border-b py-3 md:flex-row flex-col sm:gap-2 gap-4"
+                                >
+                                    <div
+                                        className="flex gap-2 items-center cursor-pointer text-blue-600 hover:text-blue-800"
+                                        onClick={() => {
+                                            window.open(file.file_path, '_blank');
+                                        }}
+                                    >
+                                        <FaFile /> {file.file_name}
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => {
+                                                const link = document.createElement('a');
+                                                link.href = file.file_path;
+                                                link.download = file.file_name;
+                                                link.click();
+                                            }}
+                                            className="cursor-pointer bg-blue-500 hover:bg-blue-600 p-2 rounded-lg text-white font-semibold transition duration-300"
+                                        >
+                                            <FaCloudDownloadAlt />
+                                        </button>
+                                        {userType === 'Teacher' && (
+                                            <button
+                                                onClick={() => {
+                                                    handleRemoveFile(modulesData[selectedLessonData].module_id, index);
+                                                }}
+                                                className="cursor-pointer bg-red-500 hover:bg-red-600 p-2 rounded-lg text-white font-semibold transition duration-300"
+                                            >
+                                                <FaTrashAlt />
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            )}
             {/* Student: Answer Module Modal */}
             {isAnswerModalOpen && (
                 <Dialog open={isAnswerModalOpen} onOpenChange={setIsAnswerModalOpen}>
@@ -997,12 +1090,15 @@ export default function Modules({ }) {
                                             <tr key={index}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                     <span
-                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${!submission.date_submitted && !submission.score
-                                                            ? 'bg-yellow-100 text-yellow-700'
-                                                            : 'bg-green-100 text-green-600'
-                                                            }`}
+                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                            !submission.date_submitted && !submission.score
+                                                                ? 'bg-yellow-100 text-yellow-700'
+                                                                : 'bg-green-100 text-green-600'
+                                                        }`}
                                                     >
-                                                        {!submission.date_submitted && !submission.score ? 'No Submission' : 'Submitted'}
+                                                        {!submission.date_submitted && !submission.score
+                                                            ? 'No Submission'
+                                                            : 'Submitted'}
                                                     </span>
                                                 </td>
 
@@ -1053,7 +1149,7 @@ export default function Modules({ }) {
             )}
 
             {/* View Student Submission Modal */}
-            {isViewSubmissionModalOpen && selectedSubmissions.length > 0 && (
+            {isViewSubmissionModalOpen && (
                 <Dialog
                     open={isViewSubmissionModalOpen}
                     onOpenChange={setIsViewSubmissionModalOpen}
@@ -1124,12 +1220,30 @@ export default function Modules({ }) {
                                                     <p className="font-medium text-gray-600 mb-4">Submitted File:</p>
                                                     <div className="flex items-center justify-between gap-2 w-full">
                                                         <p>{selectedSubmissions[submissionIndex].uploadFile}</p>
-                                                        <button
-                                                            className="cursor-pointer bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-lg text-white font-semibold transition duration-300 flex gap-2 items-center"
-                                                            onClick={() => handleDownload(selectedSubmissions[submissionIndex].uploadFile)}
-                                                        >
-                                                            <FaCloudDownloadAlt /> Download
-                                                        </button>
+                                                        <div className="flex  md:flex-row gap-2 items-center">
+                                                            <button
+                                                                className="cursor-pointer w-max bg-green-500 hover:bg-green-600 px-3 py-1 rounded-lg text-white font-semibold transition duration-300 flex gap-2 items-center"
+                                                                onClick={() =>
+                                                                    handleViewFile(
+                                                                        selectedSubmissions[submissionIndex].uploadFile,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <FaEye />
+                                                                <span className="hidden md:inline">View</span>
+                                                            </button>
+                                                            <button
+                                                                className="cursor-pointer bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-lg text-white font-semibold transition duration-300 flex gap-2 items-center"
+                                                                onClick={() =>
+                                                                    handleDownload(
+                                                                        selectedSubmissions[submissionIndex].uploadFile,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <FaCloudDownloadAlt />
+                                                                <span className="hidden md:inline">Download</span>
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             )}
