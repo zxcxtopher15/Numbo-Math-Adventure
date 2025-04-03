@@ -721,16 +721,71 @@ export default function Modules({}) {
                                                     )}
                                                 </>
                                             )}
-
-                                            <div className="bg-white text-primary rounded-xl px-4 py-5">
-                                                <div
-                                                    onClick={() => handleViewLesson(index)}
-                                                    className=" px-3 py-2 text-lg font-medium text-gray-600 cursor-pointer hover:bg-gray-200  focus:border-red-400 flex justify-between items-center border-b"
-                                                >
-                                                    {module.module_title}
-                                                    <FaArrowRight className="text-gray-600 ml-2" />
+                                            {module?.is_submission_required === 1 ? (
+                                                <div className="bg-white text-primary rounded-xl px-4 py-5">
+                                                    <div
+                                                        onClick={() => handleViewLesson(index)}
+                                                        className=" px-3 py-2 text-lg font-medium text-gray-600 cursor-pointer hover:bg-gray-200  focus:border-red-400 flex justify-between items-center border-b"
+                                                    >
+                                                        {module.module_title}
+                                                        <FaArrowRight className="text-gray-600 ml-2" />
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            ) : (
+                                                <div className="bg-white text-primary rounded-xl ">
+                                                    <div className="my-5 pt-2 pb-5 bg-white px-5 rounded-lg">
+                                                        {module.module_file_desc && (
+                                                            <h3 className="font-medium my-4 bg-yellow-100 p-2 rounded-lg text-yellow-600">
+                                                                {module.module_file_desc}
+                                                            </h3>
+                                                        )}
+
+                                                        {module.file &&
+                                                            module.file.map((file, index) => (
+                                                                <div
+                                                                    key={index}
+                                                                    className="flex justify-between text-info flex-1 items-center border-b-2 md:flex-row flex-col sm:gap-2 gap-4"
+                                                                >
+                                                                    <div
+                                                                        className="p-5 flex gap-2 items-center cursor-pointer"
+                                                                        onClick={() => {
+                                                                            window.open(file.file_path, '_blank');
+                                                                        }}
+                                                                    >
+                                                                        <FaFile /> {file.file_name}
+                                                                    </div>
+                                                                    <div className="flex gap-2 my-4">
+                                                                        <div
+                                                                            onClick={() => {
+                                                                                const link =
+                                                                                    document.createElement('a');
+                                                                                link.href = file.file_path;
+                                                                                link.download = file.file_name;
+                                                                                link.click();
+                                                                            }}
+                                                                            className="cursor-pointer bg-primary p-1 px-4 rounded-lg text-white font-semibold"
+                                                                        >
+                                                                            <FaCloudDownloadAlt />
+                                                                        </div>
+                                                                        {userType === 'Teacher' && (
+                                                                            <div
+                                                                                onClick={() => {
+                                                                                    handleRemoveFile(
+                                                                                        module.module_id,
+                                                                                        index,
+                                                                                    );
+                                                                                }}
+                                                                                className="cursor-pointer bg-danger p-1 px-4 rounded-lg text-white font-semibold"
+                                                                            >
+                                                                                <FaTrashAlt />
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </AccordionContent>
                                     </AccordionItem>
                                 </Accordion>
@@ -1015,7 +1070,7 @@ export default function Modules({}) {
                                 </div>
                             )}
                             {/* )} */}
-                            {!answerSubmitType && (
+                            {!answerSubmitType && answerCommentEnabled && (
                                 <div className="mt-4">
                                     <InputLabel htmlFor="comments" value="Comments" />
                                     <Textarea
@@ -1523,10 +1578,14 @@ export default function Modules({}) {
                                 <div className="">
                                     <Checkbox
                                         id="is_submission_required"
-                                        checked={isEditSubmissionRequired ? isEditSubmissionRequired : false}
+                                        checked={isEditSubmissionRequired === 1}
                                         onChange={(e) => {
+                                            if (isEditSubmissionRequired === 1) {
+                                                setIsEditSubmissionRequired(0);
+                                            } else {
+                                                setIsEditSubmissionRequired(1);
+                                            }
                                             handleEditChange(e);
-                                            setIsEditSubmissionRequired(e.target.checked);
                                         }}
                                     />
                                     <label htmlFor="is_submission_required" className="ml-2 text-gray-700">
