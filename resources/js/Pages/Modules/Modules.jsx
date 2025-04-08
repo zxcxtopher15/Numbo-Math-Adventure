@@ -403,6 +403,31 @@ export default function Modules({}) {
     });
 
     const handleRemoveFile = (id, index) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, remove it!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios
+                    .delete(`/modules/single/${id}/${index}`)
+                    .then((response) => {
+                        Swal.fire('Removed!', 'The Module has been removed.', 'success').then(() => {
+                            window.location.reload();
+                        });
+                    })
+                    .catch((error) => {
+                        Swal.fire('Error!', 'There was an issue deleting the module. Please try again.', 'error');
+                        console.error('There was an error deleting the module:', error);
+                    });
+            }
+        });
+    };
+    const handleRemoveFileModal = (id, index) => {
         isViewLessonModalOpen && setIsViewLessonModalOpen(false);
         Swal.fire({
             title: 'Are you sure?',
@@ -992,7 +1017,10 @@ export default function Modules({}) {
                                         {userType === 'Teacher' && (
                                             <button
                                                 onClick={() => {
-                                                    handleRemoveFile(modulesData[selectedLessonData].module_id, index);
+                                                    handleRemoveFileModal(
+                                                        modulesData[selectedLessonData].module_id,
+                                                        index,
+                                                    );
                                                 }}
                                                 className="cursor-pointer bg-red-500 hover:bg-red-600 p-2 rounded-lg text-white font-semibold transition duration-300"
                                             >
