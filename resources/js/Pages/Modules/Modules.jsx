@@ -403,6 +403,7 @@ export default function Modules({}) {
     });
 
     const handleRemoveFile = (id, index) => {
+        isViewLessonModalOpen && setIsViewLessonModalOpen(false);
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
