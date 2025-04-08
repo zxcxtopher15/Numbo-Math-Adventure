@@ -425,6 +425,8 @@ export default function Modules({}) {
                         Swal.fire('Error!', 'There was an issue deleting the module. Please try again.', 'error');
                         console.error('There was an error deleting the module:', error);
                     });
+            } else {
+                setIsViewLessonModalOpen(true);
             }
         });
     };
