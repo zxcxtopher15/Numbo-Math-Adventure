@@ -25,7 +25,7 @@ class ModuleController extends Controller
             'module_file' => 'nullable|array',
             'module_file.*' => 'mimes:jpeg,png,jpg,pdf,doc,docx,xls,xlsx,txt',
             'is_submission_required' => 'nullable|in:0,1,true,false',
-            'modules' => 'required|array',
+            'modules' => 'required_if:is_submission_required,true|array',
             'modules.*.module_title' => 'required_if:is_submission_required,true|string|max:255',
             'modules.*.points' => 'required_if:is_submission_required,true|integer|min:1',
             'modules.*.num_of_attempts' => 'required_if:is_submission_required,true|integer|min:1',
@@ -281,15 +281,41 @@ class ModuleController extends Controller
                 ->where('section_id', $sectionId)
                 ->count();
 
-            $modules = Modules::where('modules.section_id', $sectionId)
-                ->leftJoin('module_submissions', 'modules.id', '=', 'module_submissions.module_id')
-                ->select('modules.*')
-                ->selectRaw('? as total_students', [$totalStudents])
-                ->selectRaw('(SELECT COUNT(DISTINCT student_id) FROM module_submissions WHERE module_submissions.module_id = modules.id) as students_submitted')
-                ->distinct('modules.id')
+                $modules = DB::table('modules')
+                ->where('section_id', $sectionId)
                 ->get();
-
-            return response()->json($modules);
+            
+            $submissions = DB::table('module_submissions')
+                ->whereIn('module_id', $modules->pluck('id'))
+                ->select('module_id', 'student_id', 'submission_index')
+                ->get();
+            
+            $result = $modules->map(function ($module) use ($submissions, $totalStudents) {
+                $submissionIndexes = array_map('trim', explode(',', $module->submission_index));
+            
+                $totalStudentsList = [];
+                $studentsSubmittedList = [];
+            
+                foreach ($submissionIndexes as $index) {
+                    $totalStudentsList[] = $totalStudents;
+            
+                    $submittedCount = $submissions
+                        ->where('module_id', $module->id)
+                        ->where('submission_index', $index)
+                        ->unique('student_id')
+                        ->count();
+            
+                    $studentsSubmittedList[] = $submittedCount;
+                }
+            
+                $module->total_students = implode(',', $totalStudentsList);
+                $module->students_submitted = implode(',', $studentsSubmittedList);
+            
+                return $module;
+            });
+            
+            return response()->json($result);
+            
         }
     }
 
@@ -469,6 +495,7 @@ class ModuleController extends Controller
                 'ms.id as module_answer_id',
                 'ms.student_id',
                 'ms.module_id',
+                'ms.submission_index',
                 'u.name',
                 'ms.text_answer',
                 'ms.upload_file',
@@ -483,6 +510,7 @@ class ModuleController extends Controller
                 'student_id' => $submission->student_id,
                 'module_answer_id' => $submission->module_answer_id,
                 'module_id' => $submission->module_id,
+                'submission_index' => $submission->submission_index,
                 'name' => $submission->name ?? 'Unknown Student',
                 'text_answer' => $submission->text_answer,
                 'uploadFile' => $submission->upload_file,

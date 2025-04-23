@@ -33,7 +33,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
-export default function Modules({ }) {
+export default function Modules({}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isSubmissionRequired, setIsSubmissionRequired] = useState(false);
@@ -53,6 +53,7 @@ export default function Modules({ }) {
     const [selectedStudentSubmission, setSelectedStudentSubmission] = useState([]);
     const [isViewLessonModalOpen, setIsViewLessonModalOpen] = useState(false);
     const [selectedLessonData, setSelectedLessonData] = useState(null);
+    const [selectedActivityIndex, setSelectedActivityIndex] = useState(null);
 
     const { data, setData, reset } = useForm({
         module_name: '',
@@ -79,6 +80,8 @@ export default function Modules({ }) {
     });
 
     const [modulesData, setModuleData] = useState([]);
+
+    const [submissionsData, setSubmissionsData] = useState([]);
     const [submissions, setSubmissions] = useState([
         {
             module_title: '',
@@ -87,8 +90,8 @@ export default function Modules({ }) {
             attempts: '',
             submit_type: '',
             file_type: '',
-            enable_comments: false
-        }
+            enable_comments: false,
+        },
     ]);
     const { auth } = usePage().props;
     const userType = auth?.user?.user_type;
@@ -104,8 +107,8 @@ export default function Modules({ }) {
                 attempts: '',
                 submit_type: '',
                 file_type: '',
-                enable_comments: false
-            }
+                enable_comments: false,
+            },
         ]);
     };
 
@@ -129,8 +132,8 @@ export default function Modules({ }) {
             attempts: '',
             submit_type: '',
             file_type: '',
-            enable_comments: false
-        }
+            enable_comments: false,
+        },
     ]);
 
     const editSubmission = () => {
@@ -143,8 +146,8 @@ export default function Modules({ }) {
                 attempts: '',
                 submit_type: '',
                 file_type: '',
-                enable_comments: false
-            }
+                enable_comments: false,
+            },
         ]);
     };
 
@@ -193,6 +196,7 @@ export default function Modules({ }) {
 
                     return {
                         module_id: module.id,
+                        submission_index: module.submission_index,
                         module_name: module.module_name,
                         module_desc: module.module_desc,
                         module_file_desc: module.module_file_desc,
@@ -249,23 +253,28 @@ export default function Modules({ }) {
         formData.append('module_file_desc', data.module_file_desc);
         formData.append('is_submission_required', isSubmissionRequired);
 
-        submissions.forEach((item, index) => {
-            formData.append(`modules[${index}][module_title]`, item.module_title);
-            formData.append(`modules[${index}][points]`, item.points);
-            formData.append(`modules[${index}][num_of_attempts]`, item.attempts);
-            formData.append(`modules[${index}][submit_type]`, item.submit_type);
-            formData.append(`modules[${index}][file_type]`, item.file_type);
-            formData.append(`modules[${index}][due_date]`, item.due_date);
-            formData.append(`modules[${index}][enable_comment]`, item.enable_comments ? 1 : 0);
-        });
+        {
+            isSubmissionRequired &&
+                submissions.length > 0 &&
+                submissions.forEach((item, index) => {
+                    formData.append(`modules[${index}][module_title]`, item.module_title);
+                    formData.append(`modules[${index}][points]`, item.points);
+                    formData.append(`modules[${index}][num_of_attempts]`, item.attempts);
+                    formData.append(`modules[${index}][submit_type]`, item.submit_type);
+                    formData.append(`modules[${index}][file_type]`, item.file_type);
+                    formData.append(`modules[${index}][due_date]`, item.due_date);
+                    formData.append(`modules[${index}][enable_comment]`, item.enable_comments ? 1 : 0);
+                });
+        }
 
         files.forEach((file) => {
             formData.append('module_file[]', file);
         });
 
-        axios.post(route('modules.store'), formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-        })
+        axios
+            .post(route('modules.store'), formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            })
             .then((response) => {
                 Swal.fire({
                     icon: 'success',
@@ -280,7 +289,9 @@ export default function Modules({ }) {
             .catch((error) => {
                 let message = 'Something went wrong.';
                 if (error.response?.data?.errors) {
-                    message = Object.values(error.response.data.errors).map(err => err.join('\n')).join('\n');
+                    message = Object.values(error.response.data.errors)
+                        .map((err) => err.join('\n'))
+                        .join('\n');
                 }
                 Swal.fire({
                     icon: 'error',
@@ -320,17 +331,19 @@ export default function Modules({ }) {
                     is_comment_enabled: Boolean(moduleData.is_comment_enabled),
                 });
 
-                setEditSubmissions(moduleTitles.map((title, index) => ({
-                    module_title: title,
-                    points: points[index],
-                    attempts: attempts[index],
-                    file_name: fileNames[index],
-                    file_path: filePaths[index],
-                    file_type: fileTypes[index],
-                    submit_type: submitTypes[index],
-                    due_date: dueDates[index],
-                    enable_comments: moduleData.is_comment_enabled === "1",
-                })));
+                setEditSubmissions(
+                    moduleTitles.map((title, index) => ({
+                        module_title: title,
+                        points: points[index],
+                        attempts: attempts[index],
+                        file_name: fileNames[index],
+                        file_path: filePaths[index],
+                        file_type: fileTypes[index],
+                        submit_type: submitTypes[index],
+                        due_date: dueDates[index],
+                        enable_comments: moduleData.is_comment_enabled === '1',
+                    }))
+                );
 
                 setEditFiles([]);
                 toggleEditModal();
@@ -472,7 +485,7 @@ export default function Modules({ }) {
             setFiles(acceptedFiles);
             setData('file', [...data.file, ...acceptedFiles]);
         },
-        [data.file],
+        [data.file]
     );
 
     const onEditDrop = useCallback(
@@ -485,7 +498,7 @@ export default function Modules({ }) {
                 });
             }
         },
-        [editModuleData],
+        [editModuleData]
     );
 
     const { getRootProps, getInputProps } = useDropzone({ onDrop, multiple: true });
@@ -569,10 +582,19 @@ export default function Modules({ }) {
             });
     }, []);
 
-    const handleViewSubmissions = (moduleId) => {
-        if (!submissions) return;
-        const filteredSubmissions = submissions.filter((submission) => submission.module_id === moduleId);
+    const handleViewSubmissions = (moduleId, submissionIndex) => {
+        console.log('moduleId', moduleId);
+
+        if (!submissionsData) return;
+        console.log('submissionIndex', submissionIndex);
+
+        const filteredSubmissions = submissionsData.filter(
+            (submission) => submission.module_id === moduleId && submission.submission_index == submissionIndex
+        );
+        console.log('submissionIndex', submissionIndex);
+
         setSelectedSubmissions(filteredSubmissions);
+        console.log('filteredSubmissions', filteredSubmissions);
         setIsViewListSubmissionModalOpen(true);
     };
 
@@ -623,7 +645,7 @@ export default function Modules({ }) {
         formData.append('text_answer', answerSubmitType ? e.target.text_answer.value : '');
         formData.append(
             'comments',
-            answerCommentEnabled ? document.querySelector('[name="comments"]').value || '' : '',
+            answerCommentEnabled ? document.querySelector('[name="comments"]').value || '' : ''
         );
         formData.append('score', 0);
         formData.append('total_attempts', 1);
@@ -712,8 +734,8 @@ export default function Modules({ }) {
                 prevData.map((module) =>
                     module.id === selectedStudentSubmission.module_id
                         ? { ...module, score: selectedSubmissions[submissionIndex].score }
-                        : module,
-                ),
+                        : module
+                )
             );
 
             toast.success('Score saved successfully!');
@@ -723,10 +745,12 @@ export default function Modules({ }) {
         }
     };
 
-    const handleViewLesson = (module_id) => {
+    const handleViewLesson = (module_id, activity_index) => {
         setIsViewLessonModalOpen(true);
         setSelectedLessonData(module_id);
+        setSelectedActivityIndex(activity_index);
     };
+    console.log(modulesData);
 
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Module</h2>}>
@@ -776,20 +800,6 @@ export default function Modules({ }) {
                                                             {module.module_name}
                                                         </h1>
                                                     </div>
-                                                    {module?.is_submission_required === 1 && dueDates.length > 0 && (
-                                                        <div className="px-4">
-                                                            <p
-                                                                className={`border text-gray-700 p-1 px-2 rounded-lg font-medium text-xs ${new Date(dueDates[0]) - new Date() < 1000 * 60 * 60 * 24
-                                                                    ? 'bg-red-200 text-red-700'
-                                                                    : new Date(dueDates[0]) > new Date()
-                                                                        ? 'bg-green-200 text-green-800'
-                                                                        : 'bg-gray-300 text-gray-500'
-                                                                    }`}
-                                                            >
-                                                                Due: {formatDueDate(dueDates[0])}
-                                                            </p>
-                                                        </div>
-                                                    )}
                                                 </div>
                                             </AccordionTrigger>
                                             <AccordionContent>
@@ -823,11 +833,31 @@ export default function Modules({ }) {
                                                         {titles.map((title, idx) => (
                                                             <div
                                                                 key={idx}
-                                                                onClick={() => handleViewLesson(index)}
-                                                                className="px-3 py-2 text-lg font-medium text-gray-600 cursor-pointer hover:bg-gray-200 focus:border-red-400 flex justify-between items-center border-b"
+                                                                onClick={() => handleViewLesson(index, idx)}
+                                                                className="grid sm:grid-cols-1 md:grid-cols-2 gap-2 px-3 py-2 text-lg font-medium text-gray-600 cursor-pointer hover:bg-gray-200 focus:border-red-400 flex justify-between items-center border-b"
                                                             >
                                                                 {title}
-                                                                <FaArrowRight className="text-gray-600 ml-2" />
+                                                                <div className="flex items-center w-100 justify-end ml-2">
+                                                                    {dueDates.length > 0 && (
+                                                                        <div className="pe-4">
+                                                                            <p
+                                                                                className={`border text-gray-700 p-1 px-2 rounded-lg font-medium text-xs ${
+                                                                                    new Date(dueDates[idx]) -
+                                                                                        new Date() <
+                                                                                    1000 * 60 * 60 * 24
+                                                                                        ? 'bg-red-200 text-red-700'
+                                                                                        : new Date(dueDates[idx]) >
+                                                                                            new Date()
+                                                                                          ? 'bg-green-200 text-green-800'
+                                                                                          : 'bg-gray-300 text-gray-500'
+                                                                                }`}
+                                                                            >
+                                                                                Due: {formatDueDate(dueDates[idx])}
+                                                                            </p>
+                                                                        </div>
+                                                                    )}
+                                                                    <FaArrowRight className="text-gray-600" />
+                                                                </div>
                                                             </div>
                                                         ))}
                                                     </div>
@@ -848,14 +878,17 @@ export default function Modules({ }) {
                                                                     >
                                                                         <div
                                                                             className="p-5 flex gap-2 items-center cursor-pointer"
-                                                                            onClick={() => window.open(file.file_path, '_blank')}
+                                                                            onClick={() =>
+                                                                                window.open(file.file_path, '_blank')
+                                                                            }
                                                                         >
                                                                             <FaFile /> {file.file_name}
                                                                         </div>
                                                                         <div className="flex gap-2 my-4">
                                                                             <div
                                                                                 onClick={() => {
-                                                                                    const link = document.createElement('a');
+                                                                                    const link =
+                                                                                        document.createElement('a');
                                                                                     link.href = file.file_path;
                                                                                     link.download = file.file_name;
                                                                                     link.click();
@@ -866,7 +899,12 @@ export default function Modules({ }) {
                                                                             </div>
                                                                             {userType === 'Teacher' && (
                                                                                 <div
-                                                                                    onClick={() => handleRemoveFile(module.module_id, index)}
+                                                                                    onClick={() =>
+                                                                                        handleRemoveFile(
+                                                                                            module.module_id,
+                                                                                            index
+                                                                                        )
+                                                                                    }
                                                                                     className="cursor-pointer bg-danger p-1 px-4 rounded-lg text-white font-semibold"
                                                                                 >
                                                                                     <FaTrashAlt />
@@ -922,22 +960,40 @@ export default function Modules({ }) {
                                         <>
                                             <div className="flex justify-between items-center flex-wrap gap-2 mb-2 w-full text-white font-semibold">
                                                 <h1 className="text-2xl text-gray-700">
-                                                    {modulesData[selectedLessonData].module_title}
+                                                    {
+                                                        modulesData[selectedLessonData].module_title.split(',')[
+                                                            selectedActivityIndex
+                                                        ]
+                                                    }
                                                 </h1>
                                                 <div className="flex gap-2 items-center">
                                                     <div className="text-center pe-0 md:pe-4">
                                                         <p className="text-gray-600">Submitted</p>
                                                         <h3 className="font-semibold text-xl text-warning">
                                                             {modulesData[selectedLessonData].students_submitted
-                                                                ? modulesData[selectedLessonData].students_submitted
+                                                                ? parseInt(
+                                                                      modulesData[
+                                                                          selectedLessonData
+                                                                      ].students_submitted.split(',')[
+                                                                          selectedActivityIndex
+                                                                      ]
+                                                                  )
                                                                 : 0}{' '}
-                                                            / {modulesData[selectedLessonData].total_students}
+                                                            /{' '}
+                                                            {
+                                                                modulesData[selectedLessonData].total_students.split(
+                                                                    ','
+                                                                )[selectedActivityIndex]
+                                                            }
                                                         </h3>
                                                     </div>
                                                     <button
                                                         onClick={() =>
                                                             handleViewSubmissions(
                                                                 modulesData[selectedLessonData].module_id,
+                                                                modulesData[selectedLessonData].submission_index.split(
+                                                                    ','
+                                                                )[selectedActivityIndex]
                                                             )
                                                         }
                                                         className="cursor-pointer bg-success p-1 px-4 rounded-lg flex items-center"
@@ -963,7 +1019,12 @@ export default function Modules({ }) {
                                                         {modulesData[selectedLessonData].score
                                                             ? modulesData[selectedLessonData].score
                                                             : 0}{' '}
-                                                        / {modulesData[selectedLessonData].points}
+                                                        /{' '}
+                                                        {
+                                                            modulesData[selectedLessonData].points.split(',')[
+                                                                selectedActivityIndex
+                                                            ]
+                                                        }
                                                     </h3>
                                                 </div>
                                                 <button
@@ -993,7 +1054,11 @@ export default function Modules({ }) {
                                             <div>
                                                 <h3 className="font-semibold text-sm">Points: </h3>
                                                 <span className="font-normal text-sm">
-                                                    {modulesData[selectedLessonData].points}
+                                                    {
+                                                        modulesData[selectedLessonData].points.split(',')[
+                                                            selectedActivityIndex
+                                                        ]
+                                                    }
                                                 </span>
                                             </div>
                                         </div>
@@ -1013,7 +1078,11 @@ export default function Modules({ }) {
                                             <div>
                                                 <h3 className="font-semibold text-sm">File Type: </h3>
                                                 <span className="font-normal text-sm">
-                                                    {modulesData[selectedLessonData].file_type}
+                                                    {
+                                                        modulesData[selectedLessonData].file_type.split(',')[
+                                                            selectedActivityIndex
+                                                        ]
+                                                    }
                                                 </span>
                                             </div>
                                         </div>
@@ -1022,7 +1091,11 @@ export default function Modules({ }) {
                                             <div>
                                                 <h3 className="font-semibold text-sm">Attempts: </h3>
                                                 <span className="font-normal text-sm">
-                                                    {modulesData[selectedLessonData].attempts}
+                                                    {
+                                                        modulesData[selectedLessonData].attempts.split(',')[
+                                                            selectedActivityIndex
+                                                        ]
+                                                    }
                                                 </span>
                                             </div>
                                         </div>
@@ -1031,7 +1104,11 @@ export default function Modules({ }) {
                                             <div>
                                                 <h3 className="font-semibold text-sm">Available Until: </h3>
                                                 <span className="font-normal text-sm">
-                                                    {formatDueDate(modulesData[selectedLessonData].due_date)}
+                                                    {formatDueDate(
+                                                        modulesData[selectedLessonData].due_date.split(',')[
+                                                            selectedActivityIndex
+                                                        ]
+                                                    )}
                                                 </span>
                                             </div>
                                         </div>
@@ -1084,7 +1161,7 @@ export default function Modules({ }) {
                                                 onClick={() => {
                                                     handleRemoveFileModal(
                                                         modulesData[selectedLessonData].module_id,
-                                                        index,
+                                                        index
                                                     );
                                                 }}
                                                 className="cursor-pointer bg-red-500 hover:bg-red-600 p-2 rounded-lg text-white font-semibold transition duration-300"
@@ -1227,10 +1304,11 @@ export default function Modules({ }) {
                                             <tr key={index}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                     <span
-                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${!submission.date_submitted && !submission.score
-                                                            ? 'bg-yellow-100 text-yellow-700'
-                                                            : 'bg-green-100 text-green-600'
-                                                            }`}
+                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                            !submission.date_submitted && !submission.score
+                                                                ? 'bg-yellow-100 text-yellow-700'
+                                                                : 'bg-green-100 text-green-600'
+                                                        }`}
                                                     >
                                                         {!submission.date_submitted && !submission.score
                                                             ? 'No Submission'
@@ -1361,7 +1439,7 @@ export default function Modules({ }) {
                                                                 className="cursor-pointer w-max bg-green-500 hover:bg-green-600 px-3 py-1 rounded-lg text-white font-semibold transition duration-300 flex gap-2 items-center"
                                                                 onClick={() =>
                                                                     handleViewFile(
-                                                                        selectedSubmissions[submissionIndex].uploadFile,
+                                                                        selectedSubmissions[submissionIndex].uploadFile
                                                                     )
                                                                 }
                                                             >
@@ -1372,7 +1450,7 @@ export default function Modules({ }) {
                                                                 className="cursor-pointer bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-lg text-white font-semibold transition duration-300 flex gap-2 items-center"
                                                                 onClick={() =>
                                                                     handleDownload(
-                                                                        selectedSubmissions[submissionIndex].uploadFile,
+                                                                        selectedSubmissions[submissionIndex].uploadFile
                                                                     )
                                                                 }
                                                             >
@@ -1498,7 +1576,11 @@ export default function Modules({ }) {
                                     <div className="mt-7">
                                         <div className="flex justify-between items-center mb-4">
                                             <h3 className="text-lg font-medium text-gray-700">Submissions</h3>
-                                            <button type="button" onClick={addSubmission} className="text-blue-600 hover:underline">
+                                            <button
+                                                type="button"
+                                                onClick={addSubmission}
+                                                className="text-blue-600 hover:underline"
+                                            >
                                                 + Add Submission
                                             </button>
                                         </div>
@@ -1508,7 +1590,11 @@ export default function Modules({ }) {
                                                 <div className="flex justify-between">
                                                     <h4 className="font-semibold mb-2">Submission {index + 1}</h4>
                                                     {submissions.length > 1 && (
-                                                        <button type="button" onClick={() => removeSubmission(index)} className="text-red-500">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeSubmission(index)}
+                                                            className="text-red-500"
+                                                        >
                                                             Remove
                                                         </button>
                                                     )}
@@ -1591,7 +1677,10 @@ export default function Modules({ }) {
                                                         checked={submission.enable_comments}
                                                         onChange={(e) => handleSubmissionChange(index, e)}
                                                     />
-                                                    <label htmlFor={`enable_comments_${index}`} className="ml-2 text-gray-700">
+                                                    <label
+                                                        htmlFor={`enable_comments_${index}`}
+                                                        className="ml-2 text-gray-700"
+                                                    >
                                                         Enable comments for this module?
                                                     </label>
                                                 </div>
@@ -1812,7 +1901,10 @@ export default function Modules({ }) {
                                                         checked={submission.enable_comments}
                                                         onChange={(e) => handleEditSubmissionChange(index, e)}
                                                     />
-                                                    <label htmlFor={`enable_comments_${index}`} className="ml-2 text-gray-700">
+                                                    <label
+                                                        htmlFor={`enable_comments_${index}`}
+                                                        className="ml-2 text-gray-700"
+                                                    >
                                                         Enable comments for this module?
                                                     </label>
                                                 </div>
