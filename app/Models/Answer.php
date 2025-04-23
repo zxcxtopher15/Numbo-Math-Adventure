@@ -10,5 +10,5 @@ class Answer extends Model
     use HasFactory;
 
     protected $table = 'module_submissions';
-    protected $fillable = ['student_id', 'module_id', 'text_answer', 'upload_file', 'comment', 'score', 'total_attempts'];
+    protected $fillable = ['student_id', 'module_id', 'submission_index', 'text_answer', 'upload_file', 'comment', 'score', 'total_attempts'];
 }

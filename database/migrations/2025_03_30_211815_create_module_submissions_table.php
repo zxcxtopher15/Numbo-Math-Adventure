@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('module_submissions', function (Blueprint $table) {
             $table->id();
             $table->integer('student_id');
+            $table->integer('module_id');
+            $table->text('submission_index');
             $table->text('text_answer')->nullable();
             $table->string('upload_file')->nullable();
             $table->text('comment')->nullable();

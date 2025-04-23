@@ -20,12 +20,14 @@ return new class extends Migration
             $table->text('file_name');
             $table->text('file_path');
             $table->tinyInteger('is_submission_required')->default(0);
-            $table->integer('points');
-            $table->integer('num_of_attempts');
-            $table->string('submit_type');
-            $table->string('file_type')->nullable();
-            $table->tinyInteger('is_comment_enabled')->default(0);
-            $table->timestamp('due_date');
+            $table->text('module_title')->nullable();
+            $table->text('submission_index')->nullable();
+            $table->text('points')->nullable();
+            $table->text('num_of_attempts')->nullable();
+            $table->text('submit_type')->nullable();
+            $table->text('file_type')->nullable();
+            $table->text('is_comment_enabled')->nullable();
+            $table->text('due_date')->nullable();
             $table->timestamps();
         });
     }

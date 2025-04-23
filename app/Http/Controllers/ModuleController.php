@@ -73,17 +73,17 @@ class ModuleController extends Controller
             $fileTypes = [];
             $dueDates = [];
             $enableComments = [];
+            $submissionIndexes = [];
 
-            foreach ($request->modules as $subModule) {
+            foreach ($request->modules as $index => $subModule) {
                 $moduleTitles[] = $subModule['module_title'];
                 $points[] = $subModule['points'];
                 $numOfAttempts[] = $subModule['num_of_attempts'];
                 $submitTypes[] = $subModule['submit_type'];
-
                 $fileTypes[] = !empty($subModule['file_type']) ? $subModule['file_type'] : 'text';
-
                 $dueDates[] = isset($subModule['due_date']) ? Carbon::parse($subModule['due_date'])->format('Y-m-d H:i:s') : null;
                 $enableComments[] = !empty($subModule['enable_comment']) ? 1 : 0;
+                $submissionIndexes[] = $index + 1;
             }
 
             $module->update([
@@ -94,6 +94,7 @@ class ModuleController extends Controller
                 'file_type' => implode(',', $fileTypes),
                 'is_comment_enabled' => implode(',', $enableComments),
                 'due_date' => implode(',', $dueDates),
+                'submission_index' => implode(',', $submissionIndexes),
             ]);
         }
 
@@ -176,9 +177,10 @@ class ModuleController extends Controller
         $fileTypes = [];
         $dueDates = [];
         $enableComments = [];
+        $submissionIndexes = [];
 
         if ($request->boolean('is_submission_required') && is_array($request->modules)) {
-            foreach ($request->modules as $subModule) {
+            foreach ($request->modules as $index => $subModule) {
                 $moduleTitles[] = $subModule['module_title'];
                 $points[] = $subModule['points'];
                 $numOfAttempts[] = $subModule['num_of_attempts'];
@@ -187,6 +189,7 @@ class ModuleController extends Controller
                 $fileTypes[] = !empty($subModule['file_type']) ? $subModule['file_type'] : 'text';
                 $dueDates[] = isset($subModule['due_date']) ? Carbon::parse($subModule['due_date'])->format('Y-m-d H:i:s') : null;
                 $enableComments[] = !empty($subModule['enable_comment']) ? 1 : 0;
+                $submissionIndexes[] = $index + 1;
             }
         }
 
@@ -205,6 +208,7 @@ class ModuleController extends Controller
             'file_type' => implode(',', $fileTypes),
             'due_date' => implode(',', $dueDates),
             'is_comment_enabled' => implode(',', $enableComments),
+            'submission_index' => implode(',', $submissionIndexes),
         ]);
 
         $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
