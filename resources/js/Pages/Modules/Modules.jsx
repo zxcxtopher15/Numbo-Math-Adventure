@@ -33,7 +33,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
-export default function Modules({}) {
+export default function Modules({ }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isSubmissionRequired, setIsSubmissionRequired] = useState(false);
@@ -54,6 +54,7 @@ export default function Modules({}) {
     const [isViewLessonModalOpen, setIsViewLessonModalOpen] = useState(false);
     const [selectedLessonData, setSelectedLessonData] = useState(null);
     const [selectedActivityIndex, setSelectedActivityIndex] = useState(null);
+    const [dataScore, setDataScore] = useState(0);
 
     const { data, setData, reset } = useForm({
         module_name: '',
@@ -609,22 +610,32 @@ export default function Modules({}) {
         console.log('selectedStudentSubmission', selectedStudentSubmission);
     };
 
-    const handleOpenAnswerModal = (module) => {
+    const handleOpenAnswerModal = (module, submissionIndex) => {
+        const index = parseInt(submissionIndex) - 1;
+
+        const getAtIndex = (value) => value?.split(',')[index] || '';
+
+        const selectedSubmissionData = {
+            module_title: getAtIndex(module.module_title),
+            points: getAtIndex(module.points),
+            file_type: getAtIndex(module.file_type),
+            attempts: getAtIndex(module.attempts),
+            due_date: getAtIndex(module.due_date),
+            submit_type: getAtIndex(module.submit_type),
+            enable_comments: getAtIndex(module.enable_comments),
+        };
+
+        const enrichedModule = {
+            ...module,
+            ...selectedSubmissionData,
+            submission_index: submissionIndex,
+        };
+
         setIsAnswerModalOpen(true);
-        setSelectedModuleData(module);
+        setSelectedModuleData(enrichedModule);
         setSelectedModuleId(module.module_id);
-
-        if (module.submit_type == 'text') {
-            setAnswerSubmitType(true);
-        } else {
-            setAnswerSubmitType(false);
-        }
-
-        if (module.is_comment_enabled) {
-            setAnswerCommentEnabled(true);
-        } else {
-            setAnswerCommentEnabled(false);
-        }
+        setAnswerSubmitType(selectedSubmissionData.submit_type === 'text');
+        setAnswerCommentEnabled(selectedSubmissionData.enable_comments === '1');
     };
 
     const handleSubmitAnswer = async (e) => {
@@ -642,6 +653,7 @@ export default function Modules({}) {
 
         const formData = new FormData();
         formData.append('module_id', selectedModuleId);
+        formData.append('submission_index', selectedModuleData.submission_index);
         formData.append('text_answer', answerSubmitType ? e.target.text_answer.value : '');
         formData.append(
             'comments',
@@ -718,6 +730,7 @@ export default function Modules({}) {
                 },
                 body: JSON.stringify({
                     student_id: selectedStudentSubmission.student_id,
+                    submission_index: selectedStudentSubmission.submission_index,
                     module_id: selectedStudentSubmission.module_id,
                     score: selectedSubmissions[submissionIndex].score,
                 }),
@@ -745,12 +758,22 @@ export default function Modules({}) {
         }
     };
 
-    const handleViewLesson = (module_id, activity_index) => {
+    const handleViewLesson = (index, activity_index, module_id, submissionIndex) => {
         setIsViewLessonModalOpen(true);
-        setSelectedLessonData(module_id);
+        setSelectedLessonData(index);
         setSelectedActivityIndex(activity_index);
+
+        fetch(`/get-module-score?module_id=${module_id}&submission_index=${submissionIndex}`)
+            .then(response => response.json())
+            .then(data => {
+                const score = data.score !== undefined ? data.score : 0;
+                setDataScore(score);
+            })
+            .catch(error => {
+                console.error('Error fetching score:', error);
+                setDataScore(0);
+            });
     };
-    console.log(modulesData);
 
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Module</h2>}>
@@ -833,7 +856,10 @@ export default function Modules({}) {
                                                         {titles.map((title, idx) => (
                                                             <div
                                                                 key={idx}
-                                                                onClick={() => handleViewLesson(index, idx)}
+                                                                onClick={() => {
+                                                                    const submissionIndex = module.submission_index?.split(',')[idx];
+                                                                    handleViewLesson(index, idx, module.module_id, submissionIndex);
+                                                                }}
                                                                 className="grid sm:grid-cols-1 md:grid-cols-2 gap-2 px-3 py-2 text-lg font-medium text-gray-600 cursor-pointer hover:bg-gray-200 focus:border-red-400 flex justify-between items-center border-b"
                                                             >
                                                                 {title}
@@ -841,16 +867,15 @@ export default function Modules({}) {
                                                                     {dueDates.length > 0 && (
                                                                         <div className="pe-4">
                                                                             <p
-                                                                                className={`border text-gray-700 p-1 px-2 rounded-lg font-medium text-xs ${
-                                                                                    new Date(dueDates[idx]) -
-                                                                                        new Date() <
+                                                                                className={`border text-gray-700 p-1 px-2 rounded-lg font-medium text-xs ${new Date(dueDates[idx]) -
+                                                                                    new Date() <
                                                                                     1000 * 60 * 60 * 24
-                                                                                        ? 'bg-red-200 text-red-700'
-                                                                                        : new Date(dueDates[idx]) >
-                                                                                            new Date()
-                                                                                          ? 'bg-green-200 text-green-800'
-                                                                                          : 'bg-gray-300 text-gray-500'
-                                                                                }`}
+                                                                                    ? 'bg-red-200 text-red-700'
+                                                                                    : new Date(dueDates[idx]) >
+                                                                                        new Date()
+                                                                                        ? 'bg-green-200 text-green-800'
+                                                                                        : 'bg-gray-300 text-gray-500'
+                                                                                    }`}
                                                                             >
                                                                                 Due: {formatDueDate(dueDates[idx])}
                                                                             </p>
@@ -962,7 +987,7 @@ export default function Modules({}) {
                                                 <h1 className="text-2xl text-gray-700">
                                                     {
                                                         modulesData[selectedLessonData].module_title.split(',')[
-                                                            selectedActivityIndex
+                                                        selectedActivityIndex
                                                         ]
                                                     }
                                                 </h1>
@@ -972,12 +997,12 @@ export default function Modules({}) {
                                                         <h3 className="font-semibold text-xl text-warning">
                                                             {modulesData[selectedLessonData].students_submitted
                                                                 ? parseInt(
-                                                                      modulesData[
-                                                                          selectedLessonData
-                                                                      ].students_submitted.split(',')[
-                                                                          selectedActivityIndex
-                                                                      ]
-                                                                  )
+                                                                    modulesData[
+                                                                        selectedLessonData
+                                                                    ].students_submitted.split(',')[
+                                                                    selectedActivityIndex
+                                                                    ]
+                                                                )
                                                                 : 0}{' '}
                                                             /{' '}
                                                             {
@@ -1016,20 +1041,20 @@ export default function Modules({}) {
                                                 <div className="text-center pe-4">
                                                     <p className="text-gray-600">Score</p>
                                                     <h3 className="font-semibold text-xl text-warning">
-                                                        {modulesData[selectedLessonData].score
-                                                            ? modulesData[selectedLessonData].score
-                                                            : 0}{' '}
-                                                        /{' '}
+                                                        {dataScore} /{' '}
                                                         {
                                                             modulesData[selectedLessonData].points.split(',')[
-                                                                selectedActivityIndex
+                                                            selectedActivityIndex
                                                             ]
                                                         }
                                                     </h3>
                                                 </div>
                                                 <button
                                                     onClick={() =>
-                                                        handleOpenAnswerModal(modulesData[selectedLessonData])
+                                                        handleOpenAnswerModal(
+                                                            modulesData[selectedLessonData],
+                                                            modulesData[selectedLessonData].submission_index.split(',')[selectedActivityIndex]
+                                                        )
                                                     }
                                                     className="cursor-pointer bg-success p-1 px-4 rounded-lg flex items-center"
                                                 >
@@ -1056,7 +1081,7 @@ export default function Modules({}) {
                                                 <span className="font-normal text-sm">
                                                     {
                                                         modulesData[selectedLessonData].points.split(',')[
-                                                            selectedActivityIndex
+                                                        selectedActivityIndex
                                                         ]
                                                     }
                                                 </span>
@@ -1080,7 +1105,7 @@ export default function Modules({}) {
                                                 <span className="font-normal text-sm">
                                                     {
                                                         modulesData[selectedLessonData].file_type.split(',')[
-                                                            selectedActivityIndex
+                                                        selectedActivityIndex
                                                         ]
                                                     }
                                                 </span>
@@ -1093,7 +1118,7 @@ export default function Modules({}) {
                                                 <span className="font-normal text-sm">
                                                     {
                                                         modulesData[selectedLessonData].attempts.split(',')[
-                                                            selectedActivityIndex
+                                                        selectedActivityIndex
                                                         ]
                                                     }
                                                 </span>
@@ -1106,7 +1131,7 @@ export default function Modules({}) {
                                                 <span className="font-normal text-sm">
                                                     {formatDueDate(
                                                         modulesData[selectedLessonData].due_date.split(',')[
-                                                            selectedActivityIndex
+                                                        selectedActivityIndex
                                                         ]
                                                     )}
                                                 </span>
@@ -1304,11 +1329,10 @@ export default function Modules({}) {
                                             <tr key={index}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                     <span
-                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                            !submission.date_submitted && !submission.score
-                                                                ? 'bg-yellow-100 text-yellow-700'
-                                                                : 'bg-green-100 text-green-600'
-                                                        }`}
+                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${!submission.date_submitted && !submission.score
+                                                            ? 'bg-yellow-100 text-yellow-700'
+                                                            : 'bg-green-100 text-green-600'
+                                                            }`}
                                                     >
                                                         {!submission.date_submitted && !submission.score
                                                             ? 'No Submission'

@@ -37,6 +37,7 @@ Route::post('/verify-otp', [OtpController::class, 'verifyOtp']);
 
 Route::post('/modules/store', [ModuleController::class, 'store'])->name('modules.store');
 Route::get('/modules/{id}', [ModuleController::class, 'get_module'])->name('modules.get');
+Route::get('/get-module-score', [ModuleController::class, 'getScore']);
 Route::post('/modules/update/{id}', [ModuleController::class, 'update'])->name('modules.update');
 Route::delete('/modules/{id}', [ModuleController::class, 'destroy'])->name('modules.destroy');
 Route::get('/get_all_modules', [ModuleController::class, 'get_modules']);

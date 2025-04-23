@@ -281,41 +281,40 @@ class ModuleController extends Controller
                 ->where('section_id', $sectionId)
                 ->count();
 
-                $modules = DB::table('modules')
+            $modules = DB::table('modules')
                 ->where('section_id', $sectionId)
                 ->get();
-            
+
             $submissions = DB::table('module_submissions')
                 ->whereIn('module_id', $modules->pluck('id'))
                 ->select('module_id', 'student_id', 'submission_index')
                 ->get();
-            
+
             $result = $modules->map(function ($module) use ($submissions, $totalStudents) {
                 $submissionIndexes = array_map('trim', explode(',', $module->submission_index));
-            
+
                 $totalStudentsList = [];
                 $studentsSubmittedList = [];
-            
+
                 foreach ($submissionIndexes as $index) {
                     $totalStudentsList[] = $totalStudents;
-            
+
                     $submittedCount = $submissions
                         ->where('module_id', $module->id)
                         ->where('submission_index', $index)
                         ->unique('student_id')
                         ->count();
-            
+
                     $studentsSubmittedList[] = $submittedCount;
                 }
-            
+
                 $module->total_students = implode(',', $totalStudentsList);
                 $module->students_submitted = implode(',', $studentsSubmittedList);
-            
+
                 return $module;
             });
-            
+
             return response()->json($result);
-            
         }
     }
 
@@ -360,6 +359,7 @@ class ModuleController extends Controller
     {
         $request->validate([
             'module_id' => 'required|integer',
+            'submission_index' => 'required|integer',
             'text_answer' => 'nullable|string',
             'module_file' => 'nullable|file',
             'comments' => 'nullable|string',
@@ -369,22 +369,37 @@ class ModuleController extends Controller
 
         $studentId = Auth::user()->id;
         $moduleId = $request->input('module_id');
+        $submissionIndex = $request->input('submission_index');
 
         $module = Modules::where('id', $moduleId)->first();
         if (!$module) {
             return response()->json(['message' => 'Module not found!'], 404);
         }
 
-        $numOfAttempts = $module->num_of_attempts;
-        $dueDate = $module->due_date;
+        $titles = explode(',', $module->module_title);
+        $points = explode(',', $module->points);
+        $attempts = explode(',', $module->num_of_attempts);
+        $submitTypes = explode(',', $module->submit_type);
+        $fileTypes = explode(',', $module->file_type);
+        $dueDates = explode(',', $module->due_date);
+
+        $selectedTitle = $titles[$submissionIndex - 1] ?? null;
+        $selectedPoints = $points[$submissionIndex - 1] ?? null;
+        $selectedAttempts = $attempts[$submissionIndex - 1] ?? null;
+        $selectedSubmitType = $submitTypes[$submissionIndex - 1] ?? null;
+        $selectedFileType = $fileTypes[$submissionIndex - 1] ?? null;
+        $selectedDueDate = isset($dueDates[$submissionIndex - 1]) ? \Carbon\Carbon::parse($dueDates[$submissionIndex - 1]) : null;
+
+        $numOfAttempts = $selectedAttempts;
         $currentDateTime = now();
 
-        if ($dueDate && $currentDateTime->greaterThan($dueDate)) {
+        if ($selectedDueDate && $currentDateTime->greaterThan($selectedDueDate)) {
             return response()->json(['message' => 'The deadline for this module has passed!'], 403);
         }
 
         $existingAnswer = Answer::where('student_id', $studentId)
             ->where('module_id', $moduleId)
+            ->where('submission_index', $submissionIndex)
             ->first();
 
         if ($existingAnswer && $existingAnswer->score !== 0) {
@@ -406,7 +421,7 @@ class ModuleController extends Controller
             'any' => []
         ];
 
-        $allowedFileTypes = explode(',', $module->file_type);
+        $allowedFileTypes = explode(',', $selectedFileType);
         $allowedExtensions = [];
 
         foreach ($allowedFileTypes as $type) {
@@ -421,7 +436,7 @@ class ModuleController extends Controller
             $file = $request->file('module_file');
             $fileExtension = strtolower($file->getClientOriginalExtension());
 
-            if ($module->file_type !== 'any' && !in_array($fileExtension, $allowedExtensions)) {
+            if ($selectedFileType !== 'any' && !in_array($fileExtension, $allowedExtensions)) {
                 return response()->json(['message' => 'Invalid file type! Allowed file types: ' . implode(', ', $allowedExtensions)], 400);
             }
 
@@ -452,7 +467,7 @@ class ModuleController extends Controller
 
             AuditTrail::create([
                 'user_id' => Auth::user()->id,
-                'action' => "Resubmit Answer for {$module->module_name} ({$ordinalAttempt} Attempt)",
+                'action' => "Resubmit Answer for {$selectedTitle} ({$ordinalAttempt} Attempt)",
                 'created_at' => now()
             ]);
 
@@ -461,6 +476,7 @@ class ModuleController extends Controller
             Answer::create([
                 'student_id' => $studentId,
                 'module_id' => $moduleId,
+                'submission_index' => $submissionIndex,
                 'text_answer' => $request->input('text_answer'),
                 'upload_file' => $fileName,
                 'comment' => $request->input('comments'),
@@ -529,6 +545,7 @@ class ModuleController extends Controller
     {
         $request->validate([
             'student_id' => 'required|exists:module_submissions,student_id',
+            'submission_index' => 'required|exists:module_submissions,submission_index',
             'module_id' => 'required|exists:module_submissions,module_id',
             'score' => 'required|numeric|min:0',
         ]);
@@ -545,6 +562,7 @@ class ModuleController extends Controller
 
         $submission = Answer::where('student_id', $request->student_id)
             ->where('module_id', $request->module_id)
+            ->where('submission_index', $request->submission_index)
             ->join('users', 'users.id', '=', 'module_submissions.student_id')
             ->select('module_submissions.*', 'users.name as student_name')
             ->first();
@@ -576,5 +594,19 @@ class ModuleController extends Controller
             'message' => 'Score saved successfully!',
             'submission' => $submission
         ], 200);
+    }
+
+    public function getScore(Request $request)
+    {
+        $moduleId = $request->query('module_id');
+        $submissionIndex = $request->query('submission_index');
+
+        $submission = Answer::where('module_id', $moduleId)
+            ->where('submission_index', $submissionIndex)
+            ->first();
+
+        $score = $submission ? $submission->score : 0;
+
+        return response()->json(['score' => $score], 200);
     }
 }
