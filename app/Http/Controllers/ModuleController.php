@@ -25,45 +25,14 @@ class ModuleController extends Controller
             'module_file' => 'nullable|array',
             'module_file.*' => 'mimes:jpeg,png,jpg,pdf,doc,docx,xls,xlsx,txt',
             'is_submission_required' => 'nullable|in:0,1,true,false',
-            'module_title' => [
-                function ($attribute, $value, $fail) use ($request) {
-                    if ($request->boolean('is_submission_required') && is_null($value)) {
-                        $fail('The module title field is required.');
-                    }
-                },
-            ],
-            'points' => [
-                function ($attribute, $value, $fail) use ($request) {
-                    if ($request->boolean('is_submission_required') && (is_null($value) || $value < 1)) {
-                        $fail('The points field is required and must be at least 1 when submission is required.');
-                    }
-                },
-            ],
-            'num_of_attempts' => [
-                function ($attribute, $value, $fail) use ($request) {
-                    if ($request->boolean('is_submission_required') && (is_null($value) || $value < 1)) {
-                        $fail('The number of attempts field is required and must be at least 1 when submission is required.');
-                    }
-                },
-            ],
-            'submit_type' => [
-                function ($attribute, $value, $fail) use ($request) {
-                    if ($request->boolean('is_submission_required') && empty($value)) {
-                        $fail('The submit type field is required when submission is required.');
-                    }
-                },
-            ],
-            'file_type' => 'nullable|string|max:255',
-            'is_comment_enabled' => 'nullable|in:0,1,true,false',
-            'due_date' => [
-                function ($attribute, $value, $fail) use ($request) {
-                    if ($request->boolean('is_submission_required') && empty($value)) {
-                        if (Carbon::parse($value)->lt(Carbon::now())) {
-                            $fail('The due date and time must be in the future.');
-                        }
-                    }
-                }
-            ],
+            'modules' => 'required|array',
+            'modules.*.module_title' => 'required_if:is_submission_required,true|string|max:255',
+            'modules.*.points' => 'required_if:is_submission_required,true|integer|min:1',
+            'modules.*.num_of_attempts' => 'required_if:is_submission_required,true|integer|min:1',
+            'modules.*.submit_type' => 'required_if:is_submission_required,true|string',
+            'modules.*.file_type' => 'nullable|string|max:255',
+            'modules.*.due_date' => 'required_if:is_submission_required,true|date|after:now',
+            'modules.*.enable_comment' => 'nullable|boolean',
         ]);
 
         $filePaths = [];
@@ -83,21 +52,9 @@ class ModuleController extends Controller
             }
         }
 
-        $formattedDueDate = Carbon::parse($request->due_date)->format('Y-m-d H:i:s');
+        $formattedDueDate = $request->due_date ? Carbon::parse($request->due_date)->format('Y-m-d H:i:s') : null;
 
-        if (!$request->boolean('is_submission_required')) {
-            $request->merge([
-                'module_title' => "",
-                'is_comment_enabled' => 0,
-                'points' => null,
-                'num_of_attempts' => null,
-                'submit_type' => '',
-                'file_type' => '',
-                'due_date' => ''
-            ]);
-        }
-
-        Modules::create([
+        $module = Modules::create([
             'section_id' => $request->section_id,
             'module_name' => $request->module_name,
             'module_desc' => $request->module_desc,
@@ -105,25 +62,50 @@ class ModuleController extends Controller
             'file_name' => implode(',', $fileNames),
             'file_path' => implode(',', $filePaths),
             'is_submission_required' => $request->boolean('is_submission_required'),
-            'module_title' => $request->boolean('is_submission_required') ? $request->module_title : null,
-            'is_comment_enabled' => $request->boolean('is_comment_enabled'),
-            'points' => $request->boolean('is_submission_required') ? $request->points : null,
-            'num_of_attempts' => $request->boolean('is_submission_required') ? $request->num_of_attempts : null,
-            'submit_type' => $request->boolean('is_submission_required') ? $request->submit_type : '',
-            'file_type' => $request->file_type,
             'due_date' => $formattedDueDate,
         ]);
 
-        $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
+        if ($request->boolean('is_submission_required') && is_array($request->modules)) {
+            $moduleTitles = [];
+            $points = [];
+            $numOfAttempts = [];
+            $submitTypes = [];
+            $fileTypes = [];
+            $dueDates = [];
+            $enableComments = [];
 
+            foreach ($request->modules as $subModule) {
+                $moduleTitles[] = $subModule['module_title'];
+                $points[] = $subModule['points'];
+                $numOfAttempts[] = $subModule['num_of_attempts'];
+                $submitTypes[] = $subModule['submit_type'];
+
+                $fileTypes[] = !empty($subModule['file_type']) ? $subModule['file_type'] : 'text';
+
+                $dueDates[] = isset($subModule['due_date']) ? Carbon::parse($subModule['due_date'])->format('Y-m-d H:i:s') : null;
+                $enableComments[] = !empty($subModule['enable_comment']) ? 1 : 0;
+            }
+
+            $module->update([
+                'module_title' => implode(',', $moduleTitles),
+                'points' => implode(',', $points),
+                'num_of_attempts' => implode(',', $numOfAttempts),
+                'submit_type' => implode(',', $submitTypes),
+                'file_type' => implode(',', $fileTypes),
+                'is_comment_enabled' => implode(',', $enableComments),
+                'due_date' => implode(',', $dueDates),
+            ]);
+        }
+
+        $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Added Announcement: ' . $request->module_name . ' for Section ' . $section_name,
+            'action' => 'Added Module: ' . $request->module_name . ' for Section ' . $section_name,
             'created_at' => now()
         ]);
 
         return response()->json([
-            'message' => 'Announcement added successfully!'
+            'message' => 'Module added successfully!'
         ]);
     }
 
@@ -133,7 +115,7 @@ class ModuleController extends Controller
 
         if (!$module) {
             return response()->json([
-                'message' => 'Announcement not found!'
+                'message' => 'Module not found!'
             ], 404);
         }
 
@@ -152,45 +134,14 @@ class ModuleController extends Controller
             'module_file' => 'nullable|array',
             'module_file.*' => 'mimes:jpeg,png,jpg,pdf,doc,docx,xls,xlsx,txt',
             'is_submission_required' => 'nullable|in:0,1,true,false',
-            'module_title' => [
-                function ($attribute, $value, $fail) use ($request) {
-                    if ($request->boolean('is_submission_required') && is_null($value)) {
-                        $fail('The module title field is required.');
-                    }
-                },
-            ],
-            'points' => [
-                function ($attribute, $value, $fail) use ($request) {
-                    if ($request->boolean('is_submission_required') && (is_null($value) || $value < 1)) {
-                        $fail('The points field is required and must be at least 1 when submission is required.');
-                    }
-                },
-            ],
-            'num_of_attempts' => [
-                function ($attribute, $value, $fail) use ($request) {
-                    if ($request->boolean('is_submission_required') && (is_null($value) || $value < 1)) {
-                        $fail('The number of attempts field is required and must be at least 1 when submission is required.');
-                    }
-                },
-            ],
-            'submit_type' => [
-                function ($attribute, $value, $fail) use ($request) {
-                    if ($request->boolean('is_submission_required') && empty($value)) {
-                        $fail('The submit type field is required when submission is required.');
-                    }
-                },
-            ],
-            'file_type' => 'nullable|string|max:255',
-            'is_comment_enabled' => 'nullable|in:0,1,true,false',
-            'due_date' => [
-                function ($attribute, $value, $fail) use ($request) {
-                    if ($request->boolean('is_submission_required') && empty($value)) {
-                        if (Carbon::parse($value)->lt(Carbon::now())) {
-                            $fail('The due date and time must be in the future.');
-                        }
-                    }
-                }
-            ],
+            'modules' => 'required|array',
+            'modules.*.module_title' => 'required_if:is_submission_required,true|string|max:255',
+            'modules.*.points' => 'required_if:is_submission_required,true|integer|min:1',
+            'modules.*.num_of_attempts' => 'required_if:is_submission_required,true|integer|min:1',
+            'modules.*.submit_type' => 'required_if:is_submission_required,true|string',
+            'modules.*.file_type' => 'nullable|string|max:255',
+            'modules.*.due_date' => 'required_if:is_submission_required,true|date|after:now',
+            'modules.*.enable_comment' => 'nullable|boolean',
         ]);
 
         $module = Modules::findOrFail($id);
@@ -218,16 +169,25 @@ class ModuleController extends Controller
 
         $formattedDueDate = Carbon::parse($request->due_date)->format('Y-m-d H:i:s');
 
-        if (!$request->boolean('is_submission_required')) {
-            $request->merge([
-                'module_title' => "",
-                'is_comment_enabled' => 0,
-                'points' => 0,
-                'num_of_attempts' => 0,
-                'submit_type' => '',
-                'file_type' => '',
-                'due_date' => ''
-            ]);
+        $moduleTitles = [];
+        $points = [];
+        $numOfAttempts = [];
+        $submitTypes = [];
+        $fileTypes = [];
+        $dueDates = [];
+        $enableComments = [];
+
+        if ($request->boolean('is_submission_required') && is_array($request->modules)) {
+            foreach ($request->modules as $subModule) {
+                $moduleTitles[] = $subModule['module_title'];
+                $points[] = $subModule['points'];
+                $numOfAttempts[] = $subModule['num_of_attempts'];
+                $submitTypes[] = $subModule['submit_type'];
+
+                $fileTypes[] = !empty($subModule['file_type']) ? $subModule['file_type'] : 'text';
+                $dueDates[] = isset($subModule['due_date']) ? Carbon::parse($subModule['due_date'])->format('Y-m-d H:i:s') : null;
+                $enableComments[] = !empty($subModule['enable_comment']) ? 1 : 0;
+            }
         }
 
         $module->update([
@@ -238,25 +198,25 @@ class ModuleController extends Controller
             'file_name' => implode(',', $fileNames),
             'file_path' => implode(',', $filePaths),
             'is_submission_required' => $request->boolean('is_submission_required'),
-            'module_title' => $request->module_title,
-            'is_comment_enabled' => $request->boolean('is_comment_enabled'),
-            'points' => $request->points,
-            'num_of_attempts' => $request->num_of_attempts,
-            'submit_type' => $request->submit_type,
-            'file_type' => $request->file_type,
-            'due_date' => $formattedDueDate,
+            'module_title' => implode(',', $moduleTitles),
+            'points' => implode(',', $points),
+            'num_of_attempts' => implode(',', $numOfAttempts),
+            'submit_type' => implode(',', $submitTypes),
+            'file_type' => implode(',', $fileTypes),
+            'due_date' => implode(',', $dueDates),
+            'is_comment_enabled' => implode(',', $enableComments),
         ]);
 
         $section_name = Section::where('id', Auth::user()->section_id)->value('section_name');
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Update Announcement: ' . $module->mdule_name . ' for Section ' . $section_name,
+            'action' => 'Update Module: ' . $module->module_name . ' for Section ' . $section_name,
             'created_at' => now()
         ]);
 
         return response()->json([
-            'message' => 'Announcement updated successfully!'
+            'message' => 'Module updated successfully!'
         ]);
     }
 
@@ -270,12 +230,12 @@ class ModuleController extends Controller
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Delete Announcement: ' . $module->module_name . ' for Section ' . $section_name,
+            'action' => 'Delete Module: ' . $module->module_name . ' for Section ' . $section_name,
             'created_at' => now()
         ]);
 
         return response()->json([
-            'message' => 'Announcement deleted successfully!'
+            'message' => 'Module deleted successfully!'
         ]);
     }
 
@@ -357,12 +317,12 @@ class ModuleController extends Controller
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Deleted Announcement file: "' . $deletedFileName . '"' . ' for Section ' . $section_name,
+            'action' => 'Deleted Module file: "' . $deletedFileName . '"' . ' for Section ' . $section_name,
             'created_at' => now()
         ]);
 
         return response()->json([
-            'message' => 'Announcement file deleted successfully!'
+            'message' => 'Module file deleted successfully!'
         ]);
     }
 

@@ -33,7 +33,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
-export default function Modules({}) {
+export default function Modules({ }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isSubmissionRequired, setIsSubmissionRequired] = useState(false);
@@ -79,10 +79,86 @@ export default function Modules({}) {
     });
 
     const [modulesData, setModuleData] = useState([]);
-    const [submissions, setSubmissionsData] = useState([]);
+    const [submissions, setSubmissions] = useState([
+        {
+            module_title: '',
+            due_date: '',
+            points: '',
+            attempts: '',
+            submit_type: '',
+            file_type: '',
+            enable_comments: false
+        }
+    ]);
     const { auth } = usePage().props;
     const userType = auth?.user?.user_type;
     const section_id = auth?.user?.section_id;
+
+    const addSubmission = () => {
+        setSubmissions([
+            ...submissions,
+            {
+                module_title: '',
+                due_date: '',
+                points: '',
+                attempts: '',
+                submit_type: '',
+                file_type: '',
+                enable_comments: false
+            }
+        ]);
+    };
+
+    const removeSubmission = (index) => {
+        const updatedSubmissions = submissions.filter((_, i) => i !== index);
+        setSubmissions(updatedSubmissions);
+    };
+
+    const handleSubmissionChange = (index, e) => {
+        const { name, value, type, checked } = e.target;
+        const updatedSubmissions = [...submissions];
+        updatedSubmissions[index][name] = type === 'checkbox' ? checked : value;
+        setSubmissions(updatedSubmissions);
+    };
+
+    const [editSubmissions, setEditSubmissions] = useState([
+        {
+            module_title: '',
+            due_date: '',
+            points: '',
+            attempts: '',
+            submit_type: '',
+            file_type: '',
+            enable_comments: false
+        }
+    ]);
+
+    const editSubmission = () => {
+        setEditSubmissions([
+            ...editSubmissions,
+            {
+                module_title: '',
+                due_date: '',
+                points: '',
+                attempts: '',
+                submit_type: '',
+                file_type: '',
+                enable_comments: false
+            }
+        ]);
+    };
+
+    const editRemoveSubmission = (index) => {
+        const updatedSubmissions = editSubmissions.filter((_, i) => i !== index);
+        setEditSubmissions(updatedSubmissions);
+    };
+
+    const handleEditSubmissionChange = (index, e) => {
+        const { name, value, type, checked } = e.target;
+        const updatedSubmissions = [...editSubmissions];
+        updatedSubmissions[index][name] = type === 'checkbox' ? checked : value;
+        setEditSubmissions(updatedSubmissions);
+    };
 
     const formatDueDate = (dateString) => {
         if (!dateString) return 'No due date';
@@ -164,7 +240,6 @@ export default function Modules({}) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
         setIsModalOpen(false);
 
         const formData = new FormData();
@@ -172,30 +247,30 @@ export default function Modules({}) {
         formData.append('module_name', data.module_name);
         formData.append('module_desc', data.module_desc);
         formData.append('module_file_desc', data.module_file_desc);
-        formData.append('module_title', data.module_title);
         formData.append('is_submission_required', isSubmissionRequired);
-        formData.append('due_date', data.due_date);
-        formData.append('points', data.points);
-        formData.append('num_of_attempts', data.attempts);
-        formData.append('submit_type', data.submit_type);
-        formData.append('file_type', data.file_type);
-        formData.append('is_comment_enabled', isEnableComment);
+
+        submissions.forEach((item, index) => {
+            formData.append(`modules[${index}][module_title]`, item.module_title);
+            formData.append(`modules[${index}][points]`, item.points);
+            formData.append(`modules[${index}][num_of_attempts]`, item.attempts);
+            formData.append(`modules[${index}][submit_type]`, item.submit_type);
+            formData.append(`modules[${index}][file_type]`, item.file_type);
+            formData.append(`modules[${index}][due_date]`, item.due_date);
+            formData.append(`modules[${index}][enable_comment]`, item.enable_comments ? 1 : 0);
+        });
 
         files.forEach((file) => {
             formData.append('module_file[]', file);
         });
 
-        axios
-            .post(route('modules.store'), formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
+        axios.post(route('modules.store'), formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        })
             .then((response) => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Success',
-                    text: 'Module submitted successfully!',
+                    text: 'Modules submitted successfully!',
                     confirmButtonColor: '#d33',
                 }).then(() => {
                     reset();
@@ -203,31 +278,18 @@ export default function Modules({}) {
                 });
             })
             .catch((error) => {
-                if (error.response && error.response.data.errors) {
-                    let errorMessages = Object.values(error.response.data.errors)
-                        .map((err) => err.join('\n'))
-                        .join('\n');
-
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Submission Failed',
-                        text: errorMessages,
-                        confirmButtonColor: '#d33',
-                    }).then(() => {
-                        setIsModalOpen(true);
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Something went wrong. Please try again later.',
-                        confirmButtonColor: '#d33',
-                    }).then(() => {
-                        setIsModalOpen(true);
-                    });
+                let message = 'Something went wrong.';
+                if (error.response?.data?.errors) {
+                    message = Object.values(error.response.data.errors).map(err => err.join('\n')).join('\n');
                 }
-
-                console.error('There was an error submitting the form:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Submission Failed',
+                    text: message,
+                    confirmButtonColor: '#d33',
+                }).then(() => {
+                    setIsModalOpen(true);
+                });
             });
     };
 
@@ -237,13 +299,40 @@ export default function Modules({}) {
             .then((response) => {
                 const moduleData = response.data.module;
 
-                const files = [];
+                const moduleTitles = moduleData.module_title.split(',');
+                const points = moduleData.points.split(',');
+                const attempts = moduleData.num_of_attempts.split(',');
+                const fileNames = moduleData.file_name.split(',');
+                const filePaths = moduleData.file_path.split(',');
+                const fileTypes = moduleData.file_type.split(',');
+                const submitTypes = moduleData.submit_type.split(',');
+                const dueDates = moduleData.due_date.split(',');
+
+                const fileObjects = fileNames.map((fileName, index) => ({
+                    name: fileName,
+                    size: 0,
+                    filePath: filePaths[index],
+                    fileType: fileTypes[index],
+                }));
 
                 setEditModuleData({
                     ...moduleData,
                     is_comment_enabled: Boolean(moduleData.is_comment_enabled),
                 });
-                setEditFiles(files);
+
+                setEditSubmissions(moduleTitles.map((title, index) => ({
+                    module_title: title,
+                    points: points[index],
+                    attempts: attempts[index],
+                    file_name: fileNames[index],
+                    file_path: filePaths[index],
+                    file_type: fileTypes[index],
+                    submit_type: submitTypes[index],
+                    due_date: dueDates[index],
+                    enable_comments: moduleData.is_comment_enabled === "1",
+                })));
+
+                setEditFiles([]);
                 toggleEditModal();
                 setIsEditSubmissionRequired(moduleData.is_submission_required);
                 if (moduleData.submit_type !== 'text') {
@@ -265,13 +354,16 @@ export default function Modules({}) {
         formData.append('module_desc', editModuleData.module_desc);
         formData.append('module_file_desc', editModuleData.module_file_desc);
         formData.append('is_submission_required', isEditSubmissionRequired);
-        formData.append('module_title', editModuleData.module_title);
-        formData.append('due_date', editModuleData.due_date);
-        formData.append('points', editModuleData.points);
-        formData.append('num_of_attempts', editModuleData.num_of_attempts);
-        formData.append('submit_type', editModuleData.submit_type);
-        formData.append('file_type', editModuleData.file_type);
-        formData.append('is_comment_enabled', isEditEnableComment);
+
+        editSubmissions.forEach((item, index) => {
+            formData.append(`modules[${index}][module_title]`, item.module_title);
+            formData.append(`modules[${index}][points]`, item.points);
+            formData.append(`modules[${index}][num_of_attempts]`, item.attempts);
+            formData.append(`modules[${index}][submit_type]`, item.submit_type);
+            formData.append(`modules[${index}][file_type]`, item.file_type);
+            formData.append(`modules[${index}][due_date]`, item.due_date);
+            formData.append(`modules[${index}][enable_comment]`, item.enable_comments ? 1 : 0);
+        });
 
         editFiles.forEach((file) => {
             formData.append('module_file[]', file);
@@ -635,9 +727,6 @@ export default function Modules({}) {
         setIsViewLessonModalOpen(true);
         setSelectedLessonData(module_id);
     };
-    console.log('modulesData[selectedLessonData]', modulesData[selectedLessonData]);
-    console.log('modulesData', modulesData);
-    console.log('[selectedLessonData]', selectedLessonData);
 
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Module</h2>}>
@@ -663,74 +752,54 @@ export default function Modules({}) {
                         )}
 
                         <div className="grid grid-cols-1 gap-4">
-                            {modulesData.map((module, index) => (
-                                <Accordion
-                                    key={index}
-                                    type="single"
-                                    className="bg-gray-200 rounded-2xl px-2 md:px-4 text-primary"
-                                    collapsible
-                                    open
-                                    defaultValue="item-1"
-                                >
-                                    <AccordionItem value="item-1">
-                                        <AccordionTrigger>
-                                            <div className="flex flex-wrap justify-between items-center w-full gap-4">
-                                                <div>
-                                                    <h1 className="font-medium text-base md:text-3xl no-underline text-primary ps-2 mb-1">
-                                                        {' '}
-                                                        {module.module_name}
-                                                    </h1>
-                                                </div>
-                                                {module?.is_submission_required === 1 && (
-                                                    <div className="px-4">
-                                                        <p
-                                                            className={`border text-gray-700 p-1 px-2 rounded-lg font-medium text-xs ${
-                                                                new Date(module.due_date) - new Date() <
-                                                                1000 * 60 * 60 * 24
-                                                                    ? 'bg-red-200 text-red-700'
-                                                                    : new Date(module.due_date) > new Date()
-                                                                      ? 'bg-green-200 text-green-800'
-                                                                      : 'bg-gray-300 text-gray-500'
-                                                            }`}
-                                                        >
-                                                            Due: {formatDueDate(module.due_date)}
-                                                        </p>
+                            {modulesData.map((module, index) => {
+                                const dueDates = module.due_date?.split(',') || [];
+                                const titles = module.module_title?.split(',') || [];
+                                const submitTypes = module.submit_type?.split(',') || [];
+                                const points = module.points?.split(',') || [];
+                                const attempts = module.attempts?.split(',') || [];
+
+                                return (
+                                    <Accordion
+                                        key={index}
+                                        type="single"
+                                        className="bg-gray-200 rounded-2xl px-2 md:px-4 text-primary"
+                                        collapsible
+                                        open
+                                        defaultValue="item-1"
+                                    >
+                                        <AccordionItem value="item-1">
+                                            <AccordionTrigger>
+                                                <div className="flex flex-wrap justify-between items-center w-full gap-4">
+                                                    <div>
+                                                        <h1 className="font-medium text-base md:text-3xl no-underline text-primary ps-2 mb-1">
+                                                            {module.module_name}
+                                                        </h1>
                                                     </div>
-                                                )}
-                                            </div>
-                                        </AccordionTrigger>
-                                        <AccordionContent>
-                                            <div className="py-2">
-                                                <p className="text-primary text-base  px-3">{module.module_desc}</p>
-                                            </div>
-                                            {userType === 'Teacher' && (
-                                                <>
-                                                    {module?.is_submission_required === 1 ? (
-                                                        <>
-                                                            <div className="flex justify-between flex-wrap gap-2 mb-2 w-full px-3 text-white font-semibold">
-                                                                <div className="flex gap-2">
-                                                                    <button
-                                                                        onClick={() => handleEdit(module.module_id)}
-                                                                        className="cursor-pointer bg-primary p-1 px-4 rounded-lg flex items-center"
-                                                                    >
-                                                                        <FaEdit className="text-sm mr-1" />
-                                                                        Edit
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={() =>
-                                                                            handleDeleteModule(module.module_id)
-                                                                        }
-                                                                        className="cursor-pointer bg-danger p-1 px-4 rounded-lg flex items-center"
-                                                                    >
-                                                                        <FaTrashAlt className="text-sm mr-1" />
-                                                                        Delete
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                            <hr className="my-4" />
-                                                        </>
-                                                    ) : (
-                                                        <div className="flex justify-end flex-wrap gap-2 mb-2 w-full px-3 text-white font-semibold">
+                                                    {module?.is_submission_required === 1 && dueDates.length > 0 && (
+                                                        <div className="px-4">
+                                                            <p
+                                                                className={`border text-gray-700 p-1 px-2 rounded-lg font-medium text-xs ${new Date(dueDates[0]) - new Date() < 1000 * 60 * 60 * 24
+                                                                    ? 'bg-red-200 text-red-700'
+                                                                    : new Date(dueDates[0]) > new Date()
+                                                                        ? 'bg-green-200 text-green-800'
+                                                                        : 'bg-gray-300 text-gray-500'
+                                                                    }`}
+                                                            >
+                                                                Due: {formatDueDate(dueDates[0])}
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </AccordionTrigger>
+                                            <AccordionContent>
+                                                <div className="py-2">
+                                                    <p className="text-primary text-base px-3">{module.module_desc}</p>
+                                                </div>
+
+                                                {userType === 'Teacher' && (
+                                                    <div className="flex justify-between flex-wrap gap-2 mb-2 w-full px-3 text-white font-semibold">
+                                                        <div className="flex gap-2">
                                                             <button
                                                                 onClick={() => handleEdit(module.module_id)}
                                                                 className="cursor-pointer bg-primary p-1 px-4 rounded-lg flex items-center"
@@ -746,78 +815,74 @@ export default function Modules({}) {
                                                                 Delete
                                                             </button>
                                                         </div>
-                                                    )}
-                                                </>
-                                            )}
-                                            {module?.is_submission_required === 1 ? (
-                                                <div className="bg-white text-primary rounded-xl px-4 py-5">
-                                                    <div
-                                                        onClick={() => handleViewLesson(index)}
-                                                        className=" px-3 py-2 text-lg font-medium text-gray-600 cursor-pointer hover:bg-gray-200  focus:border-red-400 flex justify-between items-center border-b"
-                                                    >
-                                                        {module.module_title}
-                                                        <FaArrowRight className="text-gray-600 ml-2" />
                                                     </div>
-                                                </div>
-                                            ) : (
-                                                <div className="bg-white text-primary rounded-xl ">
-                                                    <div className="my-5 pt-2 pb-5 bg-white px-5 rounded-lg">
-                                                        {module.module_file_desc && (
-                                                            <h3 className="font-medium my-4 bg-yellow-100 p-2 rounded-lg text-yellow-600">
-                                                                {module.module_file_desc}
-                                                            </h3>
-                                                        )}
+                                                )}
 
-                                                        {module.file &&
-                                                            module.file.map((file, index) => (
-                                                                <div
-                                                                    key={index}
-                                                                    className="flex justify-between text-info flex-1 items-center border-b-2 md:flex-row flex-col sm:gap-2 gap-4"
-                                                                >
+                                                {module?.is_submission_required === 1 ? (
+                                                    <div className="bg-white text-primary rounded-xl px-4 py-5">
+                                                        {titles.map((title, idx) => (
+                                                            <div
+                                                                key={idx}
+                                                                onClick={() => handleViewLesson(index)}
+                                                                className="px-3 py-2 text-lg font-medium text-gray-600 cursor-pointer hover:bg-gray-200 focus:border-red-400 flex justify-between items-center border-b"
+                                                            >
+                                                                {title}
+                                                                <FaArrowRight className="text-gray-600 ml-2" />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="bg-white text-primary rounded-xl">
+                                                        <div className="my-5 pt-2 pb-5 bg-white px-5 rounded-lg">
+                                                            {module.module_file_desc && (
+                                                                <h3 className="font-medium my-4 bg-yellow-100 p-2 rounded-lg text-yellow-600">
+                                                                    {module.module_file_desc}
+                                                                </h3>
+                                                            )}
+
+                                                            {module.file &&
+                                                                module.file.map((file, index) => (
                                                                     <div
-                                                                        className="p-5 flex gap-2 items-center cursor-pointer"
-                                                                        onClick={() => {
-                                                                            window.open(file.file_path, '_blank');
-                                                                        }}
+                                                                        key={index}
+                                                                        className="flex justify-between text-info flex-1 items-center border-b-2 md:flex-row flex-col sm:gap-2 gap-4"
                                                                     >
-                                                                        <FaFile /> {file.file_name}
-                                                                    </div>
-                                                                    <div className="flex gap-2 my-4">
                                                                         <div
-                                                                            onClick={() => {
-                                                                                const link =
-                                                                                    document.createElement('a');
-                                                                                link.href = file.file_path;
-                                                                                link.download = file.file_name;
-                                                                                link.click();
-                                                                            }}
-                                                                            className="cursor-pointer bg-primary p-1 px-4 rounded-lg text-white font-semibold"
+                                                                            className="p-5 flex gap-2 items-center cursor-pointer"
+                                                                            onClick={() => window.open(file.file_path, '_blank')}
                                                                         >
-                                                                            <FaCloudDownloadAlt />
+                                                                            <FaFile /> {file.file_name}
                                                                         </div>
-                                                                        {userType === 'Teacher' && (
+                                                                        <div className="flex gap-2 my-4">
                                                                             <div
                                                                                 onClick={() => {
-                                                                                    handleRemoveFile(
-                                                                                        module.module_id,
-                                                                                        index,
-                                                                                    );
+                                                                                    const link = document.createElement('a');
+                                                                                    link.href = file.file_path;
+                                                                                    link.download = file.file_name;
+                                                                                    link.click();
                                                                                 }}
-                                                                                className="cursor-pointer bg-danger p-1 px-4 rounded-lg text-white font-semibold"
+                                                                                className="cursor-pointer bg-primary p-1 px-4 rounded-lg text-white font-semibold"
                                                                             >
-                                                                                <FaTrashAlt />
+                                                                                <FaCloudDownloadAlt />
                                                                             </div>
-                                                                        )}
+                                                                            {userType === 'Teacher' && (
+                                                                                <div
+                                                                                    onClick={() => handleRemoveFile(module.module_id, index)}
+                                                                                    className="cursor-pointer bg-danger p-1 px-4 rounded-lg text-white font-semibold"
+                                                                                >
+                                                                                    <FaTrashAlt />
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                            ))}
+                                                                ))}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            )}
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                </Accordion>
-                            ))}
+                                                )}
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                    </Accordion>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
@@ -1162,11 +1227,10 @@ export default function Modules({}) {
                                             <tr key={index}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                     <span
-                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                            !submission.date_submitted && !submission.score
-                                                                ? 'bg-yellow-100 text-yellow-700'
-                                                                : 'bg-green-100 text-green-600'
-                                                        }`}
+                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${!submission.date_submitted && !submission.score
+                                                            ? 'bg-yellow-100 text-yellow-700'
+                                                            : 'bg-green-100 text-green-600'
+                                                            }`}
                                                     >
                                                         {!submission.date_submitted && !submission.score
                                                             ? 'No Submission'
@@ -1432,96 +1496,107 @@ export default function Modules({}) {
 
                                 {isSubmissionRequired && (
                                     <div className="mt-7">
-                                        <InputLabel htmlFor="module_title" value="Module Title" />
-                                        <TextInput
-                                            type="text"
-                                            name="module_title"
-                                            value={data.module_title}
-                                            onChange={handleChange}
-                                            className="border w-full p-2 mb-2"
-                                            required
-                                        />
-
-                                        <InputLabel htmlFor="due_date" value="Due Date" />
-                                        <TextInput
-                                            type="datetime-local"
-                                            name="due_date"
-                                            value={data.due_date}
-                                            onChange={handleChange}
-                                            className="border w-full p-2 mb-2"
-                                            required
-                                        />
-
-                                        <InputLabel htmlFor="points" value="Points" />
-                                        <TextInput
-                                            type="number"
-                                            name="points"
-                                            value={data.points}
-                                            onChange={handleChange}
-                                            className="border w-full p-2 mb-2"
-                                            required
-                                        />
-
-                                        <InputLabel htmlFor="attempts" value="Number of Attempts" />
-                                        <TextInput
-                                            type="number"
-                                            name="attempts"
-                                            value={data.attempts}
-                                            onChange={handleChange}
-                                            className="border w-full p-2 mb-2"
-                                            required
-                                        />
-
-                                        <InputLabel htmlFor="submit_type" value="Submit Type" />
-                                        <SelectInput
-                                            name="submit_type"
-                                            value={data.submit_type}
-                                            onChange={(e) => {
-                                                handleChange(e);
-                                                setIsFileTypeSelected(e.target.value === 'file');
-                                            }}
-                                            className="border w-full p-2 mb-2"
-                                            required
-                                        >
-                                            <option value="">Select Submit Type</option>
-                                            <option value="text">Text Input</option>
-                                            <option value="file">File Upload</option>
-                                        </SelectInput>
-                                        {isFileTypeSelected && (
-                                            <>
-                                                <InputLabel htmlFor="file_type" value="File Type" />
-                                                <SelectInput
-                                                    name="file_type"
-                                                    value={data.file_type}
-                                                    onChange={handleChange}
-                                                    className="border w-full p-2 mb-2"
-                                                >
-                                                    <option value="">Select File Type</option>
-                                                    <option value="png/jpeg/jpg">Image</option>
-                                                    <option value="video">Video</option>
-                                                    <option value="pdf">PDF</option>
-                                                    <option value="doc/docx">Word Document</option>
-                                                    <option value="txt">Text File</option>
-                                                    <option value="xls/xlsx">Excel File</option>
-                                                    <option value="ppt/pptx">Powerpoint File</option>
-                                                    <option value="any">Any File</option>
-                                                </SelectInput>
-                                            </>
-                                        )}
-
-                                        <div className="my-6 mx-2">
-                                            <Checkbox
-                                                id="enable_comments"
-                                                checked={data.enable_comments}
-                                                onChange={(e) => {
-                                                    handleChange(e);
-                                                    setIsEnableComment(e.target.checked);
-                                                }}
-                                            />
-                                            <label htmlFor="enable_comments" className="ml-2 text-gray-700">
-                                                Enable comments for this module?
-                                            </label>
+                                        <div className="flex justify-between items-center mb-4">
+                                            <h3 className="text-lg font-medium text-gray-700">Submissions</h3>
+                                            <button type="button" onClick={addSubmission} className="text-blue-600 hover:underline">
+                                                + Add Submission
+                                            </button>
                                         </div>
+
+                                        {submissions.map((submission, index) => (
+                                            <div key={index} className="border rounded-xl p-4 mb-6 bg-blue-50">
+                                                <div className="flex justify-between">
+                                                    <h4 className="font-semibold mb-2">Submission {index + 1}</h4>
+                                                    {submissions.length > 1 && (
+                                                        <button type="button" onClick={() => removeSubmission(index)} className="text-red-500">
+                                                            Remove
+                                                        </button>
+                                                    )}
+                                                </div>
+                                                <InputLabel htmlFor="module_title" value="Module Title" />
+                                                <TextInput
+                                                    type="text"
+                                                    name="module_title"
+                                                    value={submission.module_title}
+                                                    onChange={(e) => handleSubmissionChange(index, e)}
+                                                    className="border w-full p-2 mb-2"
+                                                    required
+                                                />
+                                                <InputLabel htmlFor="due_date" value="Due Date" />
+                                                <TextInput
+                                                    type="datetime-local"
+                                                    name="due_date"
+                                                    value={submission.due_date}
+                                                    onChange={(e) => handleSubmissionChange(index, e)}
+                                                    className="border w-full p-2 mb-2"
+                                                    required
+                                                />
+                                                <InputLabel htmlFor="points" value="Points" />
+                                                <TextInput
+                                                    type="number"
+                                                    name="points"
+                                                    value={submission.points}
+                                                    onChange={(e) => handleSubmissionChange(index, e)}
+                                                    className="border w-full p-2 mb-2"
+                                                    required
+                                                />
+                                                <InputLabel htmlFor="attempts" value="Number of Attempts" />
+                                                <TextInput
+                                                    type="number"
+                                                    name="attempts"
+                                                    value={submission.attempts}
+                                                    onChange={(e) => handleSubmissionChange(index, e)}
+                                                    className="border w-full p-2 mb-2"
+                                                    required
+                                                />
+                                                <InputLabel htmlFor="submit_type" value="Submit Type" />
+                                                <SelectInput
+                                                    name="submit_type"
+                                                    value={submission.submit_type}
+                                                    onChange={(e) => handleSubmissionChange(index, e)}
+                                                    className="border w-full p-2 mb-2"
+                                                    required
+                                                >
+                                                    <option value="">Select Submit Type</option>
+                                                    <option value="text">Text Input</option>
+                                                    <option value="file">File Upload</option>
+                                                </SelectInput>
+
+                                                {submission.submit_type === 'file' && (
+                                                    <>
+                                                        <InputLabel htmlFor="file_type" value="File Type" />
+                                                        <SelectInput
+                                                            name="file_type"
+                                                            value={submission.file_type}
+                                                            onChange={(e) => handleSubmissionChange(index, e)}
+                                                            className="border w-full p-2 mb-2"
+                                                        >
+                                                            <option value="">Select File Type</option>
+                                                            <option value="png/jpeg/jpg">Image</option>
+                                                            <option value="video">Video</option>
+                                                            <option value="pdf">PDF</option>
+                                                            <option value="doc/docx">Word Document</option>
+                                                            <option value="txt">Text File</option>
+                                                            <option value="xls/xlsx">Excel File</option>
+                                                            <option value="ppt/pptx">Powerpoint File</option>
+                                                            <option value="any">Any File</option>
+                                                        </SelectInput>
+                                                    </>
+                                                )}
+
+                                                <div className="my-3">
+                                                    <Checkbox
+                                                        id={`enable_comments_${index}`}
+                                                        name="enable_comments"
+                                                        checked={submission.enable_comments}
+                                                        onChange={(e) => handleSubmissionChange(index, e)}
+                                                    />
+                                                    <label htmlFor={`enable_comments_${index}`} className="ml-2 text-gray-700">
+                                                        Enable comments for this module?
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
                             </div>
@@ -1593,7 +1668,7 @@ export default function Modules({}) {
                                 <ul className="mb-9">
                                     {editFiles.map((file, index) => (
                                         <li key={index} className="text-sm text-gray-700">
-                                            {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                                            {file.name} ({(file.size / 1024).toFixed(2)} KB) {/* Size is in KB */}
                                             <button
                                                 onClick={() => handleRemoveEditFile(index)}
                                                 className="text-red-500 hover:text-red-700 p-1 px-4 rounded-lg"
@@ -1626,100 +1701,123 @@ export default function Modules({}) {
 
                                 {isEditSubmissionRequired === 1 && (
                                     <div className="mt-7">
-                                        <InputLabel htmlFor="module_title" value="Module Title" />
-                                        <TextInput
-                                            type="text"
-                                            name="module_title"
-                                            value={editModuleData ? editModuleData.module_title : ''}
-                                            onChange={handleEditChange}
-                                            className="border w-full p-2 mb-2"
-                                            required
-                                        />
-
-                                        <InputLabel htmlFor="due_date" value="Due Date" />
-                                        <TextInput
-                                            type="datetime-local"
-                                            name="due_date"
-                                            value={editModuleData ? editModuleData.due_date : ''}
-                                            onChange={handleEditChange}
-                                            className="border w-full p-2 mb-2"
-                                            required
-                                        />
-
-                                        <InputLabel htmlFor="points" value="Points" />
-                                        <TextInput
-                                            type="number"
-                                            name="points"
-                                            value={editModuleData ? editModuleData.points : ''}
-                                            onChange={handleEditChange}
-                                            className="border w-full p-2 mb-2"
-                                            required
-                                        />
-
-                                        <InputLabel htmlFor="num_of_attempts" value="Number of Attempts" />
-                                        <TextInput
-                                            type="number"
-                                            name="num_of_attempts"
-                                            value={editModuleData ? editModuleData.num_of_attempts : ''}
-                                            onChange={handleEditChange}
-                                            className="border w-full p-2 mb-2"
-                                            required
-                                        />
-
-                                        <InputLabel htmlFor="submit_type" value="Submit Type" />
-                                        <SelectInput
-                                            name="submit_type"
-                                            value={editModuleData ? editModuleData.submit_type : ''}
-                                            onChange={(e) => {
-                                                handleEditChange(e);
-                                                setIsFileTypeSelected(e.target.value === 'file');
-                                            }}
-                                            className="border w-full p-2 mb-2"
-                                            required
-                                        >
-                                            <option value="">Select Submit Type</option>
-                                            <option value="text">Text Input</option>
-                                            <option value="file">File Upload</option>
-                                        </SelectInput>
-                                        {isFileTypeSelected && (
-                                            <>
-                                                <InputLabel htmlFor="file_type" value="File Type" />
-                                                <SelectInput
-                                                    name="file_type"
-                                                    value={editModuleData ? editModuleData.file_type : []}
-                                                    onChange={handleEditChange}
-                                                    className="border w-full p-2 mb-2"
-                                                >
-                                                    <option value="">Select File Type</option>
-                                                    <option value="png/jpeg/jpg">Image</option>
-                                                    <option value="video">Video</option>
-                                                    <option value="pdf">PDF</option>
-                                                    <option value="doc/docx">Word Document</option>
-                                                    <option value="txt">Text File</option>
-                                                    <option value="xls/xlsx">Excel File</option>
-                                                    <option value="ppt/pptx">Powerpoint File</option>
-                                                    <option value="any">Any File</option>
-                                                </SelectInput>
-                                            </>
-                                        )}
-
-                                        <div className="my-6 mx-2">
-                                            <Checkbox
-                                                id="enable_comments"
-                                                checked={!!editModuleData.is_comment_enabled}
-                                                onChange={(e) => {
-                                                    const newValue = e.target.checked;
-                                                    setEditModuleData((prevData) => ({
-                                                        ...prevData,
-                                                        is_comment_enabled: newValue,
-                                                    }));
-                                                    setIsEditEnableComment(newValue);
-                                                }}
-                                            />
-                                            <label htmlFor="enable_comments" className="ml-2 text-gray-700">
-                                                Enable comments for this module?
-                                            </label>
+                                        <div className="flex justify-between items-center mb-4">
+                                            <h3 className="text-lg font-medium text-gray-700">Submissions</h3>
+                                            <button
+                                                type="button"
+                                                onClick={editSubmission}
+                                                className="text-blue-600 hover:underline"
+                                            >
+                                                + Add Submission
+                                            </button>
                                         </div>
+
+                                        {editSubmissions.map((submission, index) => (
+                                            <div key={index} className="border rounded-xl p-4 mb-6 bg-blue-50">
+                                                <div className="flex justify-between">
+                                                    <h4 className="font-semibold mb-2">Submission {index + 1}</h4>
+                                                    {editSubmissions.length > 1 && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => editRemoveSubmission(index)}
+                                                            className="text-red-500"
+                                                        >
+                                                            Remove
+                                                        </button>
+                                                    )}
+                                                </div>
+
+                                                <InputLabel htmlFor="module_title" value="Module Title" />
+                                                <TextInput
+                                                    type="text"
+                                                    name="module_title"
+                                                    value={submission.module_title}
+                                                    onChange={(e) => handleEditSubmissionChange(index, e)}
+                                                    className="border w-full p-2 mb-2"
+                                                    required
+                                                />
+
+                                                <InputLabel htmlFor="due_date" value="Due Date" />
+                                                <TextInput
+                                                    type="datetime-local"
+                                                    name="due_date"
+                                                    value={submission.due_date}
+                                                    onChange={(e) => handleEditSubmissionChange(index, e)}
+                                                    className="border w-full p-2 mb-2"
+                                                    required
+                                                />
+
+                                                <InputLabel htmlFor="points" value="Points" />
+                                                <TextInput
+                                                    type="number"
+                                                    name="points"
+                                                    value={submission.points}
+                                                    onChange={(e) => handleEditSubmissionChange(index, e)}
+                                                    className="border w-full p-2 mb-2"
+                                                    required
+                                                />
+
+                                                <InputLabel htmlFor="attempts" value="Number of Attempts" />
+                                                <TextInput
+                                                    type="number"
+                                                    name="attempts"
+                                                    value={submission.attempts}
+                                                    onChange={(e) => handleEditSubmissionChange(index, e)}
+                                                    className="border w-full p-2 mb-2"
+                                                    required
+                                                />
+
+                                                <InputLabel htmlFor="submit_type" value="Submit Type" />
+                                                <SelectInput
+                                                    name="submit_type"
+                                                    value={submission.submit_type}
+                                                    onChange={(e) => {
+                                                        handleEditSubmissionChange(index, e);
+                                                        setIsFileTypeSelected(e.target.value === 'file');
+                                                    }}
+                                                    className="border w-full p-2 mb-2"
+                                                    required
+                                                >
+                                                    <option value="">Select Submit Type</option>
+                                                    <option value="text">Text Input</option>
+                                                    <option value="file">File Upload</option>
+                                                </SelectInput>
+
+                                                {submission.submit_type === 'file' && (
+                                                    <>
+                                                        <InputLabel htmlFor="file_type" value="File Type" />
+                                                        <SelectInput
+                                                            name="file_type"
+                                                            value={submission.file_type}
+                                                            onChange={(e) => handleEditSubmissionChange(index, e)}
+                                                            className="border w-full p-2 mb-2"
+                                                        >
+                                                            <option value="">Select File Type</option>
+                                                            <option value="png/jpeg/jpg">Image</option>
+                                                            <option value="video">Video</option>
+                                                            <option value="pdf">PDF</option>
+                                                            <option value="doc/docx">Word Document</option>
+                                                            <option value="txt">Text File</option>
+                                                            <option value="xls/xlsx">Excel File</option>
+                                                            <option value="ppt/pptx">Powerpoint File</option>
+                                                            <option value="any">Any File</option>
+                                                        </SelectInput>
+                                                    </>
+                                                )}
+
+                                                <div className="my-3">
+                                                    <Checkbox
+                                                        id={`enable_comments_${index}`}
+                                                        name="enable_comments"
+                                                        checked={submission.enable_comments}
+                                                        onChange={(e) => handleEditSubmissionChange(index, e)}
+                                                    />
+                                                    <label htmlFor={`enable_comments_${index}`} className="ml-2 text-gray-700">
+                                                        Enable comments for this module?
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
                             </div>
