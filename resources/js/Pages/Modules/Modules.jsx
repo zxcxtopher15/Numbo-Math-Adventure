@@ -33,7 +33,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
-export default function Modules({ }) {
+export default function Modules({}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isSubmissionRequired, setIsSubmissionRequired] = useState(false);
@@ -764,12 +764,12 @@ export default function Modules({ }) {
         setSelectedActivityIndex(activity_index);
 
         fetch(`/get-module-score?module_id=${module_id}&submission_index=${submissionIndex}`)
-            .then(response => response.json())
-            .then(data => {
+            .then((response) => response.json())
+            .then((data) => {
                 const score = data.score !== undefined ? data.score : 0;
                 setDataScore(score);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Error fetching score:', error);
                 setDataScore(0);
             });
@@ -857,8 +857,14 @@ export default function Modules({ }) {
                                                             <div
                                                                 key={idx}
                                                                 onClick={() => {
-                                                                    const submissionIndex = module.submission_index?.split(',')[idx];
-                                                                    handleViewLesson(index, idx, module.module_id, submissionIndex);
+                                                                    const submissionIndex =
+                                                                        module.submission_index?.split(',')[idx];
+                                                                    handleViewLesson(
+                                                                        index,
+                                                                        idx,
+                                                                        module.module_id,
+                                                                        submissionIndex
+                                                                    );
                                                                 }}
                                                                 className="grid sm:grid-cols-1 md:grid-cols-2 gap-2 px-3 py-2 text-lg font-medium text-gray-600 cursor-pointer hover:bg-gray-200 focus:border-red-400 flex justify-between items-center border-b"
                                                             >
@@ -867,15 +873,16 @@ export default function Modules({ }) {
                                                                     {dueDates.length > 0 && (
                                                                         <div className="pe-4">
                                                                             <p
-                                                                                className={`border text-gray-700 p-1 px-2 rounded-lg font-medium text-xs ${new Date(dueDates[idx]) -
-                                                                                    new Date() <
+                                                                                className={`border text-gray-700 p-1 px-2 rounded-lg font-medium text-xs ${
+                                                                                    new Date(dueDates[idx]) -
+                                                                                        new Date() <
                                                                                     1000 * 60 * 60 * 24
-                                                                                    ? 'bg-red-200 text-red-700'
-                                                                                    : new Date(dueDates[idx]) >
-                                                                                        new Date()
-                                                                                        ? 'bg-green-200 text-green-800'
-                                                                                        : 'bg-gray-300 text-gray-500'
-                                                                                    }`}
+                                                                                        ? 'bg-red-200 text-red-700'
+                                                                                        : new Date(dueDates[idx]) >
+                                                                                            new Date()
+                                                                                          ? 'bg-green-200 text-green-800'
+                                                                                          : 'bg-gray-300 text-gray-500'
+                                                                                }`}
                                                                             >
                                                                                 Due: {formatDueDate(dueDates[idx])}
                                                                             </p>
@@ -987,7 +994,7 @@ export default function Modules({ }) {
                                                 <h1 className="text-2xl text-gray-700">
                                                     {
                                                         modulesData[selectedLessonData].module_title.split(',')[
-                                                        selectedActivityIndex
+                                                            selectedActivityIndex
                                                         ]
                                                     }
                                                 </h1>
@@ -997,12 +1004,12 @@ export default function Modules({ }) {
                                                         <h3 className="font-semibold text-xl text-warning">
                                                             {modulesData[selectedLessonData].students_submitted
                                                                 ? parseInt(
-                                                                    modulesData[
-                                                                        selectedLessonData
-                                                                    ].students_submitted.split(',')[
-                                                                    selectedActivityIndex
-                                                                    ]
-                                                                )
+                                                                      modulesData[
+                                                                          selectedLessonData
+                                                                      ].students_submitted.split(',')[
+                                                                          selectedActivityIndex
+                                                                      ]
+                                                                  )
                                                                 : 0}{' '}
                                                             /{' '}
                                                             {
@@ -1044,7 +1051,7 @@ export default function Modules({ }) {
                                                         {dataScore} /{' '}
                                                         {
                                                             modulesData[selectedLessonData].points.split(',')[
-                                                            selectedActivityIndex
+                                                                selectedActivityIndex
                                                             ]
                                                         }
                                                     </h3>
@@ -1053,7 +1060,9 @@ export default function Modules({ }) {
                                                     onClick={() =>
                                                         handleOpenAnswerModal(
                                                             modulesData[selectedLessonData],
-                                                            modulesData[selectedLessonData].submission_index.split(',')[selectedActivityIndex]
+                                                            modulesData[selectedLessonData].submission_index.split(',')[
+                                                                selectedActivityIndex
+                                                            ]
                                                         )
                                                     }
                                                     className="cursor-pointer bg-success p-1 px-4 rounded-lg flex items-center"
@@ -1081,7 +1090,7 @@ export default function Modules({ }) {
                                                 <span className="font-normal text-sm">
                                                     {
                                                         modulesData[selectedLessonData].points.split(',')[
-                                                        selectedActivityIndex
+                                                            selectedActivityIndex
                                                         ]
                                                     }
                                                 </span>
@@ -1105,7 +1114,7 @@ export default function Modules({ }) {
                                                 <span className="font-normal text-sm">
                                                     {
                                                         modulesData[selectedLessonData].file_type.split(',')[
-                                                        selectedActivityIndex
+                                                            selectedActivityIndex
                                                         ]
                                                     }
                                                 </span>
@@ -1118,7 +1127,7 @@ export default function Modules({ }) {
                                                 <span className="font-normal text-sm">
                                                     {
                                                         modulesData[selectedLessonData].attempts.split(',')[
-                                                        selectedActivityIndex
+                                                            selectedActivityIndex
                                                         ]
                                                     }
                                                 </span>
@@ -1131,7 +1140,7 @@ export default function Modules({ }) {
                                                 <span className="font-normal text-sm">
                                                     {formatDueDate(
                                                         modulesData[selectedLessonData].due_date.split(',')[
-                                                        selectedActivityIndex
+                                                            selectedActivityIndex
                                                         ]
                                                     )}
                                                 </span>
@@ -1329,10 +1338,11 @@ export default function Modules({ }) {
                                             <tr key={index}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                     <span
-                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${!submission.date_submitted && !submission.score
-                                                            ? 'bg-yellow-100 text-yellow-700'
-                                                            : 'bg-green-100 text-green-600'
-                                                            }`}
+                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                            !submission.date_submitted && !submission.score
+                                                                ? 'bg-yellow-100 text-yellow-700'
+                                                                : 'bg-green-100 text-green-600'
+                                                        }`}
                                                     >
                                                         {!submission.date_submitted && !submission.score
                                                             ? 'No Submission'
@@ -1458,18 +1468,38 @@ export default function Modules({ }) {
                                                     <p className="font-medium text-gray-600 mb-4">Submitted File:</p>
                                                     <div className="flex items-center justify-between gap-2 w-full">
                                                         <p>{selectedSubmissions[submissionIndex].uploadFile}</p>
-                                                        <div className="flex  md:flex-row gap-2 items-center">
-                                                            <button
-                                                                className="cursor-pointer w-max bg-green-500 hover:bg-green-600 px-3 py-1 rounded-lg text-white font-semibold transition duration-300 flex gap-2 items-center"
-                                                                onClick={() =>
-                                                                    handleViewFile(
-                                                                        selectedSubmissions[submissionIndex].uploadFile
-                                                                    )
+                                                        <div className="flex md:flex-row gap-2 items-center">
+                                                            {(() => {
+                                                                const fileExtension = selectedSubmissions[
+                                                                    submissionIndex
+                                                                ].uploadFile
+                                                                    .split('.')
+                                                                    .pop()
+                                                                    .toLowerCase();
+                                                                if (
+                                                                    fileExtension === 'png' ||
+                                                                    fileExtension === 'jpg' ||
+                                                                    fileExtension === 'pdf'
+                                                                ) {
+                                                                    return (
+                                                                        <button
+                                                                            className="cursor-pointer w-max bg-green-500 hover:bg-green-600 px-3 py-1 rounded-lg text-white font-semibold transition duration-300 flex gap-2 items-center"
+                                                                            onClick={() =>
+                                                                                handleViewFile(
+                                                                                    selectedSubmissions[submissionIndex]
+                                                                                        .uploadFile
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            <FaEye />
+                                                                            <span className="hidden md:inline">
+                                                                                View
+                                                                            </span>
+                                                                        </button>
+                                                                    );
                                                                 }
-                                                            >
-                                                                <FaEye />
-                                                                <span className="hidden md:inline">View</span>
-                                                            </button>
+                                                                return null;
+                                                            })()}
                                                             <button
                                                                 className="cursor-pointer bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded-lg text-white font-semibold transition duration-300 flex gap-2 items-center"
                                                                 onClick={() =>
