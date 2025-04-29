@@ -270,7 +270,8 @@ class ModuleController extends Controller
                     ->where('module_submissions.student_id', '=', $studentId);
             })
                 ->where('modules.section_id', $sectionId)
-                ->select('modules.*', 'module_submissions.score')
+                ->select('modules.*', DB::raw('MAX(module_submissions.score) as score'))
+                ->groupBy('modules.id')
                 ->get();
 
             return response()->json($modules);
