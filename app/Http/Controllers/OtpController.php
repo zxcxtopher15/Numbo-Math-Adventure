@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Mail\OtpMail;
 use App\Services\OtpService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 use App\Models\ParentStudentRelationship;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -94,5 +98,60 @@ class OtpController extends Controller
                 'parent_id' => $parentId,
             ], 404);
         }
+    }
+
+    public function send_otp_registration(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $user = User::where('email', $request->email)
+            ->where('status', 0)
+            ->first();
+
+        if ($user) {
+            return response()->json(['error' => 'This email is already registered.'], 400);
+        }
+
+        $now = Carbon::now();
+        $otp = rand(100000, 999999);
+
+        Session::put('otp', $otp);
+        Session::put('otp_email', $request->email);
+        Session::put('otp_sent_time', $now);
+        Session::put('otp_expiry', $now->addMinutes(5));
+
+        Mail::to($request->email)->send(new OtpMail($otp));
+
+        return response()->json(['message' => 'OTP sent']);
+    }
+
+    public function verify_otp_registration(Request $request)
+    {
+        $request->validate(['email' => 'required|email', 'otp' => 'required']);
+
+        $storedOtp = Session::get('otp');
+        $storedEmail = Session::get('otp_email');
+        $otpExpiry = Session::get('otp_expiry');
+        $now = Carbon::now();
+
+        if (!$storedOtp || !$storedEmail || !$otpExpiry) {
+            return response()->json(['message' => 'No OTP session found. Please request a new OTP.'], 400);
+        }
+
+        if ($now->greaterThan(Carbon::parse($otpExpiry))) {
+            return response()->json(['message' => 'OTP has expired. Please request a new one.'], 400);
+        }
+
+        if ($request->email !== $storedEmail) {
+            return response()->json(['message' => 'Email mismatch.'], 400);
+        }
+
+        if ($request->otp != $storedOtp) {
+            return response()->json(['message' => 'Invalid OTP.'], 400);
+        }
+
+        Session::forget(['otp', 'otp_email', 'otp_expiry', 'otp_sent_time']);
+
+        return response()->json(['message' => 'OTP verified successfully.']);
     }
 }

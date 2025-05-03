@@ -467,7 +467,7 @@ class ModuleController extends Controller
 
             AuditTrail::create([
                 'user_id' => Auth::user()->id,
-                'action' => "Resubmit Answer for {$selectedTitle} ({$ordinalAttempt} Attempt)",
+                'action' => Auth::user()->student_id . ' - ' . Auth::user()->name .  "Resubmit Answer for {$selectedTitle} ({$ordinalAttempt} Attempt)",
                 'created_at' => now()
             ]);
 
@@ -486,7 +486,7 @@ class ModuleController extends Controller
 
             AuditTrail::create([
                 'user_id' => Auth::user()->id,
-                'action' => "Submit Answer for {$module->module_name} (1st Attempt)",
+                'action' => Auth::user()->student_id . ' - ' . Auth::user()->name .  "Submit Answer for {$module->module_name} (1st Attempt)",
                 'created_at' => now()
             ]);
 

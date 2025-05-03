@@ -303,7 +303,7 @@ export default function Dashboard() {
                 </div>
             )}
             {userType === 'Student' ? (
-                <StudentDashboard data={data} />
+                <StudentDashboard data={{ data: data }} topStudentsData={topStudentsData} />
             ) : userType === 'Teacher' ? (
                 <TeacherDashboard data={studentsData} topStudentsData={topStudentsData} />
             ) : userType === 'Administrator' ? (

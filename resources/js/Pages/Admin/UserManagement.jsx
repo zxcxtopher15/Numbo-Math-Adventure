@@ -22,6 +22,7 @@ const UserManagement = () => {
     const [isOpenRequest, setIsOpenRequest] = useState(false);
     const [isOpenReject, setIsOpenReject] = useState(false);
     const [isOpenDisabled, setIsOpenDisabled] = useState(false);
+    const [filterDate, setFilterDate] = useState('');
 
     const columns = [
         {
@@ -99,16 +100,23 @@ const UserManagement = () => {
     ];
 
     const filteredData = useMemo(() => {
-        return users.filter(
-            (item) =>
+        return users.filter((item) => {
+            const createdAt = new Date(item.created_at);
+
+            const matchesText =
                 item.name?.toLowerCase().includes(filterText.toLowerCase()) ||
                 item.email?.toLowerCase().includes(filterText.toLowerCase()) ||
                 item.user_type?.toLowerCase().includes(filterText.toLowerCase()) ||
-                format(new Date(item.created_at), 'MMMM do, yyyy, h:mm a')
+                format(createdAt, 'MMMM do, yyyy, h:mm a')
                     .toLowerCase()
-                    .includes(filterText.toLowerCase()),
-        );
-    }, [filterText, users]);
+                    .includes(filterText.toLowerCase());
+
+            const matchesDate =
+                !filterDate || createdAt.toISOString().slice(0, 10) === filterDate;
+
+            return matchesText && matchesDate;
+        });
+    }, [filterText, filterDate, users]);
 
     const handleChangeRowsPerPage = (value) => {
         setRowsPerPage(value);
@@ -475,9 +483,8 @@ const UserManagement = () => {
             <div className="py-12 h-d relative">
                 <div className="fixed bottom-0 right-0 mb-4 mr-4">
                     <button
-                        className={`bg-gray-600 font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl ${
-                            allDisabled.length === 0 ? 'opacity-80 cursor-not-allowed' : ''
-                        }`}
+                        className={`bg-gray-600 font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl ${allDisabled.length === 0 ? 'opacity-80 cursor-not-allowed' : ''
+                            }`}
                         onClick={() => setIsOpenDisabled(true)}
                         disabled={allDisabled.length === 0}
                     >
@@ -492,9 +499,8 @@ const UserManagement = () => {
                             <div className="flex gap-3">
                                 <div className="relative transition duration-300 ease-in-out hover:scale-110">
                                     <button
-                                        className={`bg-primary font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl mt-4 sm:mt-0 ${
-                                            allRequests.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
-                                        }`}
+                                        className={`bg-primary font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl mt-4 sm:mt-0 ${allRequests.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                                            }`}
                                         onClick={() => setIsOpenRequest(true)}
                                         disabled={allRequests.length === 0}
                                     >
@@ -508,9 +514,8 @@ const UserManagement = () => {
                                 </div>
                                 <div className="relative transition duration-300 ease-in-out hover:scale-110">
                                     <button
-                                        className={`bg-warning font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl mt-4 sm:mt-0 ${
-                                            allRejects.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
-                                        }`}
+                                        className={`bg-warning font-semibold w-max text-nowrap text-white px-4 py-2 rounded-3xl mt-4 sm:mt-0 ${allRejects.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                                            }`}
                                         onClick={() => setIsOpenReject(true)}
                                         disabled={allRejects.length === 0}
                                     >
@@ -521,6 +526,11 @@ const UserManagement = () => {
                         </div>
 
                         <div className="flex justify-end w-full">
+                            <input
+                                type="date"
+                                className="p-2 border border-gray-300 rounded-3xl"
+                                onChange={(e) => setFilterDate(e.target.value)}
+                            />
                             <input
                                 type="text"
                                 placeholder="Search..."

@@ -34,6 +34,8 @@ Route::get('/', [AuthenticatedSessionController::class, 'create'])
 
 Route::post('/send-otp', [OtpController::class, 'sendOtp']);
 Route::post('/verify-otp', [OtpController::class, 'verifyOtp']);
+Route::post('/send-otp-registration', [OtpController::class, 'send_otp_registration'])->name('send-otp');
+Route::post('/verify-otp-registration', [OtpController::class, 'verify_otp_registration'])->name('verify-otp');
 
 Route::post('/modules/store', [ModuleController::class, 'store'])->name('modules.store');
 Route::get('/modules/{id}', [ModuleController::class, 'get_module'])->name('modules.get');
@@ -158,6 +160,10 @@ Route::group(['middleware' => 'administrator'], function () {
     Route::delete('/delete_users', [UserManagementController::class, 'destroy'])->name('delete.destroy');
 
     Route::get('/user_counts', [UserManagementController::class, 'userCounts']);
+
+    Route::get('/student-section', [SectionController::class, 'admin_index']);
+    Route::post('/remove-student-section-admin', [SectionController::class, 'removeFromSectionAdmin']);
+    Route::post('/add-student-section-admin', [SectionController::class, 'addToSectionAdmin']);
 });
 
 Route::group(['middleware' => 'teacher'], function () {

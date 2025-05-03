@@ -237,7 +237,7 @@ class MathJamController extends Controller
 
                 AuditTrail::create([
                     'user_id' => Auth::user()->id,
-                    'action' => 'Joined Math Practice for ' . $mathJam->math_practice_for . ' in ' . $section_name . ' section',
+                    'action' => Auth::user()->student_id . ' - ' . Auth::user()->name .  'Joined Math Practice for ' . $mathJam->math_practice_for . ' in ' . $section_name . ' section',
                     'created_at' => now()
                 ]);
 
@@ -364,7 +364,7 @@ class MathJamController extends Controller
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Disconnected in Math Practice for ' . $mathJam->math_practice_for . ' in ' . $section_name . ' section',
+            'action' => Auth::user()->student_id . ' - ' . Auth::user()->name .  'Disconnected in Math Practice for ' . $mathJam->math_practice_for . ' in ' . $section_name . ' section',
             'created_at' => now()
         ]);
 
@@ -411,7 +411,7 @@ class MathJamController extends Controller
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Reconnected in Math Practice for ' . $mathJam->math_practice_for . ' in ' . $section_name . ' section',
+            'action' => Auth::user()->student_id . ' - ' . Auth::user()->name .  'Reconnected in Math Practice for ' . $mathJam->math_practice_for . ' in ' . $section_name . ' section',
             'created_at' => now()
         ]);
 
@@ -806,7 +806,7 @@ class MathJamController extends Controller
 
         AuditTrail::create([
             'user_id' => Auth::user()->id,
-            'action' => 'Left in Math Practice for ' . $mathJam->math_practice_for . ' in ' . $section_name . ' section',
+            'action' => Auth::user()->student_id . ' - ' . Auth::user()->name .  'Left in Math Practice for ' . $mathJam->math_practice_for . ' in ' . $section_name . ' section',
             'created_at' => now()
         ]);
 
@@ -981,7 +981,6 @@ class MathJamController extends Controller
             ->where('math_jam_participants.created_at', '>=', $sevenDaysAgo)
             ->groupBy('users.id', 'users.name')
             ->orderByDesc('success_percentage')
-            ->limit(5)
             ->get();
 
         $rankedStudents = [];

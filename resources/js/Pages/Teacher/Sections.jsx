@@ -11,14 +11,28 @@ import { usePage } from "@inertiajs/react";
 import axios from 'axios';
 
 const Sections = () => {
-    const { sectionData, allStudents } = usePage().props;
+    const { sections, sectionData, allStudents } = usePage().props;
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenStudent, setIsOpenStudent] = useState(false);
     const [sectionName, setSectionName] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     const [selectedStudents, setSelectedStudents] = useState([]);
+    const [nameFilter, setNameFilter] = useState('');
+    const [sectionFilter, setSectionFilter] = useState('');
+
+    const filteredStudentsData = sectionData
+        ? sectionData.students.filter(student =>
+            student.name.toLowerCase().includes(nameFilter.toLowerCase()) &&
+            (sectionFilter === '' || student.section_name === sectionFilter)
+        )
+        : [];
+
+    const filteredStudents = allStudents.filter((student) =>
+        student.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     const handleCheckboxChange = (id) => {
         setSelectedStudents((prev) => (prev.includes(id) ? prev.filter((userId) => userId !== id) : [...prev, id]));
@@ -114,34 +128,61 @@ const Sections = () => {
                         {sectionData ? (
                             <div className="p-4 border rounded-3xl">
                                 <div className="p-6 bg-white rounded-2xl space-y-4">
-                                    <div className="bg-white mb-10 flex flex-col sm:flex-row justify-between  items-center rounded-2xl">
+                                    <div className="bg-white mb-4 flex flex-col sm:flex-row sm:justify-between sm:items-center rounded-2xl gap-4">
                                         <h1 className="text-2xl font-semibold text-blue-500">Student List</h1>
                                         <button
                                             onClick={handleAddStudent}
-                                            className="bg-blue-500 text-sm font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110 mt-4 sm:mt-0"
+                                            className="bg-blue-500 text-sm font-semibold text-white px-4 py-2 rounded-3xl transition duration-300 ease-in-out hover:scale-110"
                                         >
                                             Add Students
                                         </button>
                                     </div>
 
-                                    {sectionData.students.length === 0 ? (
-                                        <div className="p-6 bg-white rounded-2xl space-y-4 flex flex-col justify-center items-center">
+                                    <div className="flex flex-col sm:flex-row gap-4 mb-4">
+                                        <input
+                                            type="text"
+                                            placeholder="Filter by student name"
+                                            value={nameFilter}
+                                            onChange={(e) => setNameFilter(e.target.value)}
+                                            className="border rounded-2xl px-3 py-2 w-full sm:w-1/2"
+                                        />
+                                        <select
+                                            className="border rounded-2xl px-3 py-2 w-full sm:w-1/2"
+                                            value={sectionFilter}
+                                            onChange={(e) => setSectionFilter(e.target.value)}
+                                        >
+                                            <option value="">All Sections</option>
+                                            {sections.map((section) => (
+                                                <option key={section.id} value={section.section_name}>
+                                                    {section.section_name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    {filteredStudentsData.length === 0 ? (
+                                        <div className="p-6 bg-white rounded-2xl flex flex-col justify-center items-center">
                                             <img src="/images/assets/background/not_found.svg" alt="" />
                                             <h1 className="text-primary text-3xl font-bold text-center">
                                                 No Students Found!
                                             </h1>
                                         </div>
                                     ) : (
-                                        sectionData.students.map((student) => (
+                                        filteredStudentsData.map((student) => (
                                             <div
                                                 key={student.id}
                                                 className="flex items-center justify-between gap-4 pb-4 border-b border-gray-300"
                                             >
-                                                <div className="flex items-center justify-start gap-3">
+                                                <div className="flex items-center gap-3">
                                                     <Avatar name={student.name} className={'w-12 h-12'} />
-                                                    <h3 className="font-medium text-lg text-gray-700">
-                                                        {student.name}
-                                                    </h3>
+                                                    <div>
+                                                        <h3 className="font-medium text-lg text-gray-700">{student.name}</h3>
+                                                        <div className="mt-1 text-sm text-gray-500">
+                                                            <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-500 font-semibold">
+                                                                {student.section_name}
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <button
                                                     className="bg-danger text-white p-1 rounded-full hover:scale-110 transition duration-200 ease-in-out"
@@ -156,7 +197,7 @@ const Sections = () => {
                             </div>
                         ) : (
                             <div className="p-4 border rounded-3xl">
-                                <div className="p-6 bg-white rounded-2xl space-y-4 flex flex-col justify-center items-center">
+                                <div className="p-6 bg-white rounded-2xl flex flex-col justify-center items-center">
                                     <img src="/images/assets/background/not_found.svg" alt="" />
                                     <h1 className="text-primary text-3xl font-bold text-center">
                                         Opps! No Active Section Found
@@ -178,27 +219,39 @@ const Sections = () => {
 
                         <div className="space-y-4">
                             <div className="space-y-2">
+                                <input
+                                    type="text"
+                                    placeholder="Search student name..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full px-4 py-2 border rounded-2xl focus:outline-none focus:ring focus:border-blue-300"
+                                />
+
                                 <div className="overflow-x-auto">
                                     <p className="mt-4 text-end">Selected: {selectedStudents.length}</p>
                                     <div className="max-h-[50vh] overflow-y-scroll">
                                         <table className="table-auto w-full">
                                             <thead className="bg-gray-100 sticky top-0">
                                                 <tr>
-                                                    <th className="text-start px-6  py-3 border-b border-gray-200 w-1">
+                                                    <th className="text-start px-6 py-3 border-b border-gray-200 w-1">
                                                         <input
                                                             type="checkbox"
                                                             onChange={handleSelectAll}
                                                             className="rounded-sm"
-                                                            checked={selectedStudents.length === allStudents.length}
+                                                            checked={
+                                                                selectedStudents.length > 0 &&
+                                                                selectedStudents.length ===
+                                                                filteredStudents.length
+                                                            }
                                                         />
                                                     </th>
-                                                    <th className="py-3 px-6 text-start  border-b border-gray-200 text-gray-800">
+                                                    <th className="py-3 px-6 text-start border-b border-gray-200 text-gray-800">
                                                         Student Name
                                                     </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {allStudents.map((student) => (
+                                                {filteredStudents.map((student) => (
                                                     <tr key={student.id} className="border-b">
                                                         <td className="px-6 py-4 border-b border-gray-200">
                                                             <input
@@ -211,7 +264,6 @@ const Sections = () => {
                                                         <td className="px-6 py-4 border-b border-gray-200">
                                                             <div className="flex gap-4 items-center justify-start">
                                                                 <Avatar name={student.name} className={'w-12 h-12'} />
-
                                                                 {student.name}
                                                             </div>
                                                         </td>

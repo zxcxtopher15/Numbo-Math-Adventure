@@ -33,7 +33,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
-export default function Modules({}) {
+export default function Modules({ }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isSubmissionRequired, setIsSubmissionRequired] = useState(false);
@@ -826,8 +826,10 @@ export default function Modules({}) {
                                                 </div>
                                             </AccordionTrigger>
                                             <AccordionContent>
-                                                <div className="py-2">
-                                                    <p className="text-primary text-base px-3">{module.module_desc}</p>
+                                                <div className="py-3">
+                                                    <p className="text-primary text-xl font-semibold px-4">
+                                                        {module.module_desc}
+                                                    </p>
                                                 </div>
 
                                                 {userType === 'Teacher' && (
@@ -873,16 +875,15 @@ export default function Modules({}) {
                                                                     {dueDates.length > 0 && (
                                                                         <div className="pe-4">
                                                                             <p
-                                                                                className={`border text-gray-700 p-1 px-2 rounded-lg font-medium text-xs ${
-                                                                                    new Date(dueDates[idx]) -
-                                                                                        new Date() <
+                                                                                className={`border text-gray-700 p-1 px-2 rounded-lg font-medium text-xs ${new Date(dueDates[idx]) -
+                                                                                    new Date() <
                                                                                     1000 * 60 * 60 * 24
-                                                                                        ? 'bg-red-200 text-red-700'
-                                                                                        : new Date(dueDates[idx]) >
-                                                                                            new Date()
-                                                                                          ? 'bg-green-200 text-green-800'
-                                                                                          : 'bg-gray-300 text-gray-500'
-                                                                                }`}
+                                                                                    ? 'bg-red-200 text-red-700'
+                                                                                    : new Date(dueDates[idx]) >
+                                                                                        new Date()
+                                                                                        ? 'bg-green-200 text-green-800'
+                                                                                        : 'bg-gray-300 text-gray-500'
+                                                                                    }`}
                                                                             >
                                                                                 Due: {formatDueDate(dueDates[idx])}
                                                                             </p>
@@ -994,7 +995,7 @@ export default function Modules({}) {
                                                 <h1 className="text-2xl text-gray-700">
                                                     {
                                                         modulesData[selectedLessonData].module_title.split(',')[
-                                                            selectedActivityIndex
+                                                        selectedActivityIndex
                                                         ]
                                                     }
                                                 </h1>
@@ -1004,12 +1005,12 @@ export default function Modules({}) {
                                                         <h3 className="font-semibold text-xl text-warning">
                                                             {modulesData[selectedLessonData].students_submitted
                                                                 ? parseInt(
-                                                                      modulesData[
-                                                                          selectedLessonData
-                                                                      ].students_submitted.split(',')[
-                                                                          selectedActivityIndex
-                                                                      ]
-                                                                  )
+                                                                    modulesData[
+                                                                        selectedLessonData
+                                                                    ].students_submitted.split(',')[
+                                                                    selectedActivityIndex
+                                                                    ]
+                                                                )
                                                                 : 0}{' '}
                                                             /{' '}
                                                             {
@@ -1044,14 +1045,14 @@ export default function Modules({}) {
                                 <>
                                     {modulesData[selectedLessonData]?.is_submission_required === 1 ? (
                                         <>
-                                            <div className="flex justify-between items-center flex-wrap gap-2 mb-2 w-full text-white font-semibold">
+                                            <div className="flex justify-between items-center flex-wrap gap-4 mb-4 w-full text-white font-semibold">
                                                 <div className="text-center pe-4">
-                                                    <p className="text-gray-600">Score</p>
-                                                    <h3 className="font-semibold text-xl text-warning">
+                                                    <p className="text-gray-600 text-xl">Score</p>
+                                                    <h3 className="font-semibold text-3xl text-warning">
                                                         {dataScore} /{' '}
                                                         {
                                                             modulesData[selectedLessonData].points.split(',')[
-                                                                selectedActivityIndex
+                                                            selectedActivityIndex
                                                             ]
                                                         }
                                                     </h3>
@@ -1061,17 +1062,17 @@ export default function Modules({}) {
                                                         handleOpenAnswerModal(
                                                             modulesData[selectedLessonData],
                                                             modulesData[selectedLessonData].submission_index.split(',')[
-                                                                selectedActivityIndex
+                                                            selectedActivityIndex
                                                             ]
                                                         )
                                                     }
-                                                    className="cursor-pointer bg-success p-1 px-4 rounded-lg flex items-center"
+                                                    className="cursor-pointer bg-success p-3 px-8 rounded-lg flex items-center text-xl"
                                                 >
-                                                    <FaEye className="text-sm mr-1" />
+                                                    <FaEye className="text-lg mr-3" />
                                                     Answer
                                                 </button>
                                             </div>
-                                            <hr className="my-4" />
+                                            <hr className="my-6" />
                                         </>
                                     ) : (
                                         <></>
@@ -1081,67 +1082,53 @@ export default function Modules({}) {
 
                             {modulesData[selectedLessonData]?.is_submission_required === 1 && (
                                 <>
-                                    <p className="text-gray-500 text-sm my-2 mb-4">Details:</p>
-                                    <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
-                                        <div className="flex gap-2 items-center">
-                                            <FaFileAlt className="text-base text-gray-600" />
+                                    <p className="text-gray-500 text-xl my-3 mb-6">Details:</p>
+                                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+                                        <div className="flex gap-4 items-center">
+                                            <FaFileAlt className="text-2xl text-gray-600" />
                                             <div>
-                                                <h3 className="font-semibold text-sm">Points: </h3>
-                                                <span className="font-normal text-sm">
-                                                    {
-                                                        modulesData[selectedLessonData].points.split(',')[
-                                                            selectedActivityIndex
-                                                        ]
-                                                    }
+                                                <h3 className="font-semibold text-lg">Points:</h3>
+                                                <span className="font-normal text-lg">
+                                                    {modulesData[selectedLessonData].points.split(',')[selectedActivityIndex]}
                                                 </span>
                                             </div>
                                         </div>
-                                        <div className="flex gap-2 items-center">
-                                            <FaUpload className="text-base text-gray-600" />
+                                        <div className="flex gap-4 items-center">
+                                            <FaUpload className="text-2xl text-gray-600" />
                                             <div>
-                                                <h3 className="font-semibold text-sm">Submitting: </h3>
-                                                <span className="font-normal text-sm">
+                                                <h3 className="font-semibold text-lg">Submitting:</h3>
+                                                <span className="font-normal text-lg">
                                                     {modulesData[selectedLessonData].submit_type === 'text'
                                                         ? 'User Input'
                                                         : 'File Upload'}
                                                 </span>
                                             </div>
                                         </div>
-                                        <div className="flex gap-2 items-center">
-                                            <FaFile className="text-base text-gray-600" />
+                                        <div className="flex gap-4 items-center">
+                                            <FaFile className="text-2xl text-gray-600" />
                                             <div>
-                                                <h3 className="font-semibold text-sm">File Type: </h3>
-                                                <span className="font-normal text-sm">
-                                                    {
-                                                        modulesData[selectedLessonData].file_type.split(',')[
-                                                            selectedActivityIndex
-                                                        ]
-                                                    }
+                                                <h3 className="font-semibold text-lg">File Type:</h3>
+                                                <span className="font-normal text-lg">
+                                                    {modulesData[selectedLessonData].file_type.split(',')[selectedActivityIndex]}
                                                 </span>
                                             </div>
                                         </div>
-                                        <div className="flex gap-2 items-center">
-                                            <FaRedo className="text-base text-gray-600" />
+                                        <div className="flex gap-4 items-center">
+                                            <FaRedo className="text-2xl text-gray-600" />
                                             <div>
-                                                <h3 className="font-semibold text-sm">Attempts: </h3>
-                                                <span className="font-normal text-sm">
-                                                    {
-                                                        modulesData[selectedLessonData].attempts.split(',')[
-                                                            selectedActivityIndex
-                                                        ]
-                                                    }
+                                                <h3 className="font-semibold text-lg">Attempts:</h3>
+                                                <span className="font-normal text-lg">
+                                                    {modulesData[selectedLessonData].attempts.split(',')[selectedActivityIndex]}
                                                 </span>
                                             </div>
                                         </div>
-                                        <div className="flex gap-2 items-center">
-                                            <FaCalendarAlt className="text-base text-gray-600" />
+                                        <div className="flex gap-4 items-center">
+                                            <FaCalendarAlt className="text-2xl text-gray-600" />
                                             <div>
-                                                <h3 className="font-semibold text-sm">Available Until: </h3>
-                                                <span className="font-normal text-sm">
+                                                <h3 className="font-semibold text-lg">Available Until:</h3>
+                                                <span className="font-normal text-lg">
                                                     {formatDueDate(
-                                                        modulesData[selectedLessonData].due_date.split(',')[
-                                                            selectedActivityIndex
-                                                        ]
+                                                        modulesData[selectedLessonData].due_date.split(',')[selectedActivityIndex]
                                                     )}
                                                 </span>
                                             </div>
@@ -1149,18 +1136,19 @@ export default function Modules({}) {
                                     </div>
                                 </>
                             )}
-                            <hr className="my-4" />
-                            <div className="py-2">
-                                <p className="text-gray-500 text-sm my-4">Desciption:</p>
-                                <p className="text-gray-700 text-base my-4 px-3">
+
+                            <hr className="my-6" />
+                            <div className="py-3">
+                                <p className="text-gray-500 text-lg my-4">Description:</p>
+                                <p className="text-gray-700 text-xl my-4 px-4">
                                     {modulesData[selectedLessonData].module_desc}
                                 </p>
                             </div>
 
-                            <hr className="my-4" />
-                            <p className="text-gray-500 text-sm my-4">Files:</p>
+                            <hr className="my-6" />
+                            <p className="text-gray-500 text-lg my-4">Files:</p>
                             {modulesData[selectedLessonData].module_file_desc && (
-                                <h3 className="font-medium my-4  bg-yellow-50 p-3 rounded-lg text-yellow-700">
+                                <h3 className="font-semibold my-4 bg-yellow-50 p-4 rounded-lg text-yellow-700 text-lg">
                                     {modulesData[selectedLessonData].module_file_desc}
                                 </h3>
                             )}
@@ -1168,17 +1156,17 @@ export default function Modules({}) {
                             {modulesData[selectedLessonData].file.map((file, index) => (
                                 <div
                                     key={index}
-                                    className="flex justify-between items-center border-b py-3 md:flex-row flex-col sm:gap-2 gap-4"
+                                    className="flex justify-between items-center border-b py-4 md:flex-row flex-col sm:gap-3 gap-4"
                                 >
                                     <div
-                                        className="flex gap-2 items-center cursor-pointer text-blue-600 hover:text-blue-800"
+                                        className="flex gap-3 items-center cursor-pointer text-blue-600 hover:text-blue-800 text-lg"
                                         onClick={() => {
                                             window.open(file.file_path, '_blank');
                                         }}
                                     >
-                                        <FaFile /> {file.file_name}
+                                        <FaFile className="text-xl" /> {file.file_name}
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-3">
                                         <button
                                             onClick={() => {
                                                 const link = document.createElement('a');
@@ -1186,9 +1174,9 @@ export default function Modules({}) {
                                                 link.download = file.file_name;
                                                 link.click();
                                             }}
-                                            className="cursor-pointer bg-blue-500 hover:bg-blue-600 p-2 rounded-lg text-white font-semibold transition duration-300"
+                                            className="cursor-pointer bg-blue-500 hover:bg-blue-600 p-3 rounded-lg text-white font-semibold transition duration-300 text-lg"
                                         >
-                                            <FaCloudDownloadAlt />
+                                            <FaCloudDownloadAlt className="text-xl" />
                                         </button>
                                         {userType === 'Teacher' && (
                                             <button
@@ -1198,9 +1186,9 @@ export default function Modules({}) {
                                                         index
                                                     );
                                                 }}
-                                                className="cursor-pointer bg-red-500 hover:bg-red-600 p-2 rounded-lg text-white font-semibold transition duration-300"
+                                                className="cursor-pointer bg-red-500 hover:bg-red-600 p-3 rounded-lg text-white font-semibold transition duration-300 text-lg"
                                             >
-                                                <FaTrashAlt />
+                                                <FaTrashAlt className="text-xl" />
                                             </button>
                                         )}
                                     </div>
@@ -1338,11 +1326,10 @@ export default function Modules({}) {
                                             <tr key={index}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                     <span
-                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                            !submission.date_submitted && !submission.score
-                                                                ? 'bg-yellow-100 text-yellow-700'
-                                                                : 'bg-green-100 text-green-600'
-                                                        }`}
+                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${!submission.date_submitted && !submission.score
+                                                            ? 'bg-yellow-100 text-yellow-700'
+                                                            : 'bg-green-100 text-green-600'
+                                                            }`}
                                                     >
                                                         {!submission.date_submitted && !submission.score
                                                             ? 'No Submission'

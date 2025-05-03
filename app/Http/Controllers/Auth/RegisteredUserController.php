@@ -50,6 +50,13 @@ class RegisteredUserController extends Controller
                 'unique:users,email',
             ],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'student_id' => [
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->user_type === 'Student' && empty($value)) {
+                        $fail('The student ID field is required.');
+                    }
+                },
+            ],
         ]);
 
         $user = User::create([
@@ -58,13 +65,12 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'user_type' => $request->user_type,
-            'status' => in_array($request->user_type, ['Teacher', 'Student']) ? 2 : 0,
+            'student_id' => $request->user_type === 'Student' ? $request->student_id : null,
+            'status' => in_array($request->user_type, ['Teacher', 'Student', 'Parent']) ? 2 : 0,
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->route('login');
     }
 }
