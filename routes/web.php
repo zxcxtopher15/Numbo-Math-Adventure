@@ -249,6 +249,7 @@ Route::group(['middleware' => 'student'], function () {
     Route::post('/math-practice/exit_jam', [MathJamController::class, 'exit_jam']);
     Route::get('/math-practice/get-score', [MathJamController::class, 'getScore']);
     Route::post('/submit-answer', [ModuleController::class, 'submit_answer'])->name('submit.answer');
+    Route::get('/math-practice/get-participants', [MathJamController::class, 'getParticipants']);
 });
 
 Route::group(['middleware' => 'parent'], function () {

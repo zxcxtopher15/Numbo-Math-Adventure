@@ -996,4 +996,40 @@ class MathJamController extends Controller
 
         return response()->json(['topStudentsData' => $rankedStudents]);
     }
+
+    public function getParticipants(Request $request)
+    {
+        $mathJamId = $request->query('math_jam_id');
+
+        if (!$mathJamId) {
+            return response()->json(['error' => 'math_jam_id is required'], 400);
+        }
+
+        $participants = DB::table('math_jam_participants as p')
+            ->select('p.id as participant_id', 'p.student_id', 'p.score', 'p.updated_at')
+            ->where('p.math_jam_id', $mathJamId)
+            ->orderByDesc('p.score')
+            ->orderByDesc('p.updated_at')
+            ->get();
+
+        $rank = 1;
+        $userId = Auth::user()->id;
+        $userRank = null;
+
+        foreach ($participants as $participant) {
+            $participant->rank = $rank;
+
+            if ($participant->student_id == $userId) {
+                $userRank = $participant;
+            }
+
+            $rank++;
+        }
+
+        if ($userRank) {
+            return response()->json($userRank);
+        } else {
+            return response()->json(['error' => 'User not found in participants'], 404);
+        }
+    }
 }

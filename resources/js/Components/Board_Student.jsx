@@ -16,7 +16,6 @@ import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
 import { Link } from '@inertiajs/react';
 import { SvgAsset } from './SvgAsset';
-import Categories from './Categories';
 
 function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
     return (
@@ -47,6 +46,8 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
     const { auth } = usePage().props;
     const studentId = auth?.user.id;
     const [score, setScore] = useState(0);
+    const [rank, setRank] = useState(null); // State to store rank
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     console.log("Existing Jam: " + JSON.stringify(existingJam));
 
@@ -57,7 +58,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
         }
     }, []);
 
-    const fetchStudentScore = async (studentId, mathJamId) => {
+    const fetchStudentScoreAndRank = async (studentId, mathJamId) => {
         if (!studentId || !mathJamId) {
             console.error("Student ID or Math Jam ID is missing.");
             return null;
@@ -69,7 +70,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
             return null;
         }
 
-        const apiUrl = `${baseUrl}/math-practice/get-score?student_id=${studentId}&math_jam_id=${mathJamId}`;
+        const apiUrl = `${baseUrl}/math-practice/get-participants?student_id=${studentId}&math_jam_id=${mathJamId}`;
 
         try {
             const response = await fetch(apiUrl, {
@@ -80,22 +81,26 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
             });
 
             if (!response.ok) {
-                console.error("Failed to fetch student score.");
+                console.error("Failed to fetch student score and rank.");
                 return null;
             }
 
             const data = await response.json();
-            return data.score;
+            const userRank = data.userRank;
+            setScore(userRank.score);
+            setRank(userRank.rank);
+
+            return userRank;
         } catch (error) {
-            console.error("Error fetching student score:", error);
+            console.error("Error fetching student score and rank:", error);
             return null;
         }
     };
 
     useEffect(() => {
         if (existingJam && studentId) {
-            fetchStudentScore(studentId, existingJam.id).then((score) => {
-                setScore(score);
+            fetchStudentScoreAndRank(studentId, existingJam.id).then(() => {
+                setIsModalOpen(true); // Show the modal once the data is fetched
             });
         }
     }, [existingJam, studentId]);
@@ -134,6 +139,20 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
             }
         } catch (error) {
             console.error('Error updating Math Jam status:', error);
+        }
+    };
+
+    const getOrdinal = (n) => {
+        const s = ["th", "st", "nd", "rd"];
+        const value = n % 100;
+        return n + (s[(value - 20) % 10] || s[value] || s[0]);
+    };
+
+    const renderRankMessage = () => {
+        if (rank <= 5) {
+            return "Congratulations! You are among the top 5!";
+        } else {
+            return "Great job! Keep going, you'll get there!";
         }
     };
 
@@ -181,6 +200,23 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
                     </div>
                 </div>
             </div>
+
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 md:w-1/2 text-center">
+                        <h2 className="text-3xl font-semibold mb-4">
+                            Your Rank: {getOrdinal(rank)} {/* Displaying rank as ordinal */}
+                        </h2>
+                        <p className="text-xl">{renderRankMessage()}</p>
+                        <button
+                            onClick={() => setIsModalOpen(false)}
+                            className="mt-4 px-6 py-2 bg-primary text-white rounded-full"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
