@@ -48,7 +48,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
     const studentId = auth?.user.id;
     const [score, setScore] = useState(0);
 
-    console.log("Existing Jam: " + JSON.parse(existingJam));
+    console.log("Existing Jam: " + JSON.stringify(existingJam));
 
     useEffect(() => {
         const storedJam = localStorage.getItem('existingJam');
