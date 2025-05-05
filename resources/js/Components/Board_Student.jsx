@@ -86,8 +86,14 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
             }
 
             const data = await response.json();
-            console.log("Rank: " + data);
+            console.log("API Response Data:", data);
+
             const userRank = data.userRank;
+            if (!userRank) {
+                console.error("User rank is undefined or missing.");
+                return null;
+            }
+
             setScore(userRank.score);
             setRank(userRank.rank);
 
