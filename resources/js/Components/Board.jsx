@@ -20,9 +20,8 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center bg-white p-6 rounded-3xl shadow-lg">
             <h2
-                className={`text-3xl font-bold text-center ${
-                    isTimeUp ? 'text-orange-500' : isCorrect ? 'text-green-500' : 'text-red-500'
-                }`}
+                className={`text-3xl font-bold text-center ${isTimeUp ? 'text-orange-500' : isCorrect ? 'text-green-500' : 'text-red-500'
+                    }`}
             >
                 {isTimeUp ? "Time's Up!" : isCorrect ? 'Correct!' : 'Incorrect'}
             </h2>
@@ -30,8 +29,8 @@ function RoundResult({ isTimeUp, isCorrect, correctAnswer, onNext }) {
                 {isTimeUp
                     ? 'You ran out of time.'
                     : isCorrect
-                      ? 'Great job!'
-                      : `The correct answer is: ${correctAnswer}`}
+                        ? 'Great job!'
+                        : `The correct answer is: ${correctAnswer}`}
             </p>
             <button className="bg-primary text-white text-lg px-6 py-2 rounded-2xl font-semibold mt-4" onClick={onNext}>
                 Next
@@ -304,7 +303,7 @@ export function Board({ data }) {
                         </div>
                         <div className="flex flex-col-reverse sm:flex-row justify-center w-full">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 rounded-3xl bg-gray-200">
-                                
+
                                 {data[currentQuestion].answers
                                     .filter((answer) => answer?.answer) // Filter out empty answers
                                     .map((answer, index) => (
