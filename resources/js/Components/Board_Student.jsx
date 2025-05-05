@@ -157,8 +157,8 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
     };
 
     const renderRankMessage = () => {
-        if (rank <= 5) {
-            return "Congratulations! You are among the top 5!";
+        if (rank <= 10) {
+            return "Congratulations! You are among the top 10!";
         } else {
             return "Great job! Keep going, you'll get there!";
         }
@@ -209,19 +209,29 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
                 </div>
             </div>
 
-            {isModalOpen && (
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 md:w-1/2 text-center">
-                        <h2 className="text-3xl font-semibold mb-4">
-                            Your Rank: {getOrdinal(rank)} {/* Displaying rank as ordinal */}
-                        </h2>
-                        <p className="text-xl">{renderRankMessage()}</p>
-                        <button
-                            onClick={() => setIsModalOpen(false)}
-                            className="mt-4 px-6 py-2 bg-primary text-white rounded-full"
-                        >
-                            Close
-                        </button>
+            {isModalOpen && rank <= 5 && (
+                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50 transition-all ease-in-out duration-300">
+                    <div className="bg-gradient-to-r from-green-400 to-blue-500 p-8 rounded-3xl shadow-xl w-4/5 md:w-1/3 text-center transform transition-all duration-500 scale-100 hover:scale-105">
+                        <div className="mb-6">
+                            <svg className="w-16 h-16 text-white mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v12m0 0l4-4m-4 4l-4-4" />
+                            </svg>
+                            <h2 className="text-4xl font-semibold text-white mb-4">
+                                Congratulations! 🎉
+                            </h2>
+                            <h3 className="text-2xl font-medium text-white mb-4">
+                                Your Rank: {getOrdinal(rank)} {/* Displaying rank as ordinal */}
+                            </h3>
+                            <p className="text-xl text-white mb-6">
+                                {renderRankMessage()}
+                            </p>
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="px-8 py-3 bg-white text-primary rounded-full font-semibold shadow-lg hover:bg-gray-200 transition duration-300"
+                            >
+                                Close
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
