@@ -70,7 +70,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
             return null;
         }
 
-        const apiUrl = `${baseUrl}/math-practice/get-participants?student_id=${studentId}&math_jam_id=${mathJamId}`;
+        const apiUrl = `${baseUrl}/math-practice/get-participants?math_jam_id=${mathJamId}`;
 
         try {
             const response = await fetch(apiUrl, {
@@ -86,6 +86,7 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
             }
 
             const data = await response.json();
+            console.log("Rank: " + data);
             const userRank = data.userRank;
             setScore(userRank.score);
             setRank(userRank.rank);
