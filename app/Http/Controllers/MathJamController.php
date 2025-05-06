@@ -981,6 +981,8 @@ class MathJamController extends Controller
             ->where('math_jam_participants.created_at', '>=', $sevenDaysAgo)
             ->groupBy('users.id', 'users.name')
             ->orderByDesc('success_percentage')
+            ->orderByDesc('total_score')
+            ->orderBy('users.name')
             ->get();
 
         $rankedStudents = [];
