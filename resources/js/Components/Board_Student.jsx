@@ -213,9 +213,6 @@ function TotalResult({ totalQuestions, gameState, totalTimeSpent, gameTitle, cat
                 <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50 transition-all ease-in-out duration-300">
                     <div className="bg-gradient-to-r from-green-400 to-blue-500 p-8 rounded-3xl shadow-xl w-4/5 md:w-1/3 text-center transform transition-all duration-500 scale-100 hover:scale-105">
                         <div className="mb-6">
-                            <svg className="w-16 h-16 text-white mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v12m0 0l4-4m-4 4l-4-4" />
-                            </svg>
                             <h2 className="text-4xl font-semibold text-white mb-4">
                                 Congratulations! 🎉
                             </h2>
