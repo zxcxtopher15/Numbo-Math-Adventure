@@ -222,7 +222,7 @@ export function TeacherDashboard({ data: result, topStudentsData }) {
                         </div>
                     </div>
                     {isModalOpen && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                             <div className="bg-white rounded-2xl p-6 w-full max-w-4xl">
                                 <div className="flex justify-between items-center mb-4">
                                     <h2 className="text-2xl font-bold">Top Students</h2>
@@ -259,7 +259,6 @@ export function TeacherDashboard({ data: result, topStudentsData }) {
                             </div>
                         </div>
                     )}
-
                     {/* Students Listr */}
                     <div className="bg-gray-100 sm:py-10 py-3 sm:px-8 px-2 rounded-3xl box-border overflow-hidden">
                         <h1 className="text-3xl font-bold text-primary mb-4">Students</h1>
