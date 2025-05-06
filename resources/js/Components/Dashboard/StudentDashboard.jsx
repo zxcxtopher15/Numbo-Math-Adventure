@@ -87,8 +87,8 @@ export function StudentDashboard({ data: result, topStudentsData }) {
                         {/* === LEADERBOARD CARD END === */}
                     </div>
                     {isModalOpen && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                            <div className="bg-white p-6 w-full h-full">
+                        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+                            <div className="bg-white rounded-2xl p-6 w-full max-w-4xl">
                                 <div className="flex justify-between items-center mb-4">
                                     <h2 className="text-2xl font-bold">Top Students</h2>
                                     <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
@@ -124,6 +124,7 @@ export function StudentDashboard({ data: result, topStudentsData }) {
                             </div>
                         </div>
                     )}
+
                     {/* === Other Data Row === */}
                     <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
                         {data.map((sample) => (
